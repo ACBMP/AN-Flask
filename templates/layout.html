@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- Required meta tags -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<link rel="icon" href="{{ url_for('static', filename='an_icon.png') }}">
+
+
+<!-- Bootstrap CSS -->
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+
+    {% if title %}
+        <title>{{title}}</title>
+    {% else %}
+        <title>Assassins' Network</title>
+    {% endif %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+
+
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+</head>
+<body>
+
+    <header class="site-header">
+        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+          <div class="container">
+            <a class="navbar-brand mr-4" href="/"><img src="{{ url_for('static', filename='an_icon_n.png') }}" height="24" width="24">  ASSASSINS' NETWORK</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarToggle">
+              <div class="navbar-nav mr-auto">
+                <a class="btn" href="/" role="button"  aria-haspopup="true" aria-expanded="false">Home</a>
+                <a class="btn" href="/about" role="button"  aria-haspopup="true" aria-expanded="false">About</a>
+                <!--nav-item nav-link -->
+
+
+
+                <div class="dropdown">
+                  <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Leaderboards  
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="/elo">About Elo</a>
+                <a class="dropdown-item" href="/escort">Escort</a>
+                <a class="dropdown-item" href="/manhunt">Manhunt</a>
+                  </div>
+                </div>   
+                <div class="dropdown">
+                  <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Links
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="https://assaguide.assassins.network">Assassinate Guide</a>
+		    <a class="dropdown-item" href="https://github.com/ACBMP">GitHub</a>
+                    <a class="dropdown-item" href="https://rulebook.assassins.network">Rulebook</a>
+                  </div>
+                </div>
+                <!--
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Leaderboards </a>
+                <div class="dropdown-menu">
+                <a class="dropdown-item" href="/elo">What is ELO</a>
+                <a class="dropdown-item" href="/manhunt">Manhunt</a>
+                <a class="dropdown-item" href="/escort">Escort</a>
+                </div>
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Links </a>
+                <div class="dropdown-menu">
+
+                </div>
+              -->
+
+              </div>
+            </div>
+          </div>
+        </nav>
+      </header>
+  
+   <!--
+    <header class="site-header">
+      <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <div class="container">
+          <a class="navbar-brand mr-4" href="/"><img src="{{ url_for('static', filename='an_icon_n.png') }}" height="24" width="24">  ASSASSINS' NETWORK</a>
+
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarToggle">
+            <div class="navbar-nav mr-auto">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-item nav-link" href="/">Home </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-item nav-link" href="/about">About </a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Leaderboards </a>
+              <div class="dropdown-menu">
+              <a class="dropdown-item" href="/elo">What is ELO</a>
+              <a class="dropdown-item" href="/manhunt">Manhunt</a>
+              <a class="dropdown-item" href="/escort">Escort</a>
+              </div>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Links </a>
+              <div class="dropdown-menu">
+              <a class="dropdown-item" href="https://rulebook.assassins.network">Rulebook</a>
+              <a class="dropdown-item" href="https://assaguide.assassins.network">Assassinate Guide</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    -->
+
+<!--
+
+          <a class="navbar-brand mr-4" href="/"><img src="{{ url_for('static', filename='an_icon_n.png') }}" height="24" width="24">  ASSASSINS' NETWORK</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarToggle">
+            <div class="navbar-nav mr-auto">
+              <a class="nav-item nav-link" href="/">Home</a>
+              <a class="nav-item nav-link" href="/ranking">Rankings</a>
+              <a class="nav-item nav-link" href="/elo">What is ELO</a>
+              <a class="nav-item nav-link" href="/about">About</a>
+              <a class="nav-item nav-link" href="https://rulebook.assassins.network">Rulebook</a>
+              <a class="nav-item nav-link" href="https://assaguide.assassins.network">Assassinate Guide</a>
+              <a class="nav-item dropdown nav-link dropdown-toggle" data-toggle="dropdown" href="#">Dropdown</a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="#">Link 1</a>
+                  <a class="dropdown-item" href="#">Link 2</a>
+                  <a class="dropdown-item" href="#">Link 3</a>
+                </div>
+            </div>
+          </div>
+
+      
+        </div>
+      </nav>
+    </header>
+  -->
+
+<main role="main" class="container">
+    <div>
+      {% block content %}{% endblock %}
+    </div>
+
+</main>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>About Elo</h1>
+    <p>The elo system for two players \(A\) and \(B\) with \(E\) being the expected score (chance of winning in percent) and \(R\) being the rating of the players says:
+$$E_{A}={\frac {1}{1+10^{(R_{B}-R_{A})/400}}}$$
+or conversely
+$$E_{B}={\frac {1}{1+10^{(R_{A}-R_{B})/400}}}=1-E_{A}$$
+
+Further, the adjustment after a match, with \(R'\) being the updated rating, \(S\) being the outcome, and \(K\) being a scaling factor:
+$$R_{A}^{\prime }=R_{A}+K(S_{A}-E_{A})$$
+This scaling factor of \(K\) represents the maximum the score can be adjusted by. We find this factor according to the following cases:
+$$K = \begin{cases}40 & \textrm{less than 30 games played as long as } R < 2300 \\ 20 & R \leq 2300 \\ 10 & R > 2300\end{cases}$$
+
+For the \(R\) values used for calculating \(E\) for teams, we simply find the average \(R\) of all members on a team. This is done to ensure similar adjustments are done for 2v2 and 3v3 matches.
+
+To view the function Assassins' Network uses to calculate elo, please refer to <A href="https://github.com/ACBMP/elo/blob/master/calculation.ipynb">our GitHub repository on elo calculation</A>.</p>
+
+{% endblock content %}

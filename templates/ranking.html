@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1 align="center">{{mode}} Leaderboard</h1>
+    <br \>
+    <div align="center">
+    <table>
+        <tr>
+            <th>Rank</th>
+            <th>Player</th>
+            <th>Points</th>
+          </tr>
+    {% for entry in data %}
+    <tr>
+        <td>{{entry.rank}}</td>
+        <td>{{entry.player}}</td>
+        <td>{{entry.points}}</td>
+    </tr>
+    {% endfor %}
+    </table>
+    </div>
+    {% endblock content %}
