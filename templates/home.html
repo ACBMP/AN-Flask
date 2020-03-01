@@ -1,5 +1,14 @@
 {% extends "layout.html" %}
 {% block content %}
- <h1>Hello there</h1>
- <p>The landing page of the website.</p>
+{%for entry in data%}
+  
+<article class="media content-section">
+    <div class="media-body">
+<h2 class="article-title">{{ entry.title }}</h2>
+<p class="article-content">{{ entry.content }}</p>
+</div>
+</article>
+
+{%endfor%}
+
 {% endblock content %}

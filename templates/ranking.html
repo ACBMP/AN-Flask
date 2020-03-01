@@ -9,12 +9,18 @@
             <th>Player</th>
             <th>Points</th>
           </tr>
+          {%set counter=1%}
     {% for entry in data %}
     <tr>
-        <td>{{entry.rank}}</td>
-        <td>{{entry.player}}</td>
-        <td>{{entry.points}}</td>
+        <td>{{ counter + loop.index0 }}</td>
+        <td>{{entry.ign}}</td>
+        {%if mode == "Escort"%}
+        <td>{{entry.emmr}}</td>
+        {%else%}
+        <td>{{entry.mhmmr}}</td>
+        {%endif%}
     </tr>
+    {% set counter = counter + group|length %}
     {% endfor %}
     </table>
     </div>
