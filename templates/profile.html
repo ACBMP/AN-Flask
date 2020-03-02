@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+{% if data%}
+    <h1 align="center">{{data.ign}}'s Profile</h1>
+    <br \>
+<p><b>IGN: </b>{{data.ign}}</p>
+<p><b>Escort MMR: </b>{{data.emmr}}</p>
+<p><b>Manhunt MMR: </b>{{data.mhmmr}}</p>
+{%else%}
+<h1>Nothing to show</h1>
+{%endif%}
+    {% endblock content %}

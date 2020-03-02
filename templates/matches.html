@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1 align="center">Match History</h1>
+    <br \>
+    <div align="center">
+    <table>
+        <tr>
+            <th>Mode</th>
+            <th>Team 1</th>
+            <th>Team 2</th>
+            <th>Winner</th>
+          </tr>
+    {% for entry in data %}
+    <tr>
+        <td>{{entry.mode}}</td>
+        <td>{{entry.players1|join(", ") }}</td>
+        <td>{{entry.players2|join(", ") }}</td>
+        {% if entry.outcome == 0%}
+        <td>Tie</td>
+        {% else%}
+        <td>Team {{entry.outcome}}</td>
+
+        {%endif%}
+    </tr>
+    {% endfor %}
+    </table>
+    </div>
+    {% endblock content %}

@@ -8,17 +8,21 @@
             <th>Rank</th>
             <th>Player</th>
             <th>Points</th>
+            <th>Games played</th>
+            <th>Winrate</th>
           </tr>
           {%set counter=1%}
     {% for entry in data %}
     <tr>
         <td>{{ counter + loop.index0 }}</td>
-        <td>{{entry.ign}}</td>
+        <td><a href="/profile/{{entry.ign}}">{{entry.ign}}</a></td>
         {%if mode == "Escort"%}
         <td>{{entry.emmr}}</td>
         {%else%}
         <td>{{entry.mhmmr}}</td>
         {%endif%}
+        <td>?</td>
+        <td>?</td>
     </tr>
     {% set counter = counter + group|length %}
     {% endfor %}
