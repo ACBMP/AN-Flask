@@ -15,14 +15,16 @@
     {% for entry in data %}
     <tr>
         <td>{{ counter + loop.index0 }}</td>
-        <td><a href="/profile/{{entry.ign}}">{{entry.ign}}</a></td>
+        <td><a href="/profile/{{entry.name}}">{{entry.name}}</a></td>
         {%if mode == "Escort"%}
         <td>{{entry.emmr}}</td>
-        {%else%}
+        <td>{{entry.egames[0]}}</td>
+        <td>{{ entry.egames[1] | winrate(entry.egames[2]) }}</td>
+            {%else%}
         <td>{{entry.mhmmr}}</td>
+        <td>{{entry.mhgames[0]}}</td>
+        <td>{{ entry.mhgames[1] | winrate(entry.mhgames[2]) }}</td>
         {%endif%}
-        <td>?</td>
-        <td>?</td>
     </tr>
     {% set counter = counter + group|length %}
     {% endfor %}

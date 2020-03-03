@@ -1,14 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
 {%for entry in data%}
-  
 <article class="media content-section">
     <div class="media-body">
-<h2 class="article-title">{{ entry.title }}</h2>
-<p class="article-content">{{ entry.content }}</p>
+<h2 class="article-title">{{ entry.title|safe }}</h2>
+<p class="article-content">{{ entry.content|safe }}</p>
 </div>
 </article>
-
 {%endfor%}
-
 {% endblock content %}

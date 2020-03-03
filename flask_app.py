@@ -37,10 +37,27 @@ def matches():
     data = mongo.db.matches.find().sort("_id", -1)
     return render_template('matches.html',data=data, title = 'Match History | Assassins\' Network')
 
+@app.route('/players')
+def players():
+    data = mongo.db.players.find().sort("name")
+    return render_template('players.html',data=data, title = 'Players | Assassins\' Network')
+
 @app.route('/profile/<name>')
 def display_profile(name):
-    data = mongo.db.players.find_one({"ign": name})
-    return render_template('profile.html',data=data, title = 'Player\'s Profile | Assassins\' Network')
+    data = mongo.db.players.find_one({"name": name})
+    data_matches = mongo.db.matches.find({"$or":[{"players1":name}, {"players2":name}]})
+    return render_template('profile.html',data=data, data_matches=data_matches, title = 'Player\'s Profile | Assassins\' Network')
 
+
+#Jinja2 filter
+@app.template_filter('winrate')
+def winrate(w,l):
+    try:
+        winrate = (w*100)/(w+l)
+        return "{0:.2f}%".format(winrate)
+    except:
+        return "0.00%"
+
+# REMOVE THIS, WE CAN RUN A LIVE APP IN DEBUG MODE! 
 if __name__ == '__main__':
     app.run(debug=True)
