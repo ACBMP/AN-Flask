@@ -60,6 +60,6 @@ def winrate(w,l):
     except:
         return "0.00%"
 
-# REMOVE THIS, WE CAN RUN A LIVE APP IN DEBUG MODE! 
+# WE CAN'T RUN A LIVE APP IN DEBUG MODE! 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=False, host='0.0.0.0')
