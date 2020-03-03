@@ -1,11 +1,85 @@
 {% extends "layout.html" %}
 {% block content %}
 {% if data%}
-    <h1 align="center">{{data.ign}}'s Profile</h1>
+   <h1 align="center">{{data.name}} <img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/48/{{data.nation}}.png"></h1>
+        <br \>
+    <div align="center">
+        <ul class="nav nav-tabs nav-fill" id="myTab" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="info-tab" data-toggle="tab" href="#info" role="tab" aria-controls="home" aria-selected="true">Player Info</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="matches-tab" data-toggle="tab" href="#matches" role="tab" aria-controls="profile" aria-selected="false">Match History</a>
+            </li>
+            </ul>
+    </div>
+<div class="tab-content" id="myTabContent">
     <br \>
-<p><b>IGN: </b>{{data.ign}}</p>
-<p><b>Escort MMR: </b>{{data.emmr}}</p>
-<p><b>Manhunt MMR: </b>{{data.mhmmr}}</p>
+<div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+<h3 align="center">Player info</h3>
+<br \>
+<div align="center">
+<table style="width: 50%">
+<tr><td><b>IGNs</b></td><td>{{data.ign|join(", ") }}</td></tr>
+<tr><td><b>Platforms</b></td><td>{{data.platforms|join(", ") }}</td></tr>
+<tr><td><b>Link</b></td><td><a href="{{data.link}}" target="_blank">{{data.link}}</a></td></tr>
+</table> <br \>
+<table style="width: 50%">
+    <tr>
+        <th> </th>
+        <th>Manhunt</th>
+        <th>Escort</th>
+      </tr>
+<tr><td><b>MMR</b></td>
+        <td>{{data.mhmmr}}</td>
+        <td>{{data.emmr}}</td>
+        </tr>
+<tr><td><b>Games played</b></td>
+    <td>{{data.mhgames[0]}}</td>
+    <td>{{data.egames[0]}}</td>
+    </tr>
+<tr><td><b>Games won</b></td>
+        <td>{{data.mhgames[1]}}</td>
+        <td>{{data.egames[1]}}</td>
+        </tr>
+<tr><td><b>Games lost</b></td>
+            <td>{{data.mhgames[2]}}</td>
+            <td>{{data.egames[2]}}</td>
+            </tr>
+<tr><td><b>Winrate</b></td>
+                <td>{{ data.mhgames[1]|winrate(data.mhgames[2]) }}</td>
+                <td>{{ data.egames[1]|winrate(data.egames[2]) }}</td>
+                </tr>
+</table>
+</div>
+</div>
+<div class="tab-pane fade" id="matches" role="tabpanel" aria-labelledby="matches-tab">
+<h3 align="center">Match History</h3>
+<br \>
+<div align="center">
+<table>
+    <tr>
+        <th>Mode</th>
+        <th>Team 1</th>
+        <th>Team 2</th>
+        <th>Winner</th>
+      </tr>
+{% for entry in data_matches %}
+<tr>
+    <td>{{entry.mode}}</td>
+    <td>{{entry.players1|join(", ") }}</td>
+    <td>{{entry.players2|join(", ") }}</td>
+    {% if entry.outcome == 0%}
+    <td>Tie</td>
+    {% else%}
+    <td>Team {{entry.outcome}}</td>
+    {%endif%}
+</tr>
+{% endfor %}
+</table>
+</div>
+</div>
+</div>
 {%else%}
 <h1>Nothing to show</h1>
 {%endif%}

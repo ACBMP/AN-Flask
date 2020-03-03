@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1 align="center">Player Database</h1>
+    <br \>
+    <div align="center">
+    <table>
+        <tr>
+            <th>Player</th>
+            <th>IGNs</th>
+            <th>Platform</th>
+          </tr>
+    {% for entry in data %}
+    <tr>
+        <td><a href="/profile/{{entry.name}}">{{entry.name}}</a></td>
+        <td>{{entry.ign|join(", ") }}</td>
+        <td>{{entry.platforms|join(", ") }}</td>
+    </tr>
+    {% endfor %}
+    </table>
+    </div>
+    {% endblock content %}
