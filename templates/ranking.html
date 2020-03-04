@@ -18,12 +18,12 @@
         <td><a href="/profile/{{entry.name}}">{{entry.name}}</a></td>
         {%if mode == "Escort"%}
         <td>{{entry.emmr}}</td>
-        <td>{{entry.egames[0]}}</td>
-        <td>{{ entry.egames[1] | winrate(entry.egames[2]) }}</td>
+        <td>{{entry.egames.total}}</td>
+        <td>{{ entry.egames.won | winrate(entry.egames.lost) }}</td>
             {%else%}
         <td>{{entry.mhmmr}}</td>
-        <td>{{entry.mhgames[0]}}</td>
-        <td>{{ entry.mhgames[1] | winrate(entry.mhgames[2]) }}</td>
+        <td>{{entry.mhgames.total}}</td>
+        <td>{{ entry.mhgames.won | winrate(entry.mhgames.lost) }}</td>
         {%endif%}
     </tr>
     {% set counter = counter + group|length %}
