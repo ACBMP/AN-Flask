@@ -1,10 +1,16 @@
 from flask import Flask, render_template, url_for
 from flask_pymongo import PyMongo
 from werkzeug.middleware.proxy_fix import ProxyFix
+from forms import PlayerForm
+
+from flask import flash
+
 app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb://localhost:27017/public"
+app.config["SECRET_KEY"] = "test_value"
 mongo = PyMongo(app)
 app.wsgi_app = ProxyFix(app.wsgi_app)
+
 
 # The main landing page
 @app.route('/')
@@ -59,6 +65,35 @@ def winrate(w,l):
         return "{0:.2f}%".format(winrate)
     except:
         return "0.00%"
+
+###############
+@app.route('/add_player/form', methods=['GET','POST'])
+def form_print():
+    form = PlayerForm()
+    if form.validate_on_submit():
+            igns = [form.name.data]
+            temp=form.igns.data.split(',')
+            for value in temp:
+                igns.append(value)
+            link=""
+            if form.tw_handle.data !="":
+                link = "https://twitter.com/"+form.tw_handle.data
+            platforms=[]
+            if form.pl_pc.data:
+                platforms.append("PC")
+            if form.pl_ps3.data:
+                platforms.append("PS3")
+            if form.pl_xbox.data:
+                platforms.append("XBOX")
+            f = open('new_players.txt','a+')
+            data_string="{name:\'" +form.name.data + "\',ign:"+igns.__str__()+",link:\'"+link+"\',nation:\'"+form.nation.data+"\",platforms:"+platforms.__str__()+",emmr:NumberInt(1000), mhmmr:NumberInt(1000),ehistory:[],mhhistory:[],egames:[NumberInt(0),NumberInt(0),NumberInt(0)],mhgames:[NumberInt(0),NumberInt(0),NumberInt(0)]}\n"
+            print(data_string)
+            f.write(data_string)
+            f.close()
+            flash('Entry added!', 'success')
+    return render_template('form.html', title="Add player", form=form)
+
+
 
 # WE CAN'T RUN A LIVE APP IN DEBUG MODE! 
 if __name__ == '__main__':

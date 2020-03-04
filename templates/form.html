@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Required meta tags -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="icon" href="{{ url_for('static', filename='an_icon.png') }}">
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    {% if title %}
+        <title>{{title}}</title>
+    {% else %}
+        <title>Assassins' Network</title>
+    {% endif %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+{% with messages=get_flashed_messages(with_categories=true)%}
+{% if messages %}
+{%for category, message in messages%}
+<div class="alert alert-{{category}}">{{message}}</div>
+{%endfor%}
+{%endif%}
+{%endwith%}
+<div class="content-section">
+<form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+    <legend class="border-bottom mb-4">Add Player</legend>
+    <div class="form-group">
+    <div class="form-control-label">Please input your main IGN (rememeber: capitalization matters - 'Joe' and 'joe' are treated differently)<b> [MANDATORY]</b>:</div> {{ form.name(class="form-control form-control-lg") }}
+    </div>
+    <div class="form-group">
+    <div class="form-control-label">Please input your other IGNs:<br \>
+        <ul><li>Rememeber: capitalization matters ('Joe' and 'joe' are treated differently)!</li>
+        <li>Separate multiple IGNs with "," only (no spaces), like "ign1,ign2,ign3"</li>
+        <li>DO NOT repeat your main IGN</li></ul></div> {{ form.igns(class="form-control form-control-lg") }}
+    </div>
+    <div class="form-group">
+    <div class="form-control-label">Please input the ISO code of your country of origin in all caps (example: for Germany input 'DE', for the USA input 'US'):</div> {{ form.nation(class="form-control form-control-lg") }}
+     </div>
+    <div class="form-group">
+    <div class="form-control-label">Please input your twitter handle (if your twitter url is 'https://twitter.com/Smexopolis' and handle @Smexopolis, input only 'Smexopolis'):</div> {{ form.tw_handle(class="form-control form-control-lg") }}
+     </div>
+     <div class="form-control-label">Platforms:</div>
+    <div class="form-check">
+        {{ form.pl_pc(class="form-check-input") }}<div class="form-check-label">PC</div>
+    </div>
+    <div class="form-check">
+        {{ form.pl_ps3(class="form-check-input") }}<div class="form-check-label">PS3</div>
+    </div>
+    <div class="form-check">
+        {{ form.pl_xbox(class="form-check-input") }}<div class="form-check-label">XBOX</div>
+     </div>
+    </fieldset>
+    <div class="form-group">{{form.submit(class="btn btn-outline-info")}}</div>
+</form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>
