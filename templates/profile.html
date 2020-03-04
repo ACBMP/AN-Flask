@@ -35,20 +35,20 @@
         <td>{{data.emmr}}</td>
         </tr>
 <tr><td><b>Games played</b></td>
-    <td>{{data.mhgames[0]}}</td>
-    <td>{{data.egames[0]}}</td>
+    <td>{{data.mhgames.total}}</td>
+    <td>{{data.egames.total}}</td>
     </tr>
 <tr><td><b>Games won</b></td>
-        <td>{{data.mhgames[1]}}</td>
-        <td>{{data.egames[1]}}</td>
+        <td>{{data.mhgames.won}}</td>
+        <td>{{data.egames.won}}</td>
         </tr>
 <tr><td><b>Games lost</b></td>
-            <td>{{data.mhgames[2]}}</td>
-            <td>{{data.egames[2]}}</td>
+            <td>{{data.mhgames.lost}}</td>
+            <td>{{data.egames.lost}}</td>
             </tr>
 <tr><td><b>Winrate</b></td>
-                <td>{{ data.mhgames[1]|winrate(data.mhgames[2]) }}</td>
-                <td>{{ data.egames[1]|winrate(data.egames[2]) }}</td>
+                <td>{{ data.mhgames.won|winrate(data.mhgames.lost) }}</td>
+                <td>{{ data.egames.won|winrate(data.egames.lost) }}</td>
                 </tr>
 </table>
 </div>
