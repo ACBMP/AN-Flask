@@ -47,7 +47,7 @@ def players():
 @app.route('/profile/<name>')
 def display_profile(name):
     data = mongo.db.players.find_one({"name": name})
-    data_matches = mongo.db.matches.find({"$or":[{"players1":name}, {"players2":name}]})
+    data_matches = mongo.db.matches.find({"$or":[{"team1":{"$elemMatch":{"player":name}}}, {"team2":{"$elemMatch":{"player":name}}}]})
     return render_template('profile.html',data=data, data_matches=data_matches, title = 'Player\'s Profile | Assassins\' Network')
 
 

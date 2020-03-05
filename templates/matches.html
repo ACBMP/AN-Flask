@@ -3,18 +3,34 @@
     <h1 align="center">Match History</h1>
     <br \>
     <div align="center">
-    <table>
+    <table style="width:90%">
         <tr>
             <th>Mode</th>
-            <th>Team 1</th>
-            <th>Team 2</th>
+            <th>Team 1<table style="width:100%"><tr style="background: transparent;width: 100%">
+                <td style="width: 25%;border: 0px">Player</td><td style="width: 25%;border: 0px">Score</td>
+                <td style="width: 25%;border: 0px">Kills</td><td style="width: 25%;border: 0px">Deaths</td></tr></table></th>
+                <th>Team 2<table style="width:100%"><tr style="background: transparent;width: 100%">
+                    <td style="width: 25%;border: 0px">Player</td><td style="width: 25%;border: 0px">Score</td>
+                    <td style="width: 25%;border: 0px">Kills</td><td style="width: 25%;border: 0px">Deaths</td></tr></table></th>
             <th>Winner</th>
           </tr>
     {% for entry in data %}
     <tr>
         <td>{{entry.mode}}</td>
-        <td>{{entry.players1|join(", ") }}</td>
-        <td>{{entry.players2|join(", ") }}</td>
+        <td><table style="width:100%">{% for player in entry.team1 %}
+                <tr style="background: transparent;width: 100%">
+                    <td style="width: 25%;border: 0px">{{player.player}}</td><td style="width: 25%;border: 0px">{{player.score}}</td>
+                    <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
+            {% endfor %}
+        </table>
+        </td>
+        <td><table style="width:100%">{% for player in entry.team2 %}
+            <tr style="background: transparent;width: 100%">
+                <td style="width: 25%;border: 0px">{{player.player}}</td><td style="width: 25%;border: 0px">{{player.score}}</td>
+                <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
+        {% endfor %}
+    </table>
+    </td>
         {% if entry.outcome == 0%}
         <td>Tie</td>
         {% else%}
