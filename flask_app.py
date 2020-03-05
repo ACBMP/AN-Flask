@@ -51,7 +51,7 @@ def display_profile(name):
     return render_template('profile.html',data=data, data_matches=data_matches, title = 'Player\'s Profile | Assassins\' Network')
 
 
-#Jinja2 filter
+#Jinja2 filters
 @app.template_filter('winrate')
 def winrate(w,l):
     try:
@@ -59,6 +59,14 @@ def winrate(w,l):
         return "{0:.2f}%".format(winrate)
     except:
         return "0.00%"
+    
+@app.template_filter('kdratio')
+def kdratio(k,d):
+    try:
+        kdr = k/d
+        return "{0:.2f}%".format(kdr)
+    except:
+        return "0.00"
 
 # WE CAN'T RUN A LIVE APP IN DEBUG MODE! 
 if __name__ == '__main__':
