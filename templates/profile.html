@@ -59,8 +59,8 @@
                 <td>{{ data.estats.highscore }}</td>
                 </tr>
 <tr><td><b>K/D ratio</b></td>
-                <td>-</td>
-                <td>-</td>
+                <td>{{ data.mhstats.kills|kdratio(data.mhstats.deaths) }}</td>
+                <td>{{ data.estats.kills|kdratio(data.estats.deaths) }}</td>
                 </tr>
 </table>
 </div>
