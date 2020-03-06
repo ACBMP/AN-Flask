@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for
 from flask_pymongo import PyMongo
 from werkzeug.middleware.proxy_fix import ProxyFix
+import json
 app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb://localhost:27017/public"
 mongo = PyMongo(app)

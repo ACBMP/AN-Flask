@@ -63,6 +63,23 @@
                 <td>{{ data.estats.kills|kdratio(data.estats.deaths) }}</td>
                 </tr>
 </table>
+<br \>
+
+<div class="container">
+<div style="width: 60%">
+    <canvas id="echart"></canvas>
+    <br \>
+</div>
+<div style="width: 60%">
+    <canvas id="mhchart"></canvas>
+    <br \>
+</div>
+<div style="width: 60%">
+    <canvas id="gchart"></canvas>
+    <br \>
+</div>
+</div>
+
 </div>
 </div>
 <div class="tab-pane fade" id="matches" role="tabpanel" aria-labelledby="matches-tab">
@@ -111,4 +128,32 @@
 {%else%}
 <h1>Nothing to show</h1>
 {%endif%}
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+
+<script>
+    var echart = document.getElementById('echart').getContext('2d');
+    var escortchart = new Chart(echart, {
+        type: 'doughnut',
+        data:{
+            labels:['WINS', 'LOSSES', 'TIES'],
+            datasets:
+            [{data:[{{data.egames.won}},{{data.egames.lost}},{{data.egames.total-data.egames.won-data.egames.lost}}], backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Escort game outcomes',fontSize: 25 },}});
+    var mhchart = document.getElementById('mhchart').getContext('2d');
+    var manhuntchart = new Chart(mhchart, {
+        type: 'doughnut',
+        data:{
+            labels:['WINS', 'LOSSES', 'TIES'],
+            datasets:
+            [{data:[{{data.mhgames.won}},{{data.mhgames.lost}},{{data.mhgames.total-data.mhgames.won-data.mhgames.lost}}],backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Manhunt game outcomes',fontSize: 25},}});
+    var gchart = document.getElementById('gchart').getContext('2d');
+    var gameschart = new Chart(gchart, {
+        type: 'doughnut',
+        data:{
+            labels:['ESCORT', 'MANHUNT'],
+            datasets:
+            [{data:[{{data.egames.total}},{{data.mhgames.total}}],backgroundColor:['#0099ff','#33cc33']}],},options:{title:{display:true,text:'Games Played',fontSize: 25},}});
+</script>
     {% endblock content %}
