@@ -42,7 +42,7 @@ def matches():
 
 @app.route('/players')
 def players():
-    data = mongo.db.players.find().sort("name")
+    data = mongo.db.players.find().collation({'locale':'en'}).sort("name")
     return render_template('players.html',data=data, title = 'Players | Assassins\' Network')
 
 @app.route('/profile/<name>')
