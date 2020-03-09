@@ -11,6 +11,9 @@
             <li class="nav-item">
               <a class="nav-link" id="matches-tab" data-toggle="tab" href="#matches" role="tab" aria-controls="profile" aria-selected="false">Match History</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" id="mmrhistory-tab" data-toggle="tab" href="#mmrhistory" role="tab" aria-controls="profile" aria-selected="false">MMR History</a>
+            </li>
             </ul>
     </div>
 <div class="tab-content" id="myTabContent">
@@ -124,7 +127,29 @@
     </table>
 </div>
 </div>
+
+<div class="tab-pane fade" id="mmrhistory" role="tabpanel" aria-labelledby="mmrhistory-tab">
+<h3 align="center">MMR History</h3>
+<br \>
+<div align="center">
+
+<div class="container">
+<div style="width: 80%">
+    <canvas id="mhhist"></canvas>
+    <br \>
 </div>
+<div style="width: 80%">
+    <canvas id="ehist"></canvas>
+    <br \>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+
 {%else%}
 <h1>Nothing to show</h1>
 {%endif%}
@@ -134,6 +159,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
 
 <script>
+    Chart.defaults.global.defaultFontFamily='Arial';
     var echart = document.getElementById('echart').getContext('2d');
     var escortchart = new Chart(echart, {
         type: 'doughnut',
@@ -155,5 +181,42 @@
             labels:['ESCORT', 'MANHUNT'],
             datasets:
             [{data:[{{data.egames.total}},{{data.mhgames.total}}],backgroundColor:['#0099ff','#33cc33']}],},options:{title:{display:true,text:'Games Played',fontSize: 25},}});
+   
+    var ehist = document.getElementById('ehist').getContext('2d');
+    var ehistchart = new Chart(ehist, {
+        type: 'line',
+        data:{
+            labels: {{data.ehistory.dates|safe}},
+            datasets:
+            [
+                {
+                    data: {{data.ehistory.mmrs|safe}}, 
+                    backgroundColor:'rgba(40, 170, 240, 0.4)',
+                    borderColor:'rgba(40, 170, 240, 0.7)',
+                    lineTension:0
+                }
+            ],},
+            options:{title:{display:true,text:'Escort MMR',fontSize: 25 },legend:{
+                display:false}
+            }});
+    var mhhist = document.getElementById('mhhist').getContext('2d');
+    var mhhistchart = new Chart(mhhist, {
+        type: 'line',
+        data:{
+            labels: {{data.mhhistory.dates|safe}},
+            datasets:
+            [
+                {
+                    data: {{data.mhhistory.mmrs|safe}}, 
+                    backgroundColor:'rgba(0, 209, 10, 0.4)',
+                    borderColor:'rgba(0, 209, 10, 0.7)',
+                    lineTension:0
+                }
+            ],},
+            options:{title:{display:true,text:'Manhunt MMR',fontSize: 25 },legend:{
+                display:false}
+            }});
+          
+    
 </script>
     {% endblock content %}
