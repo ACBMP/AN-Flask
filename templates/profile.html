@@ -54,8 +54,8 @@
                 <td>{{ data.egames.won|winrate(data.egames.lost) }}</td>
                 </tr>
 <tr><td><b>Average score</b></td>
-                <td>{{ data.mhstats.avgscore }}</td>
-                <td>{{ data.estats.avgscore }}</td>
+                <td>{{ data.mhstats.totalscore|avgscore(data.mhgames.total) }}</td>
+                <td>{{ data.estats.totalscore|avgscore(data.egames.total) }}</td>
                 </tr>
 <tr><td><b>Highest score</b></td>
                 <td>{{ data.mhstats.highscore }}</td>
