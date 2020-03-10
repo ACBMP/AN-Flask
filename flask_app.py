@@ -73,7 +73,7 @@ def kdratio(k,d):
 def avgscore(s,g):
     try:
         avgs = s/g
-        return "{0:.2f}%".format(avgs)
+        return "{0:.2f}".format(avgs)
     except:
         return "0.00"
 
