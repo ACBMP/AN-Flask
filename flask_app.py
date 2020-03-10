@@ -68,6 +68,14 @@ def kdratio(k,d):
         return "{0:.2f}%".format(kdr)
     except:
         return "0.00"
+    
+@app.template_filter('avgscore')
+def avgscore(s,g):
+    try:
+        avgs = s/g
+        return "{0:.2f}%".format(avgs)
+    except:
+        return "0.00"
 
 # WE CAN'T RUN A LIVE APP IN DEBUG MODE! 
 if __name__ == '__main__':
