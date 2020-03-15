@@ -65,7 +65,7 @@ def winrate(w,l):
 def kdratio(k,d):
     try:
         kdr = k/d
-        return "{0:.2f}%".format(kdr)
+        return "{0:.2f}".format(kdr)
     except:
         return "0.00"
     
