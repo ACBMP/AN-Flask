@@ -10,6 +10,8 @@
             <th>Points</th>
             <th>Games played</th>
             <th>Winrate</th>
+	    <th>Average score</th>
+	    <th>K/D</th>
           </tr>
           {%set counter=1%}
     {% for entry in data %}
@@ -20,10 +22,14 @@
         <td>{{entry.emmr}}</td>
         <td>{{entry.egames.total}}</td>
         <td>{{ entry.egames.won | winrate(entry.egames.lost) }}</td>
+	<td>{{ entry.estats.totalscore|avgscore(entry.egames.total) }}</td>
+	<td>{{ entry.estats.kills|kdratio(entry.estats.deaths) }}</td>
             {%else%}
         <td>{{entry.mhmmr}}</td>
         <td>{{entry.mhgames.total}}</td>
         <td>{{ entry.mhgames.won | winrate(entry.mhgames.lost) }}</td>
+	<td>{{ entry.mhstats.totalscore|avgscore(entry.mhgames.total) }}</td>
+	<td>{{ entry.mhstats.kills|kdratio(entry.mhstats.deaths) }}</td>
         {%endif%}
     </tr>
     {% set counter = counter + group|length %}
