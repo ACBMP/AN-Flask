@@ -11,7 +11,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app)
 @app.route('/')
 @app.route('/home')
 def home():
-    data = mongo.db.home.find().sort("_id",-1).limit(7)
+    data = mongo.db.home.find()
     return render_template('home.html', data=data)
 
 # Page displaying the ranking
@@ -79,4 +79,4 @@ def avgscore(s,g):
 
 # WE CAN'T RUN A LIVE APP IN DEBUG MODE! 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0')
