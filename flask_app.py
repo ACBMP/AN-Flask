@@ -11,7 +11,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app)
 @app.route('/')
 @app.route('/home')
 def home():
-    data = mongo.db.home.find().sort("_id",-1).limit(7)
+    data = mongo.db.home.find()
     return render_template('home.html', data=data)
 
 # Page displaying the ranking
