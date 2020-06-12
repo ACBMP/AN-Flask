@@ -9,7 +9,7 @@ mongo = PyMongo(app)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 # The main landing page
-@app.errorhandler(HTTPException)
+@app.errorhandler(Exception)
 @app.route('/')
 @app.route('/home')
 def home():
