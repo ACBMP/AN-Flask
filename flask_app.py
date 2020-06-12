@@ -8,8 +8,11 @@ app.config["MONGO_URI"] = "mongodb://localhost:27017/public"
 mongo = PyMongo(app)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
-# The main landing page
 @app.errorhandler(Exception)
+def error_handler():
+    return redirect("https://assassins.network", code=302)
+
+# The main landing page
 @app.route('/')
 @app.route('/home')
 def home():
