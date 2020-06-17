@@ -73,11 +73,28 @@ def kdratio(k,d):
         return "{0:.2f}".format(kdr)
     except:
         return "0.00"
-    
+      
 @app.template_filter('avgscore')
 def avgscore(s,g):
     try:
         avgs = s/g
+        return "{0:.2f}".format(avgs)
+    except:
+        return "0.00"
+
+@app.template_filter('avgkills')
+def avgkills(k,g):
+    try:
+        avgs = k/g
+        return "{0:.2f}".format(avgs)
+    except:
+        return "0.00"
+
+   
+@app.template_filter('avgdeaths')
+def avgdeaths(d,g):
+    try:
+        avgs = d/g
         return "{0:.2f}".format(avgs)
     except:
         return "0.00"

@@ -65,6 +65,14 @@
                 <td>{{ data.mhstats.kills|kdratio(data.mhstats.deaths) }}</td>
                 <td>{{ data.estats.kills|kdratio(data.estats.deaths) }}</td>
                 </tr>
+<tr><td><b>Average kills</b></td>
+                <td>{{ data.mhstats.kills|avgkills(data.mhgames.total) }}</td>
+                <td>{{ data.estats.kills|avgkills(data.egames.total) }}</td>
+                </tr>
+<tr><td><b>Average deaths</b></td>
+                <td>{{ data.mhstats.deaths|avgdeaths(data.mhgames.total) }}</td>
+                <td>{{ data.estats.deaths|avgdeaths(data.egames.total) }}</td>
+                </tr>
 </table>
 <br \>
 
