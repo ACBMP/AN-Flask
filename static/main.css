@@ -24,6 +24,10 @@ body {
     font-weight: 500;
   }
   
+  .navbar-nav{
+    align-items: flex-start;
+  }
+
   .content-section {
     background: #ffffff;
     padding: 10px 20px;
