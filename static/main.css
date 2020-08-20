@@ -25,8 +25,12 @@ body {
   }
   
   .navbar-nav{
-    align-items: flex-start !important;
+    align-items: flex-end;
   }
+  .dropdown-menu{
+    align-items: flex-start;
+  }
+
 
   .content-section {
     background: #ffffff;
