@@ -27,9 +27,6 @@ body {
   .navbar-nav{
     align-items: flex-start;
   }
-  .navbar-collapse{
-    align-items: flex-end;
-  }
 
   .content-section {
     background: #ffffff;
