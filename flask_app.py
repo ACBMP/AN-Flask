@@ -56,6 +56,9 @@ def display_profile(name):
     data_matches = mongo.db.matches.find({"$or":[{"team1":{"$elemMatch":{"player":name}}}, {"team2":{"$elemMatch":{"player":name}}}]}).sort("_id", -1).limit(10)
     return render_template('profile.html',data=data, data_matches=data_matches, title = 'Player\'s Profile | Assassins\' Network')
 
+@app.route('/418')
+def teapot():
+    return render_template('418.html')
 
 #Jinja2 filters
 @app.template_filter('winrate')
