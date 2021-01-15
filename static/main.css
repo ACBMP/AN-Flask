@@ -1,6 +1,6 @@
 body {
-    background: #1b1b1b;
-    color: #333333;
+    background: #333333;
+    color: #dbcbcb;
     margin-top: 5rem;
   }
   
@@ -29,7 +29,7 @@ body {
   }
 
   .content-section {
-    background: #1b1b1b;
+    background: #383838;
     padding: 10px 20px;
     border: 1px solid #dddddd;
     border-radius: 3px;
@@ -96,7 +96,7 @@ body {
   }
   
   tr:nth-child(even) {
-    background-color: #4f4f4f;
+    background-color: #3d3d3d;
   }
   h1 {
       font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
