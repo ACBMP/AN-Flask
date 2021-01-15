@@ -26,7 +26,9 @@ body {
   .nav-link:active{
     background: #4d4d4d;
   }
-  
+  .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    color: #fff;
+	  background-color: #4d4d4d;}
   .navbar-nav{
     align-items: flex-start;
   }
@@ -127,5 +129,5 @@ body {
       color: rgb(255, 27, 27);
     }
   a {
-    color: #e5ecf5;
+    color: #c8d7ea;
     }
