@@ -1,5 +1,5 @@
 body {
-    background: #fafafa;
+    background: #1b1b1b;
     color: #333333;
     margin-top: 5rem;
   }
@@ -29,7 +29,7 @@ body {
   }
 
   .content-section {
-    background: #ffffff;
+    background: #1b1b1b;
     padding: 10px 20px;
     border: 1px solid #dddddd;
     border-radius: 3px;
@@ -37,11 +37,11 @@ body {
   }
   
   .article-title {
-    color: #444444;
+    color: #e3e3e3;
   }
   
   a.article-title:hover {
-    color: #428bca;
+    color: #f0f0f0;
     text-decoration: none;
   }
   
@@ -96,7 +96,7 @@ body {
   }
   
   tr:nth-child(even) {
-    background-color: #dddddd;
+    background-color: #4f4f4f;
   }
   h1 {
       font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
