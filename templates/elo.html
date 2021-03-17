@@ -12,11 +12,11 @@ This scaling factor of \(K\) represents the maximum the score can be adjusted by
 $$K = \begin{cases}40 & \textrm{less than 30 games played as long as } R < 1200 \\ 20 & R \leq 1200 \\ 10 & R > 1200\end{cases}$$
 
 In addition to the above, we have added a simple points difference factor \(P\), which uses the team scores \(p_A\) and \(p_B\):
-$$P = \frac{\max(p_A, p_B) - \min(p_A, p_B)}{(p_A - p_B) / 2}$$
+$$P = \frac{\mathrm{abs}(p_A - p_B)}{(p_A + p_B) / 2}$$
 This extends the \(R'\) calculation:
 $$R_{A}^{\prime }=R_{A}+(1 + P) \times K(S_{A}-E_{A})$$
 
-In our case, we track 2v2 escort and 3v3/4v4 manhunt games, so we have to calculate the team rankings. We use a weighted mean \(m_w\) of the team's rankings in accordance to each player's difference \(d\) from the opposing team's mean ranking \(m_e\), whereby weights are calculated according to:
+In our case, we track 2v2 escort and 3v3/4v4 manhunt games, so we have to calculate the team rankings. We use a weighted mean \(m_w\) of the team's rankings in accordance to each player's (\(p/)) difference \(d\) from the opposing team's mean ranking \(m_e\), whereby weights are calculated according to:
 $$w = \frac{\mathrm{abs}(p - m_e)}{d}$$
 
 As of season 2, we have added 10 so called "placement games", which replace the above formulas. During these 10 games, any win raises the player's rating by 50, while every loss lowers it by 10. To compensate, every player starts off with a ranking of 800.
