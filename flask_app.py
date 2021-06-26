@@ -22,12 +22,12 @@ def home():
 # Page displaying the ranking
 @app.route('/manhunt')
 def manhunt():
-    data = mongo.db.players.find({ "mhgames.total": { '$gte': 1 } }).sort("mhmmr",-1)
+    data = mongo.db.players.find({ "mhgames.total": { '$gte': 10 } }).sort("mhmmr",-1)
     return render_template('ranking.html', data=data, title = 'Manhunt | Assassins\' Network', mode='Manhunt' )
 
 @app.route('/escort')
 def escort():
-    data = mongo.db.players.find({ "egames.total": { '$gte': 1 } }).sort("emmr",-1)
+    data = mongo.db.players.find({ "egames.total": { '$gte': 10 } }).sort("emmr",-1)
     return render_template('ranking.html', data=data, title = 'Escort | Assassins\' Network', mode='Escort' )
 
 # Page showing the algorithm used
@@ -61,9 +61,9 @@ def teapot():
     return render_template('418.html')
 
 # Special tournament page
-@app.route('/tournament')
-def tournament():
-    return render_template('tournament.html', title = 'Tournament | Assassins\' Network' )
+#@app.route('/tournament')
+#def tournament():
+#    return render_template('tournament.html', title = 'Tournament | Assassins\' Network' )
 
 ###End of pages
 
