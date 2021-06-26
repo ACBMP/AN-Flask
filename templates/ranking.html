@@ -13,26 +13,38 @@
 	    <th>Average score</th>
 	    <th>K/D</th>
           </tr>
-          {%set counter=1%}
     {% for entry in data %}
     <tr>
-        <td>{{ counter + loop.index0 }}</td>
-        <td><a href="/profile/{{entry.name}}">{{entry.name}}</a></td>
         {%if mode == "Escort"%}
-        <td>{{entry.emmr}}</td>
-        <td>{{entry.egames.total}}</td>
-        <td>{{ entry.egames.won | winrate(entry.egames.lost) }}</td>
-	<td>{{ entry.estats.totalscore|avgscore(entry.egames.total) }}</td>
-	<td>{{ entry.estats.kills|kdratio(entry.estats.deaths) }}</td>
+            {%if entry.erankchange < 0%}
+                <td>{{ entry.erank }} <span style="color:red;">&#9660;{{ -1 * entry.erankchange }}</span></td>
+            {%elif entry.erankchange > 0%}
+                <td>{{ entry.erank }} <span style="color:green;">&#9650;{{ entry.erankchange }}</span></td>
             {%else%}
-        <td>{{entry.mhmmr}}</td>
-        <td>{{entry.mhgames.total}}</td>
-        <td>{{ entry.mhgames.won | winrate(entry.mhgames.lost) }}</td>
-	<td>{{ entry.mhstats.totalscore|avgscore(entry.mhgames.total) }}</td>
-	<td>{{ entry.mhstats.kills|kdratio(entry.mhstats.deaths) }}</td>
+                <td>{{ entry.erank }}</td>
+            {%endif%}
+            <td><a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
+            <td>{{ entry.emmr }}</td>
+            <td>{{ entry.egames.total }}</td>
+            <td>{{ entry.egames.won | winrate(entry.egames.lost) }}</td>
+	        <td>{{ entry.estats.totalscore|avgscore(entry.egames.total) }}</td>
+	        <td>{{ entry.estats.kills|kdratio(entry.estats.deaths) }}</td>
+        {%else%}
+            {%if entry.mhrankchange < 0%}
+                <td>{{ entry.mhrank }} <span style="color:red;">&#9660;{{ -1 * entry.mhrankchange }}</span></td>
+            {%elif entry.mhrankchange > 0%}
+                <td>{{ entry.mhrank }} <span style="color:green;">&#9650;{{ entry.mhrankchange }}</span></td>
+            {%else%}
+                <td>{{ entry.mhrank }}</td>
+            {%endif%}
+            <td><a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
+            <td>{{ entry.mhmmr }}</td>
+            <td>{{ entry.mhgames.total }}</td>
+            <td>{{ entry.mhgames.won | winrate(entry.mhgames.lost) }}</td>
+	        <td>{{ entry.mhstats.totalscore|avgscore(entry.mhgames.total) }}</td>
+	        <td>{{ entry.mhstats.kills|kdratio(entry.mhstats.deaths) }}</td>
         {%endif%}
     </tr>
-    {% set counter = counter + group|length %}
     {% endfor %}
     </table>
     </div>
