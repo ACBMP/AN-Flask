@@ -53,7 +53,14 @@ def players():
 @app.route('/profile/<name>')
 def display_profile(name):
     data = mongo.db.players.find_one({"name": name})
-    data_matches = mongo.db.matches.find({"$or":[{"team1":{"$elemMatch":{"player":name}}}, {"team2":{"$elemMatch":{"player":name}}}]}).sort("_id", -1).limit(10)
+    # load and search for all igns plus name so we don't get empty match histories
+    igns = data["ign"]
+    if type(igns) == str:
+        igns = [igns]
+    igns += [name]
+    search = [{"team1":{"$elemMatch":{"player":ign}}} for ign in igns]
+    search += [{"team2":{"$elemMatch":{"player":ign}}} for ign in igns]
+    data_matches = mongo.db.matches.find({"$or": search}).sort("_id", -1).limit(10)
     return render_template('profile.html',data=data, data_matches=data_matches, title = 'Player\'s Profile | Assassins\' Network')
 
 @app.route('/418')
