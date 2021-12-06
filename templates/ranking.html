@@ -29,6 +29,34 @@
             <td>{{ entry.egames.won | winrate(entry.egames.lost) }}</td>
 	        <td>{{ entry.estats.totalscore|avgscore(entry.egames.total) }}</td>
 	        <td>{{ entry.estats.kills|kdratio(entry.estats.deaths) }}</td>
+        {%elif mode == "Artifact Assault Running"%}
+            {%if entry.aarrankchange < 0%}
+                <td>{{ entry.aarrank }} <span style="color:red;">&#9660;{{ -1 * entry.aarrankchange }}</span></td>
+            {%elif entry.aarrankchange > 0%}
+                <td>{{ entry.aarrank }} <span style="color:green;">&#9650;{{ entry.aarrankchange }}</span></td>
+            {%else%}
+                <td>{{ entry.aarrank }}</td>
+            {%endif%}
+            <td><a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
+            <td>{{ entry.aarmmr }}</td>
+            <td>{{ entry.aargames.total }}</td>
+            <td>{{ entry.aargames.won | winrate(entry.aargames.lost) }}</td>
+	        <td>{{ entry.aarstats.totalscore|avgscore(entry.aargames.total) }}</td>
+	        <td>{{ entry.aarstats.kills|kdratio(entry.aarstats.deaths) }}</td>
+        {%elif mode == "Artifact Assault Defending"%}
+            {%if entry.aadrankchange < 0%}
+                <td>{{ entry.aadrank }} <span style="color:red;">&#9660;{{ -1 * entry.aadrankchange }}</span></td>
+            {%elif entry.aadrankchange > 0%}
+                <td>{{ entry.aadrank }} <span style="color:green;">&#9650;{{ entry.aadrankchange }}</span></td>
+            {%else%}
+                <td>{{ entry.aadrank }}</td>
+            {%endif%}
+            <td><a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
+            <td>{{ entry.aadmmr }}</td>
+            <td>{{ entry.aadgames.total }}</td>
+            <td>{{ entry.aadgames.won | winrate(entry.aadgames.lost) }}</td>
+	        <td>{{ entry.aadstats.totalscore|avgscore(entry.aadgames.total) }}</td>
+	        <td>{{ entry.aadstats.kills|kdratio(entry.aadstats.deaths) }}</td>
         {%else%}
             {%if entry.mhrankchange < 0%}
                 <td>{{ entry.mhrank }} <span style="color:red;">&#9660;{{ -1 * entry.mhrankchange }}</span></td>
