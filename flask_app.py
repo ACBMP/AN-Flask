@@ -125,6 +125,42 @@ def avgdeaths(d,g):
         return "{0:.2f}".format(avgs)
     except:
         return "0.00"
+    
+@app.template_filter('rank_title')
+def rank_title(elo):
+    if elo < 800:
+        return "Disciple"
+    if elo < 1000:
+        return "Cleric"
+    if elo < 1200:
+        return "Cleric Supreme"
+    if elo < 1400:
+        return "Grand Cleric"
+    return "Supreme Overlord Cleric"
+    
+@app.template_filter('rank_pic_small')
+def rank_pic_small(elo):
+    if elo < 800:
+        return "badge_1_small.png"
+    if elo < 1000:
+        return "badge_2_small.png"
+    if elo < 1200:
+        return "badge_3_small.png"
+    if elo < 1400:
+        return "badge_4_small.png"
+    return "badge_5_small.png"
+
+@app.template_filter('rank_pic_big')
+def rank_pic_big(elo):
+    if elo < 800:
+        return "badge_1_big.png"
+    if elo < 1000:
+        return "badge_2_big.png"
+    if elo < 1200:
+        return "badge_3_big.png"
+    if elo < 1400:
+        return "badge_4_big.png"
+    return "badge_5_big.png"
 
 # WE CAN'T RUN A LIVE APP IN DEBUG MODE! 
 if __name__ == '__main__':
