@@ -3,7 +3,12 @@
     <h1 align="center">Match History</h1>
     <br \>
     <center>
-    <a href="https://assassins.network/matches/{{ [page_no,0]|min(0) }}"><< Previous</a>&emsp;<a href="https://assassins.network/matches/{{ page_no+1 }}">Next >></a>
+    <div style="width: 50%;display: inline-block; align-content: right">
+    <a href="https://assassins.network/matches/{{ [page_no,0]|min(0) }}"><< Previous</a>&emsp;
+    </div>
+    <div style="width: 49%;display: inline-block; align-content: left"> 
+    &emsp;<a href="https://assassins.network/matches/{{ page_no+1 }}">Next >></a>
+    </div>
     </center>
     <br \><br \>
     <div align="center">
@@ -46,7 +51,12 @@
     </div>
     <br \><br \>
     <center>
-    <a href="https://assassins.network/matches/{{ [page_no,0]|min(0) }}"><< Previous</a>&emsp;<a href="https://assassins.network/matches/{{ page_no+1 }}">Next >></a>
+    <div style="width: 50%;display: inline-block; align-content: right">
+    <a href="https://assassins.network/matches/{{ [page_no,0]|min(0) }}"><< Previous</a>&emsp;
+    </div>
+    <div style="width: 49%;display: inline-block; align-content: left"> 
+    &emsp;<a href="https://assassins.network/matches/{{ page_no+1 }}">Next >></a>
+    </div>
     </center>
     <br \><br \>
     {% endblock content %}
