@@ -88,14 +88,26 @@ body {
     font-size: 2.5rem;
   }
 
+
+
+
   .profile-table {
     width: 50%;
+  }
+  .pie-chart{
+    width: 60%;
   }
 @media only screen and (max-width: 768px) {
   .profile-table {
     width: 85%;
   }
+   .pie-chart{
+    width: 90%;
+  }
 }
+
+
+
 
   table {
     font-family: arial, sans-serif;
