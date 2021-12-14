@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 {% if data%}
-<p align="center">{{ data.mhmmr|max(data.emmr)|rank_title() }}</p>
+<p align="center">{{ [data.mhmmr, data.emmr]|max()|rank_title() }}</p>
    <h1 align="center">{{data.name}} <img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/48/{{data.nation}}.png"></h1>
         <br \>
     <div align="center">
