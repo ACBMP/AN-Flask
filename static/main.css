@@ -131,3 +131,11 @@ body {
   a {
     color: #c8d7ea;
     }
+  .profile-table {
+    width: 50%;
+  }
+@media only screen and (max-width: 768px) {
+  .profile-table {
+    width: 70%;
+  }
+}
