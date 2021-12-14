@@ -55,6 +55,15 @@ def matches():
     data = mongo.db.matches.find().sort("_id", -1).limit(20)
     return render_template('matches.html',data=data, title = 'Match History | Assassins\' Network')
 
+#paginated matches
+@app.route('/matches/<page>')
+def matches(page):
+    if type(page) != int:
+            data = mongo.db.matches.find().sort("_id", -1).limit(20)
+            return render_template('matches.html',data=data, title = 'Match History | Assassins\' Network')
+    data = mongo.db.matches.find().sort("_id", -1).skip(page*20).limit(20)
+    return render_template('matches.html',data=data, title = 'Match History | Assassins\' Network')
+
 @app.route('/players')
 def players():
     data = mongo.db.players.find().collation({'locale':'en'}).sort("name")
