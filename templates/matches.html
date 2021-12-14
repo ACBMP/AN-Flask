@@ -2,8 +2,10 @@
 {% block content %}
     <h1 align="center">Match History</h1>
     <br \>
-    <a href="https://assassins.network/matches/{{ [page_no,0]|min(0) }}"><< Previous</a><a href="https://assassins.network/matches/{{ page_no+1 }}">Next >></a>
-    <br \>
+    <center>
+    <a href="https://assassins.network/matches/{{ [page_no,0]|min(0) }}"><< Previous</a>&emsp;<a href="https://assassins.network/matches/{{ page_no+1 }}">Next >></a>
+    </center>
+    <br \><br \>
     <div align="center">
     <table style="width:90%">
         <tr>
@@ -32,6 +34,11 @@
                 <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
         {% endfor %}
     </table>
+    <br \><br \>
+    <center>
+    <a href="https://assassins.network/matches/{{ [page_no,0]|min(0) }}"><< Previous</a>&emsp;<a href="https://assassins.network/matches/{{ page_no+1 }}">Next >></a>
+    </center>
+    <br \><br \>
     </td>
         {% if entry.outcome == 0%}
         <td>Tie</td>
