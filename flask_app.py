@@ -53,7 +53,7 @@ def about():
 @app.route('/matches')
 def matches():
     data = mongo.db.matches.find().sort("_id", -1).limit(20)
-    return render_template('matches.html',data=data, title = 'Match History | Assassins\' Network')
+    return render_template('matches.html',data=data, page_no=0, title = 'Match History | Assassins\' Network')
 
 #paginated matches
 @app.route('/matches/<page>')
@@ -62,9 +62,9 @@ def paged_matches(page):
         page = int(page)
     except:
         data = mongo.db.matches.find().sort("_id", -1).limit(20)
-        return render_template('matches.html',data=data, title = 'Match History | Assassins\' Network')
+        return render_template('matches.html',data=data, page_no=0, title = 'Match History | Assassins\' Network')
     data = mongo.db.matches.find().sort("_id", -1).skip(page*20).limit(20)
-    return render_template('matches.html',data=data, title = 'Match History | Assassins\' Network')
+    return render_template('matches.html',data=data, page_no=page, title = 'Match History | Assassins\' Network')
 
 @app.route('/players')
 def players():
