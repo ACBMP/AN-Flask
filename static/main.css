@@ -97,6 +97,9 @@ body {
   .pie-chart{
     width: 60%;
   }
+.mmr-history{
+	width: 80%;
+}
 @media only screen and (max-width: 768px) {
   .profile-table {
     width: 85%;
@@ -104,6 +107,9 @@ body {
    .pie-chart{
     width: 90%;
   }
+.mmr-history{
+	width: 95%;
+}
 }
 
 
