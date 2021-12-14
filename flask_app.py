@@ -67,7 +67,8 @@ def display_profile(name):
     igns = data["ign"]
     if type(igns) == str:
         igns = [igns]
-    igns += [name]
+    if name not in igns:
+        igns += [name]
     search = [{"team1":{"$elemMatch":{"player":ign}}} for ign in igns]
     search += [{"team2":{"$elemMatch":{"player":ign}}} for ign in igns]
     data_matches = mongo.db.matches.find({"$or": search}).sort("_id", -1).limit(10)
