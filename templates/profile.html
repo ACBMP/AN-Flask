@@ -18,14 +18,14 @@
             </ul>
     </div>
 <div align="center">
-   <div style="width: 50%">
+   <div style="width: 50%;display: inline-block">
    <center>
    <p align="center">Manhunt Rank</p><br \>
    <img src="/static/badges/{{ data.mhmmr|rank_pic_big() }}"><br \>
    <p align="center">{{ data.mhmmr|rank_title() }}</p>
    </center>
    </div>
-   <div style="width: 50%">
+   <div style="width: 49%;display: inline-block">
    <center>
    <p align="center">Escort Rank</p><br \>
    <img src="/static/badges/{{ data.emmr|rank_pic_big() }}"><br \>
@@ -33,6 +33,7 @@
     </center>
    </div>
 </div>
+<br \>
 <div class="tab-content" id="myTabContent">
     <br \>
 <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
