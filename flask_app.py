@@ -128,7 +128,7 @@ def avgdeaths(d,g):
     
 @app.template_filter('rank_title')
 def rank_title(elo):
-    if elo < 800:
+    if elo < 801:
         return "Disciple"
     if elo < 1000:
         return "Cleric"
@@ -140,7 +140,7 @@ def rank_title(elo):
     
 @app.template_filter('rank_pic_small')
 def rank_pic_small(elo):
-    if elo < 800:
+    if elo < 801:
         return "badge_1_small.png"
     if elo < 1000:
         return "badge_2_small.png"
@@ -152,7 +152,7 @@ def rank_pic_small(elo):
 
 @app.template_filter('rank_pic_big')
 def rank_pic_big(elo):
-    if elo < 800:
+    if elo < 801:
         return "badge_1_big.png"
     if elo < 1000:
         return "badge_2_big.png"
