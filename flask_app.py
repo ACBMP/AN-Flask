@@ -57,7 +57,7 @@ def matches():
 
 #paginated matches
 @app.route('/matches/<page>')
-def matches(page):
+def paged_matches(page):
     if type(page) != int:
             data = mongo.db.matches.find().sort("_id", -1).limit(20)
             return render_template('matches.html',data=data, title = 'Match History | Assassins\' Network')
