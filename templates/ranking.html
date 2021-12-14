@@ -23,7 +23,7 @@
             {%else%}
                 <td>{{ entry.erank }}</td>
             {%endif%}
-            <td>{{ rank_pic_small(entry.emmr) }} <a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
+            <td><img src="/static/{{ rank_pic_small(entry.emmr) }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
             <td>{{ entry.emmr }}</td>
             <td>{{ entry.egames.total }}</td>
             <td>{{ entry.egames.won | winrate(entry.egames.lost) }}</td>
@@ -65,7 +65,7 @@
             {%else%}
                 <td>{{ entry.mhrank }}</td>
             {%endif%}
-            <td>{{ rank_pic_small(entry.mhmmr) }} <a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
+            <td><img src="/static/{{ rank_pic_small(entry.mhmmr) }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
             <td>{{ entry.mhmmr }}</td>
             <td>{{ entry.mhgames.total }}</td>
             <td>{{ entry.mhgames.won | winrate(entry.mhgames.lost) }}</td>
