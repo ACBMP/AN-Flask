@@ -17,6 +17,22 @@
             </li>
             </ul>
     </div>
+<div align="center">
+   <div style="width: 50%">
+   <center>
+   <p align="center">Manhunt Rank</p>
+   <img src="/static/badges/{{ entry.mhmmr|rank_pic_big() }}">
+   <p align="center">{{ data.mhmmr|rank_title() }}</p>
+   </center>
+   </div>
+   <div style="width: 50%">
+   <center>
+   <p align="center">Escort Rank</p>
+   <img src="/static/badges/{{ entry.emmr|rank_pic_big() }}">
+   <p align="center">{{ data.emmr|rank_title() }}</p>
+    </center>
+   </div>
+</div>
 <div class="tab-content" id="myTabContent">
     <br \>
 <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
