@@ -64,7 +64,7 @@
    <div align="center">
         <ul class="nav nav-tabs nav-fill" id="myTab" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active" id="e_mh-tab" data-toggle="tab" href="#ehtab" role="tab" aria-controls="home" aria-selected="true">Escort & Manhunt</a>
+              <a class="nav-link active" id="e_mh-tab" data-toggle="tab" href="#emhtab" role="tab" aria-controls="home" aria-selected="true">Escort & Manhunt</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" id="aa-tab" data-toggle="tab" href="#aatab" role="tab" aria-controls="profile" aria-selected="false">Artifact Assault</a>
@@ -342,8 +342,8 @@
             datasets:
             [{data:[{{data.egames.total}},{{data.mhgames.total}}],backgroundColor:['#0099ff','#33cc33']}],},options:{title:{display:true,text:'Games played',fontSize: 25},}});
    
-   
-      var echart = document.getElementById('aadchart').getContext('2d');
+   /*{#
+      var aadchart = document.getElementById('aadchart').getContext('2d');
     var aadefchart = new Chart(aadchart, {
         type: 'doughnut',
         data:{
@@ -357,7 +357,7 @@
             labels:['WINS', 'LOSSES', 'TIES'],
             datasets:
             [{data:[{{data.aargames.won}},{{data.aargames.lost}},{{data.aargames.total-data.aargames.won-data.aargames.lost}}],backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Runninf game outcomes',fontSize: 25},}});
-/*{#
+
     var aachart = document.getElementById('aachart').getContext('2d');
     var artachart = new Chart(aachart, {
         type: 'doughnut',
