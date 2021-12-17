@@ -355,6 +355,7 @@
             labels:['WINS', 'LOSSES', 'TIES'],
             datasets:
             [{data:[{{data.aargames.won}},{{data.aargames.lost}},{{data.aargames.total-data.aargames.won-data.aargames.lost}}],backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Runninf game outcomes',fontSize: 25},}});
+{#<!--
     var aachart = document.getElementById('aachart').getContext('2d');
     var artachart = new Chart(aachart, {
         type: 'doughnut',
@@ -362,7 +363,7 @@
             labels:['DEFENDING', 'RUNNING'],
             datasets:
             [{data:[{{data.aadgames.total}},{{data.aargames.total}}],backgroundColor:['#0099ff','#33cc33']}],},options:{title:{display:true,text:'Roles played',fontSize: 25},}});
-   
+   -->#}
    
     var ehist = document.getElementById('ehist').getContext('2d');
     var ehistchart = new Chart(ehist, {
@@ -398,7 +399,7 @@
             options:{title:{display:true,text:'Manhunt MMR',fontSize: 25 },legend:{
                 display:false}
             }});
-          
+        {#<!--  
        var aadhist = document.getElementById('aadhist').getContext('2d');
     var aadhistchart = new Chart(aadhist, {
         type: 'line',
@@ -433,6 +434,6 @@
             options:{title:{display:true,text:'AA Running MMR',fontSize: 25 },legend:{
                 display:false}
             }});
-    
+    -->#}
 </script>
     {% endblock content %}
