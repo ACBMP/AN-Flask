@@ -100,6 +100,9 @@ body {
 .mmr-history{
 	width: 80%;
 }
+.profile-list-table{
+	width: 70%	
+}
 @media only screen and (max-width: 768px) {
   .profile-table {
     width: 85%;
@@ -109,6 +112,9 @@ body {
   }
 .mmr-history{
 	width: 95%;
+}
+.profile-list-table{
+	width: 90%	
 }
 }
 
