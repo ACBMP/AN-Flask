@@ -290,7 +290,7 @@
     <canvas id="ehist"></canvas>
     <br \>
 </div>
-   {#<!-- 
+   
    <div class="mmr-history">
     <canvas id="aadhist"></canvas>
     <br \>
@@ -298,7 +298,7 @@
    <div class="mmr-history">
     <canvas id="aarhist"></canvas>
     <br \>
-</div>-->#}
+</div>
 
 </div>
 
@@ -353,7 +353,7 @@
         data:{
             labels:['WINS', 'LOSSES', 'TIES'],
             datasets:
-            [{data:[{{data.aargames.won}},{{data.aargames.lost}},{{data.aargames.total-data.aargames.won-data.aargames.lost}}],backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Runninf game outcomes',fontSize: 25},}});
+            [{data:[{{data.aargames.won}},{{data.aargames.lost}},{{data.aargames.total-data.aargames.won-data.aargames.lost}}],backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Running game outcomes',fontSize: 25},}});
 
     var aachart = document.getElementById('aachart').getContext('2d');
     var artachart = new Chart(aachart, {
@@ -397,7 +397,7 @@
             options:{title:{display:true,text:'Manhunt MMR',fontSize: 25 },legend:{
                 display:false}
             }});
-        /* {#
+ 
        var aadhist = document.getElementById('aadhist').getContext('2d');
     var aadhistchart = new Chart(aadhist, {
         type: 'line',
@@ -432,6 +432,6 @@
             options:{title:{display:true,text:'AA Running MMR',fontSize: 25 },legend:{
                 display:false}
             }});
-    #}*/
+
 </script>
     {% endblock content %}
