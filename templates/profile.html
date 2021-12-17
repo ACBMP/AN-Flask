@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 {% if data%}
-<p align="center">{{ [data.mhmmr, data.emmr]|max()|rank_title() }}</p>
+<p align="center">{{ [data.mhmmr, data.emmr, data.aarmmr, data.aadmmr]|max()|rank_title() }}</p>
    <h1 align="center">{{data.name}} <img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/48/{{data.nation}}.png"></h1>
         <br \>
 <div align="center">
@@ -18,6 +18,20 @@
    <img src="/static/badges/{{ data.emmr|rank_pic_big() }}"><br \><br \>
    <p align="center">{{ data.emmr|rank_title() }}</p>
     </center>
+   </div>
+      <div style="width: 200px;display: inline-block">
+   <center>
+   <p align="center" style="font-weight: bold">Artifact Assault Defender Rank</p>
+   <img src="/static/badges/{{ data.aadmmr|rank_pic_big() }}"><br \><br \>
+   <p align="center">{{ data.mhmmr|rank_title() }}</p>
+   </center>
+   </div>
+      <div style="width: 200px;display: inline-block">
+   <center>
+   <p align="center" style="font-weight: bold">Artifact Assault Runner Rank</p>
+   <img src="/static/badges/{{ data.aarmmr|rank_pic_big() }}"><br \><br \>
+   <p align="center">{{ data.mhmmr|rank_title() }}</p>
+   </center>
    </div>
 </div>
 <br \>
@@ -45,6 +59,19 @@
 <tr><td><b>Platforms</b></td><td>{{data.platforms|join(", ") }}</td></tr>
 <tr><td><b>Link</b></td><td><a href="{{data.link}}" target="_blank">{{data.link}}</a></td></tr>
 </table> <br \>
+   
+   <div align="center">
+        <ul class="nav nav-tabs nav-fill" id="myTab" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="info-tab" data-toggle="tab" href="#info" role="tab" aria-controls="home" aria-selected="true">Escort & Manhunt</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="matches-tab" data-toggle="tab" href="#matches" role="tab" aria-controls="profile" aria-selected="false">Artifact Assault</a>
+            </li>
+            </ul>
+    </div>
+<div class="tab-content" id="myTabContent">
+    
 <table class="profile-table">
     <tr>
         <th> </th>
@@ -113,6 +140,96 @@
 </div>
 </div>
 
+   <div class="tab-content" id="myTabContent">
+    
+      
+      
+<table class="profile-table">
+   <tr>
+        <th> </th>
+        <th>Defending</th>
+      </tr>
+<tr><td><b>MMR</b></td>
+        <td>{{data.aadmmr}}</td>
+        </tr>
+<tr><td><b>Peak MMR</b></td>
+        <td>{{data.aadhistory.mmrs|max()}}</td>
+        </tr>
+<tr><td><b>Games played</b></td>
+    <td>{{data.aadgames.total}}</td>
+    </tr>
+<tr><td><b>Games won</b></td>
+        <td>{{data.aadgames.won}}</td>
+        </tr>
+<tr><td><b>Games lost</b></td>
+            <td>{{data.aadgames.lost}}</td>
+            </tr>
+<tr><td><b>Winrate</b></td>
+                <td>{{ data.aadgames.won|winrate(data.aadgames.lost) }}</td>
+                </tr>
+<tr><td><b>Average score</b></td>
+                <td>{{ data.aadstats.totalscore|avgscore(data.aadgames.total) }}</td>
+                </tr>
+<tr><td><b>Average kills</b></td>
+                <td>{{ data.aadstats.kills|avgkills(data.aadgames.total) }}</td>
+                </tr>
+<tr><td><b>Average artifacts conceded</b></td>
+                <td>{{ data.aadstats.conceded|avgdeaths(data.aadgames.total) }}</td>
+                </tr>
+</table>
+<br \>
+     <table class="profile-table">
+   <tr>
+        <th> </th>
+        <th>Running</th>
+      </tr>
+<tr><td><b>MMR</b></td>
+        <td>{{data.aarmmr}}</td>
+        </tr>
+<tr><td><b>Peak MMR</b></td>
+        <td>{{data.aarhistory.mmrs|max()}}</td>
+        </tr>
+<tr><td><b>Games played</b></td>
+    <td>{{data.aargames.total}}</td>
+    </tr>
+<tr><td><b>Games won</b></td>
+        <td>{{data.aargames.won}}</td>
+        </tr>
+<tr><td><b>Games lost</b></td>
+            <td>{{data.aargames.lost}}</td>
+            </tr>
+<tr><td><b>Winrate</b></td>
+                <td>{{ data.aargames.won|winrate(data.aargames.lost) }}</td>
+                </tr>
+<tr><td><b>Average score</b></td>
+                <td>{{ data.aarstats.totalscore|avgscore(data.aargames.total) }}</td>
+                </tr>
+<tr><td><b>Average artifacts scored</b></td>
+                <td>{{ data.aarstats.scored|avgkills(data.aadgames.total) }}</td>
+                </tr>
+<tr><td><b>Average artifacts per death</b></td>
+                <td>{{ data.aarstats.scored|avgdeaths(data.aarstats.deaths) }}</td>
+                </tr>
+</table> 
+     <br \>
+
+<div class="container">
+<div class="pie-chart">
+    <canvas id="aachart"></canvas>
+    <br \>
+</div>
+<div class="pie-chart">
+    <canvas id="aadchart"></canvas>
+    <br \>
+</div>
+<div class="pie-chart">
+    <canvas id="aarchart"></canvas>
+    <br \>
+</div>
+</div>
+   </div>
+   
+   
 </div>
 </div>
 <div class="tab-pane fade" id="matches" role="tabpanel" aria-labelledby="matches-tab">
@@ -172,6 +289,14 @@
     <canvas id="ehist"></canvas>
     <br \>
 </div>
+   <div class="mmr-history">
+    <canvas id="aadhist"></canvas>
+    <br \>
+</div>
+   <div class="mmr-history">
+    <canvas id="aarhist"></canvas>
+    <br \>
+</div>
 
 </div>
 
@@ -212,6 +337,30 @@
             datasets:
             [{data:[{{data.egames.total}},{{data.mhgames.total}}],backgroundColor:['#0099ff','#33cc33']}],},options:{title:{display:true,text:'Games played',fontSize: 25},}});
    
+   
+      var echart = document.getElementById('aadchart').getContext('2d');
+    var aadefchart = new Chart(aadchart, {
+        type: 'doughnut',
+        data:{
+            labels:['WINS', 'LOSSES', 'TIES'],
+            datasets:
+            [{data:[{{data.aadgames.won}},{{data.aadgames.lost}},{{data.aadgames.total-data.aadgames.won-data.aadgames.lost}}], backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Defending game outcomes',fontSize: 25 },}});
+    var mhchart = document.getElementById('aarchart').getContext('2d');
+    var aarunchart = new Chart(aarchart, {
+        type: 'doughnut',
+        data:{
+            labels:['WINS', 'LOSSES', 'TIES'],
+            datasets:
+            [{data:[{{data.aargames.won}},{{data.aargames.lost}},{{data.aargames.total-data.aargames.won-data.aargames.lost}}],backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Runninf game outcomes',fontSize: 25},}});
+    var aachart = document.getElementById('aachart').getContext('2d');
+    var artachart = new Chart(aachart, {
+        type: 'doughnut',
+        data:{
+            labels:['DEFENDING', 'RUNNING'],
+            datasets:
+            [{data:[{{data.aadgames.total}},{{data.aargames.total}}],backgroundColor:['#0099ff','#33cc33']}],},options:{title:{display:true,text:'Roles played',fontSize: 25},}});
+   
+   
     var ehist = document.getElementById('ehist').getContext('2d');
     var ehistchart = new Chart(ehist, {
         type: 'line',
@@ -247,6 +396,40 @@
                 display:false}
             }});
           
+       var aadhist = document.getElementById('aadhist').getContext('2d');
+    var aadhistchart = new Chart(aadhist, {
+        type: 'line',
+        data:{
+            labels: {{data.aadhistory.dates|safe}},
+            datasets:
+            [
+                {
+                    data: {{data.aadhistory.mmrs|safe}}, 
+                    backgroundColor:'rgba(40, 170, 240, 0.4)',
+                    borderColor:'rgba(40, 170, 240, 0.7)',
+                    lineTension:0
+                }
+            ],},
+            options:{title:{display:true,text:'AA Defending MMR',fontSize: 25 },legend:{
+                display:false}
+            }});
+    var aarhist = document.getElementById('aarhist').getContext('2d');
+    var aarhistchart = new Chart(aarhist, {
+        type: 'line',
+        data:{
+            labels: {{data.aarhistory.dates|safe}},
+            datasets:
+            [
+                {
+                    data: {{data.aarhistory.mmrs|safe}}, 
+                    backgroundColor:'rgba(0, 209, 10, 0.4)',
+                    borderColor:'rgba(0, 209, 10, 0.7)',
+                    lineTension:0
+                }
+            ],},
+            options:{title:{display:true,text:'AA Running MMR',fontSize: 25 },legend:{
+                display:false}
+            }});
     
 </script>
     {% endblock content %}
