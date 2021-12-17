@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 {% if data%}
-{#<!-- <p align="center">{{ [data.mhmmr, data.emmr, data.aarmmr, data.aadmmr]|max()|rank_title() }}</p> -->#}
+<p align="center">{{ [data.mhmmr, data.emmr, data.aarmmr, data.aadmmr]|max()|rank_title() }}</p>
    <h1 align="center">{{data.name}} <img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/48/{{data.nation}}.png"></h1>
         <br \>
 <div align="center">
@@ -19,21 +19,20 @@
    <p align="center">{{ data.emmr|rank_title() }}</p>
     </center>
    </div>
-  {# <!--
       <div style="width: 200px;display: inline-block">
    <center>
-   <p align="center" style="font-weight: bold">Artifact Assault Defender Rank</p>
+   <p align="center" style="font-weight: bold">AA Defender Rank</p>
    <img src="/static/badges/{{ data.aadmmr|rank_pic_big() }}"><br \><br \>
    <p align="center">{{ data.aadmmr|rank_title() }}</p>
    </center>
    </div>
       <div style="width: 200px;display: inline-block">
    <center>
-   <p align="center" style="font-weight: bold">Artifact Assault Runner Rank</p>
+   <p align="center" style="font-weight: bold">AA Runner Rank</p>
    <img src="/static/badges/{{ data.aarmmr|rank_pic_big() }}"><br \><br \>
    <p align="center">{{ data.aarmmr|rank_title() }}</p>
    </center>
-   </div>-->#}
+   </div>
 </div>
 <br \>
     <div align="center">
@@ -64,10 +63,10 @@
    <div align="center">
         <ul class="nav nav-tabs nav-fill" id="myTab" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active" id="e_mh-tab" data-toggle="tab" href="#emhtab" role="tab" aria-controls="home" aria-selected="true">Escort & Manhunt</a>
+              <a class="nav-link active" id="e_mh-tab" data-toggle="tab" href="#emhtab" role="tab" aria-controls="home" aria-selected="true">Escort & Manhunt (ACB)</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" id="aa-tab" data-toggle="tab" href="#aatab" role="tab" aria-controls="profile" aria-selected="false">Artifact Assault</a>
+              <a class="nav-link" id="aa-tab" data-toggle="tab" href="#aatab" role="tab" aria-controls="profile" aria-selected="false">Artifact Assault (ACR)</a>
             </li>
             </ul>
     </div>
@@ -143,13 +142,11 @@
 </div>
 </div>
 <div class="tab-pane fade" id="aatab" role="tabpanel" aria-labelledby="aa-tab">
-    
-      
-      <!-- {# 
+<br \>           
       
 <table class="profile-table">
    <tr>
-        <th> </th>
+<th></th>
         <th>Defending</th>
       </tr>
 <tr><td><b>MMR</b></td>
@@ -183,7 +180,7 @@
 <br \>
      <table class="profile-table">
    <tr>
-        <th> </th>
+<th></th>
         <th>Running</th>
       </tr>
 <tr><td><b>MMR</b></td>
@@ -231,7 +228,7 @@
 </div>
 </div>
    </div>
-   #}-->
+</div>
    </div>
    </div>
 </div>   
@@ -342,7 +339,7 @@
             datasets:
             [{data:[{{data.egames.total}},{{data.mhgames.total}}],backgroundColor:['#0099ff','#33cc33']}],},options:{title:{display:true,text:'Games played',fontSize: 25},}});
    
-   /*{#
+   
       var aadchart = document.getElementById('aadchart').getContext('2d');
     var aadefchart = new Chart(aadchart, {
         type: 'doughnut',
@@ -365,7 +362,6 @@
             labels:['DEFENDING', 'RUNNING'],
             datasets:
             [{data:[{{data.aadgames.total}},{{data.aargames.total}}],backgroundColor:['#0099ff','#33cc33']}],},options:{title:{display:true,text:'Roles played',fontSize: 25},}});
-  #} */
    
     var ehist = document.getElementById('ehist').getContext('2d');
     var ehistchart = new Chart(ehist, {
