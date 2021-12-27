@@ -206,8 +206,8 @@
 <tr><td><b>Average artifacts scored</b></td>
                 <td>{{ data.aarstats.scored|avgkills(data.aargames.total) }}</td>
                 </tr>
-<tr><td><b>Average artifacts per death</b></td>
-                <td>{{ data.aarstats.scored|avgdeaths(data.aarstats.deaths) }}</td>
+<tr><td><b>Average deaths per artifact</b></td>
+                <td>{{ data.aarstats.deaths|avgdeaths(data.aarstats.scored) }}</td>
                 </tr>
 </table> 
      <br \>

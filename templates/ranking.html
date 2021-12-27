@@ -4,15 +4,37 @@
     <br \>
     <div align="center">
     <table>
-        <tr>
-            <th>Rank</th>
-            <th>Player</th>
-            <th>Points</th>
-            <th>Games played</th>
-            <th>Winrate</th>
-	    <th>Average score</th>
-	    <th>K/D</th>
-          </tr>
+        {%if mode in ["Escort", "Manhunt"]%}
+            <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Points</th>
+                <th>Games played</th>
+                <th>Winrate</th>
+	            <th>Average score</th>
+	            <th>K/D</th>
+            </tr>
+        {%elif mode == "Artifact Assault Running"%}
+            <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Points</th>
+                <th>Games played</th>
+                <th>Winrate</th>
+	            <th>Average scores</th>
+	            <th>Deaths per score</th>
+            </tr>
+        {%elif mode == "Artifact Assault Defending"%}
+            <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Points</th>
+                <th>Games played</th>
+                <th>Winrate</th>
+	            <th>Average kills</th>
+	            <th>Average concedes</th>
+            </tr>
+        {%endif%}
     {% for entry in data %}
     <tr>
         {%if mode == "Escort"%}
@@ -37,12 +59,12 @@
             {%else%}
                 <td>{{ entry.aarrank }}</td>
             {%endif%}
-            <td><a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
+            <td><img src="/static/badges/{{ entry.aarmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
             <td>{{ entry.aarmmr }}</td>
             <td>{{ entry.aargames.total }}</td>
             <td>{{ entry.aargames.won | winrate(entry.aargames.lost) }}</td>
-	        <td>{{ entry.aarstats.totalscore|avgscore(entry.aargames.total) }}</td>
-	        <td>{{ entry.aarstats.kills|kdratio(entry.aarstats.deaths) }}</td>
+	        <td>{{ entry.aarstats.scored|avgscore(entry.aargames.total) }}</td>
+	        <td>{{ entry.aarstats.deaths|kdratio(entry.aarstats.scored) }}</td>
         {%elif mode == "Artifact Assault Defending"%}
             {%if entry.aadrankchange < 0%}
                 <td>{{ entry.aadrank }} <span style="color:red;">&#9660;{{ -1 * entry.aadrankchange }}</span></td>
@@ -51,12 +73,12 @@
             {%else%}
                 <td>{{ entry.aadrank }}</td>
             {%endif%}
-            <td><a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
+            <td><img src="/static/badges/{{ entry.aadmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
             <td>{{ entry.aadmmr }}</td>
             <td>{{ entry.aadgames.total }}</td>
             <td>{{ entry.aadgames.won | winrate(entry.aadgames.lost) }}</td>
-	        <td>{{ entry.aadstats.totalscore|avgscore(entry.aadgames.total) }}</td>
-	        <td>{{ entry.aadstats.kills|kdratio(entry.aadstats.deaths) }}</td>
+	        <td>{{ entry.aadstats.kills|avgscore(entry.aadgames.total) }}</td>
+	        <td>{{ entry.aadstats.conceded|avgdeaths(entry.aadgames.total) }}</td>
         {%else%}
             {%if entry.mhrankchange < 0%}
                 <td>{{ entry.mhrank }} <span style="color:red;">&#9660;{{ -1 * entry.mhrankchange }}</span></td>

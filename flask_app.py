@@ -32,12 +32,12 @@ def escort():
 
 @app.route('/running')
 def running():
-    data = mongo.db.players.find({ "aargames.total": { '$gte': 10 } }).sort("aarmmr",-1)
+    data = mongo.db.players.find({ "aargames.total": { '$gte': 1 } }).sort("aarmmr",-1)
     return render_template('ranking.html', data=data, title = 'Artifact Assault Running | Assassins\' Network', mode='Artifact Assault Running' )
 
 @app.route('/defending')
 def defending():
-    data = mongo.db.players.find({ "aadgames.total": { '$gte': 10 } }).sort("aadmmr",-1)
+    data = mongo.db.players.find({ "aadgames.total": { '$gte': 1 } }).sort("aadmmr",-1)
     return render_template('ranking.html', data=data, title = 'Artifact Assault Defending | Assassins\' Network', mode='Artifact Assault Defending' )
 
 # Page showing the algorithm used
