@@ -6,12 +6,14 @@
     <table class="profile-list-table">
         <tr>
             <th>Player</th>
+            <th>Nation</th>
             <th>IGNs</th>
             <th>Platform</th>
           </tr>
     {% for entry in data %}
     <tr>
         <td><a href="/profile/{{entry.name}}">{{entry.name}}</a></td>
+        <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
         <td>{{entry.ign|join(", ") }}</td>
         <td>{{entry.platforms|join(", ") }}</td>
     </tr>

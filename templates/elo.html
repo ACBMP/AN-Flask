@@ -2,24 +2,27 @@
 {% block content %}
     <h1>About Elo</h1>
     <p>The elo system for two players \(A\) and \(B\) with \(E\) being the expected score (chance of winning in percent) and \(R\) being the rating of the players says:
-$$E_{A}={\frac {1}{1+10^{(R_{B}-R_{A})/400}}}$$
+$$E_{A}={\frac {1}{1+10^{(R_{B}-R_{A})\div400}}}$$
 or conversely
-$$E_{B}={\frac {1}{1+10^{(R_{A}-R_{B})/400}}}=1-E_{A}$$
+$$E_{B}={\frac {1}{1+10^{(R_{A}-R_{B})\div400}}}=1-E_{A}$$
 
 Further, the adjustment after a match, with \(R'\) being the updated rating, \(S\) being the outcome, and \(K\) being a scaling factor:
 $$R_{A}^{\prime }=R_{A}+K(S_{A}-E_{A})$$
 This scaling factor of \(K\) represents the maximum the score can be adjusted by. We find this factor according to the following cases:
-$$K = \begin{cases}40 & \textrm{less than 30 games played as long as } R < 1200 \\ 20 & R \leq 1200 \\ 10 & R > 1200\end{cases}$$
+$$K = \begin{cases}40 & \textrm{less than 30 games played as long as } R < 1200 \\ 20 & R \leq 1200 \\ 15 & R > 1200\end{cases}$$
 
 In addition to the above, we have added a simple points difference factor \(P\), which uses the team scores \(p_A\) and \(p_B\):
-$$P = \frac{\mathrm{abs}(p_A - p_B)}{(p_A + p_B) / 2}$$
+$$P = \frac{|p_A - p_B|}{(p_A + p_B) \div 2}$$
 This extends the \(R'\) calculation:
 $$R_{A}^{\prime }=R_{A}+(1 + P) \times K(S_{A}-E_{A})$$
 
-In our case, we track 2v2 escort and 3v3/4v4 manhunt games, so we have to calculate the team rankings. We use a weighted mean \(m_w\) of the team's rankings in accordance to each player's (\(p\)) difference \(d\) from the opposing team's mean ranking \(m_e\), whereby weights are calculated according to:
-$$w = \frac{\mathrm{abs}(p - m_e)}{d}$$
+In the case of artifact assault, the above equation to find \(P\) is nonsense. Instead, we use a reference "stomp" value:
+$$P = \frac{\mathrm{max}(|p_A - p_B| - 1, 0)}{4}$$
 
-As of season 2, we have added 10 so called "placement games", which replace the above formulas. During these 10 games, any win raises the player's rating by 50, while every loss lowers it by 10. To compensate, every player starts off with a ranking of 800.
+In our case, we track 2v2 escort and 3v3/4v4 manhunt games, so we have to calculate the team rankings. We use a weighted mean \(m_w\) of the team's rankings in accordance to each player \(p\)'s difference \(d\) from the opposing team's mean ranking \(m_e\), whereby weights are calculated according to:
+$$w = \frac{|p - m_e|}{d}$$
+
+As of season 2, we have added 10 so called "placement games", which replace the above formulas. During these 10 games, any win raises the player's rating by 50, while every loss lowers it by 10 and ties have no impact. To compensate, every player starts off with a ranking of 800.
 
 To view the function Assassins' Network uses to calculate elo, please refer to <A href="https://github.com/ACBMP/elo/blob/master/calculation.ipynb">our GitHub repository on elo calculation</A>.</p>
 
