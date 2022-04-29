@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block content %}
+    {%for table in data%}
+        <h1 align="center">{{table.name}} Leaderboard</h1>
+        <br \>
+        <div align="center">
+        <table>
+            <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Time</th>
+                <th>Platform</th>
+            </tr>
+        {% for entry in table.stats %}
+        <tr>
+            <td>{{ entry.rank }}</td>
+            <td>{{ entry.name|name_in_db()|safe }}</td>
+            <td>{{ entry.time }}</td>
+            <td>{{ entry.platform }}</td>
+        </tr>
+        {% endfor %}
+        </table>
+        </div>
+    {% endfor %}
+    {% endblock content %}

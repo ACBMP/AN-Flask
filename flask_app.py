@@ -40,6 +40,11 @@ def defending():
     data = mongo.db.players.find({ "aadgames.total": { '$gte': 10 } }).sort("aadmmr",-1)
     return render_template('ranking.html', data=data, title = 'Artifact Assault Defending | Assassins\' Network', mode='Artifact Assault Defending' )
 
+@app.route('/virtualtraining')
+def vtraining():
+    data = mongo.db.vtraining.find({})
+    return render_template('vranking.html', data=data)
+
 # Page showing the algorithm used
 @app.route('/elo')
 def elo():
@@ -174,6 +179,25 @@ def rank_pic_big(elo):
     if elo < 1400:
         return "badge_4_big.png"
     return "badge_5_big.png"
+
+# from Scripts/util.py
+@app.template_filter("name_in_db")
+def name_in_db(name):
+    from pymongo import MongoClient
+    client = MongoClient('mongodb://localhost:27017')
+    db = client.public
+    try:
+        import re
+        rename = re.compile(name, re.IGNORECASE)
+        player = db.players.find_one({"name" : rename})
+        if player is None:
+            player = db.players.find_one({"ign": rename})
+        if player is None:
+            raise ValueError(f"identify_player: player {name} not found")
+
+        return f"<a href=\"/profile/{player['name']}\">{player['name']}</a>"
+    except ValueError:
+        return name
 
 # WE CAN'T RUN A LIVE APP IN DEBUG MODE! 
 if __name__ == '__main__':
