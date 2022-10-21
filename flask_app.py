@@ -91,6 +91,12 @@ def display_profile(name):
     data_matches = mongo.db.matches.find({"$or": search}).sort("_id", -1).limit(10)
     return render_template('profile.html',data=data, data_matches=data_matches, title = 'Player\'s Profile | Assassins\' Network')
 
+@app.route('/status')
+def status_page():
+    from status import status
+    data = status.main()
+    return render_template('status.html', data=data, title='Status Page | Assassins\' Network')
+
 @app.route('/418')
 def teapot():
     return render_template('418.html')
