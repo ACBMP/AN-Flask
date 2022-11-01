@@ -33,7 +33,7 @@ def main():
     print("Testing PC login servers...")
     for k in ips.keys():
         statuses[k] = test_server(ips[k])
-    # convert form dict to listfor laziness reasons
+    # convert form dict to list for laziness reasons
     s = []
     for k in statuses.keys():
         s.append({"name": k, "status": statuses[k]})

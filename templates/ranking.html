@@ -69,6 +69,21 @@
             <td>{{ entry.aadgames.won | winrate(entry.aadgames.lost) }}</td>
 	        <td>{{ entry.aadstats.kills|avgscore(entry.aadgames.total) }}</td>
 	        <td>{{ entry.aadstats.conceded|avgdeaths(entry.aadgames.total) }}</td>
+        {%elif mode == "Domination"%}
+            {%if entry.dorankchange < 0%}
+                <td>{{ entry.dorank }} <span style="color:red;">&#9660;{{ -1 * entry.dorankchange }}</span></td>
+            {%elif entry.dorankchange > 0%}
+                <td>{{ entry.dorank }} <span style="color:green;">&#9650;{{ entry.dorankchange }}</span></td>
+            {%else%}
+                <td>{{ entry.dorank }}</td>
+            {%endif%}
+            <td><img src="/static/badges/{{ entry.dommr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
+            <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
+            <td>{{ entry.dommr }}</td>
+            <td>{{ entry.dogames.total }}</td>
+            <td>{{ entry.dogames.won | winrate(entry.dogames.lost) }}</td>
+	        <td>{{ entry.dostats.totalscore|avgscore(entry.dogames.total) }}</td>
+	        <td>{{ entry.dostats.kills|kdratio(entry.dostats.deaths) }}</td>
         {%else%}
             {%if entry.mhrankchange < 0%}
                 <td>{{ entry.mhrank }} <span style="color:red;">&#9660;{{ -1 * entry.mhrankchange }}</span></td>

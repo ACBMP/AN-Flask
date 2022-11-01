@@ -40,6 +40,11 @@ def defending():
     data = mongo.db.players.find({ "aadgames.total": { '$gte': 10 } }).sort("aadmmr",-1)
     return render_template('ranking.html', data=data, title = 'Artifact Assault Defending | Assassins\' Network', mode='Artifact Assault Defending' )
 
+@app.route('/domination')
+def domination():
+    data = mongo.db.players.find({ "dogames.total": { '$gte': 10 } }).sort("dommr",-1)
+    return render_template('ranking.html', data=data, title = 'Domination | Assassins\' Network', mode='Domination' )
+
 @app.route('/virtualtraining')
 def vtraining():
     data = mongo.db.vtraining.find({})
