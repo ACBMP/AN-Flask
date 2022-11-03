@@ -74,171 +74,219 @@
             <li class="nav-item">
               <a class="nav-link" id="aa-tab" data-toggle="tab" href="#aatab" role="tab" aria-controls="profile" aria-selected="false">Artifact Assault (ACR)</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" id="do-tab" data-toggle="tab" href="#dotab" role="tab" aria-controls="profile" aria-selected="false">Domination (AC4)</a>
+            </li>
             </ul>
     </div>
 <div class="tab-content" id="myTabContent">
     <br \>
-<div class="tab-pane fade show active" id="emhtab" role="tabpanel" aria-labelledby="e_mh-tab">
-<table class="profile-table">
-    <tr>
-        <th> </th>
-        <th>Manhunt</th>
-        <th>Escort</th>
-      </tr>
-<tr><td><b>MMR</b></td>
-        <td>{{data.mhmmr}}</td>
-        <td>{{data.emmr}}</td>
-        </tr>
-<tr><td><b>Peak MMR</b></td>
-        <td>{{data.mhhistory.mmrs|max()}}</td>
-        <td>{{data.ehistory.mmrs|max()}}</td>
-        </tr>
-<tr><td><b>Games played</b></td>
-    <td>{{data.mhgames.total}}</td>
-    <td>{{data.egames.total}}</td>
-    </tr>
-<tr><td><b>Games won</b></td>
-        <td>{{data.mhgames.won}}</td>
-        <td>{{data.egames.won}}</td>
-        </tr>
-<tr><td><b>Games lost</b></td>
-            <td>{{data.mhgames.lost}}</td>
-            <td>{{data.egames.lost}}</td>
+    <div class="tab-pane fade show active" id="emhtab" role="tabpanel" aria-labelledby="e_mh-tab">
+        <table class="profile-table">
+            <tr>
+                <th> </th>
+                <th>Manhunt</th>
+                <th>Escort</th>
             </tr>
-<tr><td><b>Winrate</b></td>
+            <tr><td><b>MMR</b></td>
+                <td>{{data.mhmmr}}</td>
+                <td>{{data.emmr}}</td>
+            </tr>
+            <tr><td><b>Peak MMR</b></td>
+                <td>{{data.mhhistory.mmrs|max()}}</td>
+                <td>{{data.ehistory.mmrs|max()}}</td>
+            </tr>
+            <tr><td><b>Games played</b></td>
+                <td>{{data.mhgames.total}}</td>
+                <td>{{data.egames.total}}</td>
+            </tr>
+            <tr><td><b>Games won</b></td>
+                <td>{{data.mhgames.won}}</td>
+                <td>{{data.egames.won}}</td>
+            </tr>
+            <tr><td><b>Games lost</b></td>
+                <td>{{data.mhgames.lost}}</td>
+                <td>{{data.egames.lost}}</td>
+            </tr>
+            <tr><td><b>Winrate</b></td>
                 <td>{{ data.mhgames.won|winrate(data.mhgames.lost) }}</td>
                 <td>{{ data.egames.won|winrate(data.egames.lost) }}</td>
-                </tr>
-<tr><td><b>Average score</b></td>
+            </tr>
+            <tr><td><b>Average score</b></td>
                 <td>{{ data.mhstats.totalscore|avgscore(data.mhgames.total) }}</td>
                 <td>{{ data.estats.totalscore|avgscore(data.egames.total) }}</td>
-                </tr>
-<tr><td><b>Highest score</b></td>
+            </tr>
+            <tr><td><b>Highest score</b></td>
                 <td>{{ data.mhstats.highscore }}</td>
                 <td>{{ data.estats.highscore }}</td>
-                </tr>
-<tr><td><b>K/D ratio</b></td>
+            </tr>
+            <tr><td><b>K/D ratio</b></td>
                 <td>{{ data.mhstats.kills|kdratio(data.mhstats.deaths) }}</td>
                 <td>{{ data.estats.kills|kdratio(data.estats.deaths) }}</td>
-                </tr>
-<tr><td><b>Average kills</b></td>
+            </tr>
+            <tr><td><b>Average kills</b></td>
                 <td>{{ data.mhstats.kills|avgkills(data.mhgames.total) }}</td>
                 <td>{{ data.estats.kills|avgkills(data.egames.total) }}</td>
-                </tr>
-<tr><td><b>Average deaths</b></td>
+            </tr>
+            <tr><td><b>Average deaths</b></td>
                 <td>{{ data.mhstats.deaths|avgdeaths(data.mhgames.total) }}</td>
                 <td>{{ data.estats.deaths|avgdeaths(data.egames.total) }}</td>
-                </tr>
-</table>
-<br \>
-
-<div class="container">
-<div class="pie-chart">
-    <canvas id="echart"></canvas>
-    <br \>
-</div>
-<div class="pie-chart">
-    <canvas id="mhchart"></canvas>
-    <br \>
-</div>
-<div class="pie-chart">
-    <canvas id="gchart"></canvas>
-    <br \>
-</div>
-</div>
-</div>
-<div class="tab-pane fade" id="aatab" role="tabpanel" aria-labelledby="aa-tab">        
-      
-<table class="profile-table">
-   <tr>
-<th></th>
-        <th>Defending</th>
-      </tr>
-<tr><td><b>MMR</b></td>
-        <td>{{data.aadmmr}}</td>
-        </tr>
-<tr><td><b>Peak MMR</b></td>
-        <td>{{data.aadhistory.mmrs|max()}}</td>
-        </tr>
-<tr><td><b>Games played</b></td>
-    <td>{{data.aadgames.total}}</td>
-    </tr>
-<tr><td><b>Games won</b></td>
-        <td>{{data.aadgames.won}}</td>
-        </tr>
-<tr><td><b>Games lost</b></td>
-            <td>{{data.aadgames.lost}}</td>
             </tr>
-<tr><td><b>Winrate</b></td>
+        </table>
+        <br \>
+
+        <div class="container">
+            <div class="pie-chart">
+                <canvas id="echart"></canvas>
+                <br \>
+            </div>
+            <div class="pie-chart">
+                <canvas id="mhchart"></canvas>
+                <br \>
+            </div>
+            <div class="pie-chart">
+                <canvas id="gchart"></canvas>
+                <br \>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tab-pane fade" id="aatab" role="tabpanel" aria-labelledby="aa-tab">          
+        <table class="profile-table">
+            <tr>
+                <th></th>
+                <th>Defending</th>
+            </tr>
+            <tr><td><b>MMR</b></td>
+                <td>{{data.aadmmr}}</td>
+            </tr>
+            <tr><td><b>Peak MMR</b></td>
+                <td>{{data.aadhistory.mmrs|max()}}</td>
+            </tr>
+            <tr><td><b>Games played</b></td>
+                <td>{{data.aadgames.total}}</td>
+            </tr>
+            <tr><td><b>Games won</b></td>
+                <td>{{data.aadgames.won}}</td>
+            </tr>
+            <tr><td><b>Games lost</b></td>
+                <td>{{data.aadgames.lost}}</td>
+            </tr>
+            <tr><td><b>Winrate</b></td>
                 <td>{{ data.aadgames.won|winrate(data.aadgames.lost) }}</td>
-                </tr>
-<tr><td><b>Average score</b></td>
-                <td>{{ data.aadstats.totalscore|avgscore(data.aadgames.total) }}</td>
-                </tr>
-<tr><td><b>Average kills</b></td>
-                <td>{{ data.aadstats.kills|avgkills(data.aadgames.total) }}</td>
-                </tr>
-<tr><td><b>Average artifacts conceded</b></td>
-                <td>{{ data.aadstats.conceded|avgdeaths(data.aadgames.total) }}</td>
-                </tr>
-</table>
-<br \>
-     <table class="profile-table">
-   <tr>
-<th></th>
-        <th>Running</th>
-      </tr>
-<tr><td><b>MMR</b></td>
-        <td>{{data.aarmmr}}</td>
-        </tr>
-<tr><td><b>Peak MMR</b></td>
-        <td>{{data.aarhistory.mmrs|max()}}</td>
-        </tr>
-<tr><td><b>Games played</b></td>
-    <td>{{data.aargames.total}}</td>
-    </tr>
-<tr><td><b>Games won</b></td>
-        <td>{{data.aargames.won}}</td>
-        </tr>
-<tr><td><b>Games lost</b></td>
-            <td>{{data.aargames.lost}}</td>
             </tr>
-<tr><td><b>Winrate</b></td>
+            <tr><td><b>Average score</b></td>
+                <td>{{ data.aadstats.totalscore|avgscore(data.aadgames.total) }}</td>
+            </tr>
+            <tr><td><b>Average kills</b></td>
+                <td>{{ data.aadstats.kills|avgkills(data.aadgames.total) }}</td>
+            </tr>
+            <tr><td><b>Average artifacts conceded</b></td>
+                <td>{{ data.aadstats.conceded|avgdeaths(data.aadgames.total) }}</td>
+            </tr>
+        </table>
+        <br \>
+        <table class="profile-table">
+            <tr>
+                <th></th>
+                <th>Running</th>
+            </tr>
+            <tr><td><b>MMR</b></td>
+                <td>{{data.aarmmr}}</td>
+            </tr>
+            <tr><td><b>Peak MMR</b></td>
+                <td>{{data.aarhistory.mmrs|max()}}</td>
+            </tr>
+            <tr><td><b>Games played</b></td>
+                <td>{{data.aargames.total}}</td>
+            </tr>
+            <tr><td><b>Games won</b></td>
+                <td>{{data.aargames.won}}</td>
+            </tr>
+            <tr><td><b>Games lost</b></td>
+                <td>{{data.aargames.lost}}</td>
+            </tr>
+            <tr><td><b>Winrate</b></td>
                 <td>{{ data.aargames.won|winrate(data.aargames.lost) }}</td>
-                </tr>
-<tr><td><b>Average score</b></td>
+            </tr>
+            <tr><td><b>Average score</b></td>
                 <td>{{ data.aarstats.totalscore|avgscore(data.aargames.total) }}</td>
-                </tr>
-<tr><td><b>Average artifacts scored</b></td>
+            </tr>
+            <tr><td><b>Average artifacts scored</b></td>
                 <td>{{ data.aarstats.scored|avgkills(data.aargames.total) }}</td>
-                </tr>
-<tr><td><b>Average deaths per artifact</b></td>
+            </tr>
+            <tr><td><b>Average deaths per artifact</b></td>
                 <td>{{ data.aarstats.deaths|avgdeaths(data.aarstats.scored) }}</td>
-                </tr>
-<tr><td><b>Average kills</b></td>
+            </tr>
+            <tr><td><b>Average kills</b></td>
                 <td>{{ data.aarstats.kills|avgdeaths(data.aargames.total) }}</td>
-                </tr>
-</table> 
-     <br \>
+            </tr>
+        </table> 
+        <br \>
+        <div class="container">
+            <div class="pie-chart">
+                <canvas id="aachart"></canvas>
+                <br \>
+            </div>
+            <div class="pie-chart">
+                <canvas id="aadchart"></canvas>
+                <br \>
+            </div>
+            <div class="pie-chart">
+                <canvas id="aarchart"></canvas>
+                <br \>
+            </div>
+        </div>
+    </div>
 
-<div class="container">
-<div class="pie-chart">
-    <canvas id="aachart"></canvas>
-    <br \>
+    <div class="tab-pane fade" id="dotab" role="tabpanel" aria-labelledby="do-tab">
+        <table class="profile-table">
+            <tr><td><b>MMR</b></td>
+                <td>{{data.dommr}}</td>
+            </tr>
+            <tr><td><b>Peak MMR</b></td>
+                <td>{{data.dohistory.mmrs|max()}}</td>
+            </tr>
+            <tr><td><b>Games played</b></td>
+                <td>{{data.dogames.total}}</td>
+            </tr>
+            <tr><td><b>Games won</b></td>
+                <td>{{data.dogames.won}}</td>
+            </tr>
+            <tr><td><b>Games lost</b></td>
+                <td>{{data.dogames.lost}}</td>
+            </tr>
+            <tr><td><b>Winrate</b></td>
+                <td>{{ data.dogames.won|winrate(data.dogames.lost) }}</td>
+            </tr>
+            <tr><td><b>Average score</b></td>
+                <td>{{ data.dostats.totalscore|avgscore(data.dogames.total) }}</td>
+            </tr>
+            <tr><td><b>Highest score</b></td>
+                <td>{{ data.dostats.highscore }}</td>
+            </tr>
+            <tr><td><b>K/D ratio</b></td>
+                <td>{{ data.dostats.kills|kdratio(data.dostats.deaths) }}</td>
+            </tr>
+            <tr><td><b>Average kills</b></td>
+                <td>{{ data.dostats.kills|avgkills(data.dogames.total) }}</td>
+            </tr>
+            <tr><td><b>Average deaths</b></td>
+                <td>{{ data.dostats.deaths|avgdeaths(data.dogames.total) }}</td>
+            </tr>
+        </table>
+        <br \>
+        <div class="container">
+            <div class="pie-chart">
+                <canvas id="dochart"></canvas>
+                <br \>
+            </div>
+        </div>
+    </div>
 </div>
-<div class="pie-chart">
-    <canvas id="aadchart"></canvas>
-    <br \>
-</div>
-<div class="pie-chart">
-    <canvas id="aarchart"></canvas>
-    <br \>
+
 </div>
 </div>
-   </div>
-</div>
-   </div>
-   </div>
   
 
 <div class="tab-pane fade" id="matches" role="tabpanel" aria-labelledby="matches-tab">
@@ -307,9 +355,12 @@
     <canvas id="aarhist"></canvas>
     <br \>
 </div>
-
+    <div class="mmr-history">
+    <canvas id="dohist"></canvas>
+    <br \>
 </div>
 
+</div>
 </div>
 </div>
 
@@ -355,7 +406,7 @@
             labels:['WINS', 'LOSSES', 'TIES'],
             datasets:
             [{data:[{{data.aadgames.won}},{{data.aadgames.lost}},{{data.aadgames.total-data.aadgames.won-data.aadgames.lost}}], backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Defending game outcomes',fontSize: 25 },}});
-    var mhchart = document.getElementById('aarchart').getContext('2d');
+    var aarchart = document.getElementById('aarchart').getContext('2d');
     var aarunchart = new Chart(aarchart, {
         type: 'doughnut',
         data:{
@@ -371,6 +422,14 @@
             datasets:
             [{data:[{{data.aadgames.total}},{{data.aargames.total}}],backgroundColor:['#0099ff','#33cc33']}],},options:{title:{display:true,text:'Roles played',fontSize: 25},}});
    
+    var dochart = document.getElementById('dochart').getContext('2d');
+    var domichart = new Chart(dochart, {
+        type: 'doughnut',
+        data:{
+            labels:['WINS', 'LOSSES', 'TIES'],
+            datasets:
+            [{data:[{{data.dogames.won}},{{data.dogames.lost}},{{data.dogames.total-data.dogames.won-data.dogames.lost}}],backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Domination game outcomes',fontSize: 25},}});
+
     var ehist = document.getElementById('ehist').getContext('2d');
     var ehistchart = new Chart(ehist, {
         type: 'line',
@@ -440,6 +499,22 @@
             options:{title:{display:true,text:'AA Running MMR',fontSize: 25 },legend:{
                 display:false}
             }});
-
+    var dohist = document.getElementById('dohist').getContext('2d');
+    var dohistchart = new Chart(dohist, {
+        type: 'line',
+        data:{
+            labels: {{data.dohistory.dates|safe}},
+            datasets:
+            [
+                {
+                    data: {{data.dohistory.mmrs|safe}}, 
+                    backgroundColor:'rgba(226, 31, 31, 0.65)',
+                    borderColor:'rgba(255, 0, 0, 0.75)',
+                    lineTension:0
+                }
+            ],},
+            options:{title:{display:true,text:'Domination MMR',fontSize: 25 },legend:{
+                display:false}
+            }});
 </script>
     {% endblock content %}
