@@ -210,6 +210,20 @@ def name_in_db(name):
     except ValueError:
         return name
 
+@app.template_filter("full_badge_name")
+def full_badge_name(badge):
+    badges = badge.split("><")
+
+    full = ""
+    for b in badges:
+        name = b[b.find("\"") + 1:b.find(">") - 1]
+        full += f"{b}> {name}<br><"
+
+    if full == "":
+        return full
+
+    return full[:-1].replace(">>", ">")
+
 # WE CAN'T RUN A LIVE APP IN DEBUG MODE! 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')
