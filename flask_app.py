@@ -79,7 +79,7 @@ def paged_matches(page):
 
 @app.route('/players')
 def players():
-    data = mongo.db.players.find().collation({'locale':'en'}).sort("name")
+    data = mongo.db.players.find().sort("name")
     return render_template('players.html',data=data, title = 'Players | Assassins\' Network')
 
 @app.route('/profile/<name>')
@@ -212,15 +212,18 @@ def name_in_db(name):
 
 @app.template_filter("full_badge_name")
 def full_badge_name(badge):
-    badges = badge.split("><")
+    try:
+        badges = badge.split("><")
+    except:
+        return ""
 
     full = ""
     for b in badges:
         name = b[b.find("\"") + 1:b.find(">") - 1]
         full += f"{b}> {name}<br><"
 
-    if full == "":
-        return full
+    if full in ["", ">"]:
+        return ""
 
     return full[:-1].replace(">>", ">")
 
