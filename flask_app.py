@@ -210,8 +210,10 @@ def name_in_db(name):
     except ValueError:
         return name
 
-@app.template_filter("full_badge_name")
-def full_badge_name(badge):
+@app.template_filter("full_badge_names")
+def full_badge_names(badges):
+    # I already wrote the conversion like this it's quite inefficient but it's already done
+    badge = transform_badges(badges)
     try:
         badges = badge.split("><")
     except:
@@ -226,6 +228,53 @@ def full_badge_name(badge):
         return ""
 
     return full[:-1].replace(">>", ">")
+
+@app.template_filter("transform_badges")
+def transform_badges(badges):
+    badges_str = ""
+    for i in range(len(badges)):
+        badges_str = transform_badge_to_html(badges[i], badges_str)
+    return badges_str
+
+def transform_badge_to_html(badge: dict, badges=""):
+    # Ik there's a more elegant way of doing this but I don't have the time rn
+    try:
+        rank = badge["rank"]
+    except:
+        pass
+    try:
+        mode = badge["mode"]
+    except:
+        pass
+    try:
+        season = badge["season"]
+    except:
+        pass
+    try:
+        name = badge["name"]
+    except:
+        pass
+    if rank == "1st":
+        medal = "&#129351"
+    elif rank == "2nd":
+        medal = "&#129352"
+    elif rank == "3rd":
+        medal = "&#129353"
+    elif rank == "Trophy":
+        medal = "&#127942"
+    elif rank == "Rookie":
+        medal = "&#128304"
+    elif rank == "Special":
+        medal = "&#127941"
+    else:
+        raise ValueError("Unknown rank! Options are: 1st, 2nd, 3rd, Trophy, and Trophy.")
+    if rank in ["Trophy", "Special"]:
+        badges = f"<span title=\"{name}\">{medal}</span>" + badges
+    elif rank == "Rookie":
+        badges = f"<span title=\"Season {season} Rookie of the Season\">{medal}</span>" + badges
+    else:
+        badges = f"<span title=\"Season {season} {mode} {rank} Place\">{medal}</span>" + badges
+    return badges
 
 # WE CAN'T RUN A LIVE APP IN DEBUG MODE! 
 if __name__ == '__main__':
