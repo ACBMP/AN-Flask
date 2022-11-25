@@ -33,12 +33,12 @@ def escort():
 @app.route('/running')
 def running():
     data = mongo.db.players.find({ "aargames.total": { '$gte': 10 } }).sort("aarmmr",-1)
-    return render_template('ranking.html', data=data, title = 'Artifact Assault Running | Assassins\' Network', mode='Artifact Assault Running' )
+    return render_template('ranking.html', data=data, title = 'Artifact Assault Running | Assassins\' Network', mode='AA Running' )
 
 @app.route('/defending')
 def defending():
     data = mongo.db.players.find({ "aadgames.total": { '$gte': 10 } }).sort("aadmmr",-1)
-    return render_template('ranking.html', data=data, title = 'Artifact Assault Defending | Assassins\' Network', mode='Artifact Assault Defending' )
+    return render_template('ranking.html', data=data, title = 'Artifact Assault Defending | Assassins\' Network', mode='AA Defending' )
 
 @app.route('/domination')
 def domination():
@@ -230,8 +230,13 @@ def full_badge_names(badges):
     return full[:-1].replace(">>", ">")
 
 @app.template_filter("transform_badges")
-def transform_badges(badges):
+def transform_badges(badges, mode=None):
+    # we need to support no mode for user profiles
+    if mode is None:
+        badges = filter_badges(badges, mode)
+    
     badges_str = ""
+
     for i in range(len(badges)):
         badges_str = transform_badge_to_html(badges[i], badges_str)
     return badges_str
@@ -275,6 +280,41 @@ def transform_badge_to_html(badge: dict, badges=""):
     else:
         badges = f"<span title=\"Season {season} {mode} {rank} Place\">{medal}</span>" + badges
     return badges
+
+@app.template_filter("filter_badges")
+def filter_badges(badges, mode):
+    # the maximum number of badges to be displayed on a page
+    limit = 5
+    if len(badges) < limit + 1:
+        return badges
+
+    filtered = []
+    irrelevant = []
+
+    for b in badges:
+        # some badges won't have modes - eg rookie of the season
+        try:
+            # because AA obviously cares about both - no priority here for now
+            if mode in ["AA Running", "AA Defending"]:
+                if b["mode"] in ["AA Running", "AA Defending"]:
+                    filtered.append(b)
+                else:
+                    irrelevant.append(b)
+            elif b["mode"] == mode:
+                filtered.append(b)
+            else:
+                irrelevant.append(b)
+        except:
+            filtered.append(b)
+    # irrelevant badges should be the wrong way around at this point
+    irrelevant = irrelevant[::-1]
+    i = 0
+    while len(filtered) < limit:
+        try:
+            filtered.append(irrelevant[i])
+        except:
+            break
+    return filtered
 
 # WE CAN'T RUN A LIVE APP IN DEBUG MODE! 
 if __name__ == '__main__':

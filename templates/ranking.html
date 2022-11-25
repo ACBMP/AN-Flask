@@ -14,10 +14,10 @@
         {%if mode in ["Escort", "Manhunt"]%}
 	            <th>Average score</th>
 	            <th>K/D</th>
-        {%elif mode == "Artifact Assault Running"%}
+        {%elif mode == "AA Running"%}
 	            <th>Average scores</th>
 	            <th>Deaths per score</th>
-        {%elif mode == "Artifact Assault Defending"%}
+        {%elif mode == "AA Defending"%}
 	            <th>Average kills</th>
 	            <th>Average concedes</th>
         {%endif%}
@@ -32,14 +32,14 @@
             {%else%}
                 <td>{{ entry.erank }}</td>
             {%endif%}
-            <td><img src="/static/badges/{{ entry.emmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges()|safe}}</td>
+            <td><img src="/static/badges/{{ entry.emmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
             <td>{{ entry.emmr }}</td>
             <td>{{ entry.egames.total }}</td>
             <td>{{ entry.egames.won | winrate(entry.egames.lost) }}</td>
 	        <td>{{ entry.estats.totalscore|avgscore(entry.egames.total) }}</td>
 	        <td>{{ entry.estats.kills|kdratio(entry.estats.deaths) }}</td>
-        {%elif mode == "Artifact Assault Running"%}
+        {%elif mode == "AA Running"%}
             {%if entry.aarrankchange < 0%}
                 <td>{{ entry.aarrank }} <span style="color:red;">&#9660;{{ -1 * entry.aarrankchange }}</span></td>
             {%elif entry.aarrankchange > 0%}
@@ -47,14 +47,14 @@
             {%else%}
                 <td>{{ entry.aarrank }}</td>
             {%endif%}
-            <td><img src="/static/badges/{{ entry.aarmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges()|safe}}</td>
+            <td><img src="/static/badges/{{ entry.aarmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
             <td>{{ entry.aarmmr }}</td>
             <td>{{ entry.aargames.total }}</td>
             <td>{{ entry.aargames.won | winrate(entry.aargames.lost) }}</td>
 	        <td>{{ entry.aarstats.scored|avgscore(entry.aargames.total) }}</td>
 	        <td>{{ entry.aarstats.deaths|kdratio(entry.aarstats.scored) }}</td>
-        {%elif mode == "Artifact Assault Defending"%}
+        {%elif mode == "AA Defending"%}
             {%if entry.aadrankchange < 0%}
                 <td>{{ entry.aadrank }} <span style="color:red;">&#9660;{{ -1 * entry.aadrankchange }}</span></td>
             {%elif entry.aadrankchange > 0%}
@@ -62,7 +62,7 @@
             {%else%}
                 <td>{{ entry.aadrank }}</td>
             {%endif%}
-            <td><img src="/static/badges/{{ entry.aadmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges()|safe}}</td>
+            <td><img src="/static/badges/{{ entry.aadmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
             <td>{{ entry.aadmmr }}</td>
             <td>{{ entry.aadgames.total }}</td>
@@ -77,7 +77,7 @@
             {%else%}
                 <td>{{ entry.dorank }}</td>
             {%endif%}
-            <td><img src="/static/badges/{{ entry.dommr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges()|safe}}</td>
+            <td><img src="/static/badges/{{ entry.dommr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
             <td>{{ entry.dommr }}</td>
             <td>{{ entry.dogames.total }}</td>
@@ -90,7 +90,7 @@
             {%else%}
                 <td>{{ entry.mhrank }}</td>
             {%endif%}
-            <td><img src="/static/badges/{{ entry.mhmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges()|safe}}</td>
+            <td><img src="/static/badges/{{ entry.mhmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
             <td>{{ entry.mhmmr }}</td>
             <td>{{ entry.mhgames.total }}</td>
