@@ -232,7 +232,7 @@ def full_badge_names(badges):
 @app.template_filter("transform_badges")
 def transform_badges(badges, mode=None):
     # we need to support no mode for user profiles
-    if mode is None:
+    if mode:
         badges = filter_badges(badges, mode)
     
     badges_str = ""
@@ -312,6 +312,7 @@ def filter_badges(badges, mode):
     while len(filtered) < limit:
         try:
             filtered.append(irrelevant[i])
+            i += 1
         except:
             break
     return filtered
