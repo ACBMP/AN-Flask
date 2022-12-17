@@ -19,30 +19,43 @@ def home():
     data = mongo.db.home.find().sort("_id",-1).limit(7)
     return render_template('home.html', data=data)
 
+def concat_results(*results):
+   ids = set()
+   for result in results:
+       for v in result:
+           if v['_id'] not in ids:
+               ids.add(v['_id'])
+               yield v
+
+def extract_mode_data(mode):
+    data = mongo.db.players.find({ f"{mode}games.total": { '$gte': 10 } }).sort(f"{mode}mmr",-1)
+    tbd = mongo.db.players.find({'$and': [ {f"{mode}games.total": {"$gt": 0}}, {f"{mode}games.total": {"$lt": 10}}]}).sort(f"{mode}mmr", -1)
+    return list(concat_results(data, tbd))
+
 # Page displaying the ranking
 @app.route('/manhunt')
 def manhunt():
-    data = mongo.db.players.find({ "mhgames.total": { '$gte': 10 } }).sort("mhmmr",-1)
+    data = extract_mode_data("mh")
     return render_template('ranking.html', data=data, title = 'Manhunt | Assassins\' Network', mode='Manhunt' )
 
 @app.route('/escort')
 def escort():
-    data = mongo.db.players.find({ "egames.total": { '$gte': 10 } }).sort("emmr",-1)
+    data = extract_mode_data("e")
     return render_template('ranking.html', data=data, title = 'Escort | Assassins\' Network', mode='Escort' )
 
 @app.route('/running')
 def running():
-    data = mongo.db.players.find({ "aargames.total": { '$gte': 10 } }).sort("aarmmr",-1)
+    data = extract_mode_data("aar")
     return render_template('ranking.html', data=data, title = 'Artifact Assault Running | Assassins\' Network', mode='AA Running' )
 
 @app.route('/defending')
 def defending():
-    data = mongo.db.players.find({ "aadgames.total": { '$gte': 10 } }).sort("aadmmr",-1)
+    data = extract_mode_data("aad")
     return render_template('ranking.html', data=data, title = 'Artifact Assault Defending | Assassins\' Network', mode='AA Defending' )
 
 @app.route('/domination')
 def domination():
-    data = mongo.db.players.find({ "dogames.total": { '$gte': 10 } }).sort("dommr",-1)
+    data = extract_mode_data("do")
     return render_template('ranking.html', data=data, title = 'Domination | Assassins\' Network', mode='Domination' )
 
 @app.route('/virtualtraining')
@@ -212,20 +225,16 @@ def name_in_db(name):
 
 @app.template_filter("full_badge_names")
 def full_badge_names(badges):
+    if len(badges) == 0:
+        return ""
     # I already wrote the conversion like this it's quite inefficient but it's already done
     badge = transform_badges(badges)
-    try:
-        badges = badge.split("><")
-    except:
-        return ""
+    badges = badge.split("><")
 
     full = ""
     for b in badges:
         name = b[b.find("\"") + 1:b.find(">") - 1]
         full += f"{b}> {name}<br><"
-
-    if full in ["", ">"]:
-        return ""
 
     return full[:-1].replace(">>", ">")
 
@@ -271,9 +280,13 @@ def transform_badge_to_html(badge: dict, badges=""):
         medal = "&#128304"
     elif rank == "Special":
         medal = "&#127941"
+    elif rank == "All-Star":
+        medal = "&#11088"
+    elif rank == "Custom":
+        medal = badge["medal"]["HTML"]
     else:
-        raise ValueError("Unknown rank! Options are: 1st, 2nd, 3rd, Trophy, and Trophy.")
-    if rank in ["Trophy", "Special"]:
+        raise ValueError("Unknown rank! Options are: 1st, 2nd, 3rd, Trophy, Rookie, Special, All-Star, and Custom.")
+    if rank in ["Trophy", "Special", "All-Star", "Custom"]:
         badges = f"<span title=\"{name}\">{medal}</span>" + badges
     elif rank == "Rookie":
         badges = f"<span title=\"Season {season} Rookie of the Season\">{medal}</span>" + badges
@@ -285,33 +298,32 @@ def transform_badge_to_html(badge: dict, badges=""):
 def filter_badges(badges, mode):
     # the maximum number of badges to be displayed on a page
     limit = 5
-    if len(badges) < limit + 1:
-        return badges
 
     filtered = []
     irrelevant = []
 
     for b in badges:
         # some badges won't have modes - eg rookie of the season
-        try:
+        if b["mode"] != "all":
             # because AA obviously cares about both - no priority here for now
             if mode in ["AA Running", "AA Defending"]:
                 if b["mode"] in ["AA Running", "AA Defending"]:
+                    # appending would break the ordering
                     filtered.append(b)
                 else:
-                    irrelevant.append(b)
+                    irrelevant = [b] + irrelevant
             elif b["mode"] == mode:
                 filtered.append(b)
+                #filtered = [b] + filtered
             else:
-                irrelevant.append(b)
-        except:
+                irrelevant = [b] + irrelevant
+        else:
             filtered.append(b)
-    # irrelevant badges should be the wrong way around at this point
-    irrelevant = irrelevant[::-1]
+            #filtered = [b] + filtered
     i = 0
     while len(filtered) < limit:
         try:
-            filtered.append(irrelevant[i])
+            filtered = [irrelevant[i]] + filtered
             i += 1
         except:
             break

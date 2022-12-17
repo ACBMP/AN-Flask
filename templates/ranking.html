@@ -20,17 +20,23 @@
         {%elif mode == "AA Defending"%}
 	            <th>Average kills</th>
 	            <th>Average concedes</th>
+        {%elif mode == "Domination"%}
+            <th>K/D</th>
         {%endif%}
         </tr>
     {% for entry in data %}
     <tr>
         {%if mode == "Escort"%}
-            {%if entry.erankchange < 0%}
-                <td>{{ entry.erank }} <span style="color:red;">&#9660;{{ -1 * entry.erankchange }}</span></td>
-            {%elif entry.erankchange > 0%}
-                <td>{{ entry.erank }} <span style="color:green;">&#9650;{{ entry.erankchange }}</span></td>
-            {%else%}
-                <td>{{ entry.erank }}</td>
+            {% if entry.erank == 0 %}
+                <td>TBD</td>
+            {% else %}
+                {%if entry.erankchange < 0%}
+                    <td>{{ entry.erank }} <span style="color:red;">&#9660;{{ -1 * entry.erankchange }}</span></td>
+                {%elif entry.erankchange > 0%}
+                    <td>{{ entry.erank }} <span style="color:green;">&#9650;{{ entry.erankchange }}</span></td>
+                {%else%}
+                    <td>{{ entry.erank }}</td>
+                {%endif%}
             {%endif%}
             <td><img src="/static/badges/{{ entry.emmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
@@ -40,12 +46,16 @@
 	        <td>{{ entry.estats.totalscore|avgscore(entry.egames.total) }}</td>
 	        <td>{{ entry.estats.kills|kdratio(entry.estats.deaths) }}</td>
         {%elif mode == "AA Running"%}
-            {%if entry.aarrankchange < 0%}
-                <td>{{ entry.aarrank }} <span style="color:red;">&#9660;{{ -1 * entry.aarrankchange }}</span></td>
-            {%elif entry.aarrankchange > 0%}
-                <td>{{ entry.aarrank }} <span style="color:green;">&#9650;{{ entry.aarrankchange }}</span></td>
-            {%else%}
-                <td>{{ entry.aarrank }}</td>
+            {% if entry.aarrank == 0 %}
+                <td>TBD</td>
+            {% else %}
+                {%if entry.aarrankchange < 0%}
+                    <td>{{ entry.aarrank }} <span style="color:red;">&#9660;{{ -1 * entry.aarrankchange }}</span></td>
+                {%elif entry.aarrankchange > 0%}
+                    <td>{{ entry.aarrank }} <span style="color:green;">&#9650;{{ entry.aarrankchange }}</span></td>
+                {%else%}
+                    <td>{{ entry.aarrank }}</td>
+                {%endif%}
             {%endif%}
             <td><img src="/static/badges/{{ entry.aarmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
@@ -55,12 +65,16 @@
 	        <td>{{ entry.aarstats.scored|avgscore(entry.aargames.total) }}</td>
 	        <td>{{ entry.aarstats.deaths|kdratio(entry.aarstats.scored) }}</td>
         {%elif mode == "AA Defending"%}
-            {%if entry.aadrankchange < 0%}
-                <td>{{ entry.aadrank }} <span style="color:red;">&#9660;{{ -1 * entry.aadrankchange }}</span></td>
-            {%elif entry.aadrankchange > 0%}
-                <td>{{ entry.aadrank }} <span style="color:green;">&#9650;{{ entry.aadrankchange }}</span></td>
-            {%else%}
-                <td>{{ entry.aadrank }}</td>
+            {% if entry.aadrank == 0 %}
+                <td>TBD</td>
+            {% else %}
+                {%if entry.aadrankchange < 0%}
+                    <td>{{ entry.aadrank }} <span style="color:red;">&#9660;{{ -1 * entry.aadrankchange }}</span></td>
+                {%elif entry.aadrankchange > 0%}
+                    <td>{{ entry.aadrank }} <span style="color:green;">&#9650;{{ entry.aadrankchange }}</span></td>
+                {%else%}
+                    <td>{{ entry.aadrank }}</td>
+                {%endif%}
             {%endif%}
             <td><img src="/static/badges/{{ entry.aadmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
@@ -70,25 +84,34 @@
 	        <td>{{ entry.aadstats.kills|avgscore(entry.aadgames.total) }}</td>
 	        <td>{{ entry.aadstats.conceded|avgdeaths(entry.aadgames.total) }}</td>
         {%elif mode == "Domination"%}
-            {%if entry.dorankchange < 0%}
-                <td>{{ entry.dorank }} <span style="color:red;">&#9660;{{ -1 * entry.dorankchange }}</span></td>
-            {%elif entry.dorankchange > 0%}
-                <td>{{ entry.dorank }} <span style="color:green;">&#9650;{{ entry.dorankchange }}</span></td>
-            {%else%}
-                <td>{{ entry.dorank }}</td>
+            {% if entry.dorank == 0 %}
+                <td>TBD</td>
+            {% else %}
+                {%if entry.dorankchange < 0%}
+                    <td>{{ entry.dorank }} <span style="color:red;">&#9660;{{ -1 * entry.dorankchange }}</span></td>
+                {%elif entry.dorankchange > 0%}
+                    <td>{{ entry.dorank }} <span style="color:green;">&#9650;{{ entry.dorankchange }}</span></td>
+                {%else%}
+                    <td>{{ entry.dorank }}</td>
+                {%endif%}
             {%endif%}
             <td><img src="/static/badges/{{ entry.dommr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
             <td>{{ entry.dommr }}</td>
             <td>{{ entry.dogames.total }}</td>
             <td>{{ entry.dogames.won | winrate(entry.dogames.lost) }}</td>
+	        <td>{{ entry.dostats.kills|kdratio(entry.dostats.deaths) }}</td>
         {%else%}
-            {%if entry.mhrankchange < 0%}
-                <td>{{ entry.mhrank }} <span style="color:red;">&#9660;{{ -1 * entry.mhrankchange }}</span></td>
-            {%elif entry.mhrankchange > 0%}
-                <td>{{ entry.mhrank }} <span style="color:green;">&#9650;{{ entry.mhrankchange }}</span></td>
-            {%else%}
-                <td>{{ entry.mhrank }}</td>
+            {% if entry.mhrank == 0 %}
+                <td>TBD</td>
+            {% else %}
+                {%if entry.mhrankchange < 0%}
+                    <td>{{ entry.mhrank }} <span style="color:red;">&#9660;{{ -1 * entry.mhrankchange }}</span></td>
+                {%elif entry.mhrankchange > 0%}
+                    <td>{{ entry.mhrank }} <span style="color:green;">&#9650;{{ entry.mhrankchange }}</span></td>
+                {%else%}
+                    <td>{{ entry.mhrank }}</td>
+                {%endif%}
             {%endif%}
             <td><img src="/static/badges/{{ entry.mhmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
