@@ -46,7 +46,7 @@
             {%endif%}
             <td><img src="/static/badges/{{ entry.emmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
-            <td>{{ entry.emmr | round() }}</td>
+            <td>{{ entry.emmr | round() | int() }}</td>
             <td>{{ entry.egames.total }}</td>
             <td>{{ entry.egames.won | winrate(entry.egames.lost) }}</td>
 	        <td>{{ entry.estats.totalscore|avgscore(entry.egames.total) }}</td>
@@ -65,7 +65,7 @@
             {%endif%}
             <td><img src="/static/badges/{{ entry.aarmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
-            <td>{{ entry.aarmmr | round() }}</td>
+            <td>{{ entry.aarmmr | round() | int() }}</td>
             <td>{{ entry.aargames.total }}</td>
             <td>{{ entry.aargames.won | winrate(entry.aargames.lost) }}</td>
 	        <td>{{ entry.aarstats.scored|avgscore(entry.aargames.total) }}</td>
@@ -84,7 +84,7 @@
             {%endif%}
             <td><img src="/static/badges/{{ entry.aadmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
-            <td>{{ entry.aadmmr | round() }}</td>
+            <td>{{ entry.aadmmr | round() | int() }}</td>
             <td>{{ entry.aadgames.total }}</td>
             <td>{{ entry.aadgames.won | winrate(entry.aadgames.lost) }}</td>
 	        <td>{{ entry.aadstats.kills|avgscore(entry.aadgames.total) }}</td>
@@ -103,7 +103,7 @@
             {%endif%}
             <td><img src="/static/badges/{{ entry.dommr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
-            <td>{{ entry.dommr | round() }}</td>
+            <td>{{ entry.dommr | round() | int() }}</td>
             <td>{{ entry.dogames.total }}</td>
             <td>{{ entry.dogames.won | winrate(entry.dogames.lost) }}</td>
 	        <td>{{ entry.dostats.kills|kdratio(entry.dostats.deaths) }}</td>
@@ -121,7 +121,7 @@
             {%endif%}
             <td><img src="/static/badges/{{ entry.mhmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
-            <td>{{ entry.mhmmr | round() }}</td>
+            <td>{{ entry.mhmmr | round() | int() }}</td>
             <td>{{ entry.mhgames.total }}</td>
             <td>{{ entry.mhgames.won | winrate(entry.mhgames.lost) }}</td>
 	        <td>{{ entry.mhstats.totalscore|avgscore(entry.mhgames.total) }}</td>
@@ -130,33 +130,33 @@
             <td>{{ entry.totalrank }}</td>
             <td><a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
-            <td>{{ entry.totalmmr | round() }}</td>
+            <td>{{ entry.totalmmr | round() | int() }}</td>
             <td>{{ entry.totalgames }}</td>
             <td>{{ entry.totalwins | winrate(entry.totallosses) }}</td>
             {%if entry.aadgames.total < 10%}
                 <td>TBD</td>
             {%else%}
-                <td><img src="/static/badges/{{ entry.aadmmr|rank_pic_small() }}">{{ entry.aadmmr | round() }}</td>
+                <td><img src="/static/badges/{{ entry.aadmmr|rank_pic_small() }}">{{ entry.aadmmr | round() | int() }}</td>
             {%endif%}
             {%if entry.aargames.total < 10%}
                 <td>TBD</td>
             {%else%}
-                <td><img src="/static/badges/{{ entry.aarmmr|rank_pic_small() }}">{{ entry.aarmmr | round() }}</td>
+                <td><img src="/static/badges/{{ entry.aarmmr|rank_pic_small() }}">{{ entry.aarmmr | round() | int() }}</td>
             {%endif%}
             {%if entry.dogames.total < 10%}
                 <td>TBD</td>
             {%else%}
-                <td><img src="/static/badges/{{ entry.dommr|rank_pic_small() }}">{{ entry.dommr | round() }}</td>
+                <td><img src="/static/badges/{{ entry.dommr|rank_pic_small() }}">{{ entry.dommr | round() | int() }}</td>
             {%endif%}
             {%if entry.egames.total < 10%}
                 <td>TBD</td>
             {%else%}
-                <td><img src="/static/badges/{{ entry.emmr|rank_pic_small() }}">{{ entry.emmr | round() }}</td>
+                <td><img src="/static/badges/{{ entry.emmr|rank_pic_small() }}">{{ entry.emmr | round() | int() }}</td>
             {%endif%}
             {%if entry.mhgames.total < 10%}
                 <td>TBD</td>
             {%else%}
-                <td><img src="/static/badges/{{ entry.mhmmr|rank_pic_small() }}">{{ entry.mhmmr | round() }}</td>
+                <td><img src="/static/badges/{{ entry.mhmmr|rank_pic_small() }}">{{ entry.mhmmr | round() | int() }}</td>
             {%endif%}
         {%endif%}
     </tr>

@@ -100,12 +100,12 @@
                 <th>Escort</th>
             </tr>
             <tr><td><b>MMR</b></td>
-                <td>{{data.mhmmr | round() }}</td>
-                <td>{{data.emmr | round() }}</td>
+                <td>{{data.mhmmr | round() | int() }}</td>
+                <td>{{data.emmr | round() | int() }}</td>
             </tr>
             <tr><td><b>Peak MMR</b></td>
-                <td>{{data.mhhistory.mmrs|max() | round() }}</td>
-                <td>{{data.ehistory.mmrs|max() | round() }}</td>
+                <td>{{data.mhhistory.mmrs|max() | round() | int() }}</td>
+                <td>{{data.ehistory.mmrs|max() | round() | int() }}</td>
             </tr>
             <tr><td><b>Games played</b></td>
                 <td>{{data.mhgames.total}}</td>
@@ -169,10 +169,10 @@
                 <th>Defending</th>
             </tr>
             <tr><td><b>MMR</b></td>
-                <td>{{data.aadmmr | round() }}</td>
+                <td>{{data.aadmmr | round() | int() }}</td>
             </tr>
             <tr><td><b>Peak MMR</b></td>
-                <td>{{data.aadhistory.mmrs|max() | round() }}</td>
+                <td>{{data.aadhistory.mmrs|max() | round() | int() }}</td>
             </tr>
             <tr><td><b>Games played</b></td>
                 <td>{{data.aadgames.total}}</td>
@@ -203,10 +203,10 @@
                 <th>Running</th>
             </tr>
             <tr><td><b>MMR</b></td>
-                <td>{{data.aarmmr | round() }}</td>
+                <td>{{data.aarmmr | round() | int() }}</td>
             </tr>
             <tr><td><b>Peak MMR</b></td>
-                <td>{{data.aarhistory.mmrs|max() | round() }}</td>
+                <td>{{data.aarhistory.mmrs|max() | round() | int() }}</td>
             </tr>
             <tr><td><b>Games played</b></td>
                 <td>{{data.aargames.total}}</td>
@@ -253,10 +253,10 @@
     <div class="tab-pane fade" id="dotab" role="tabpanel" aria-labelledby="do-tab">
         <table class="profile-table">
             <tr><td><b>MMR</b></td>
-                <td>{{data.dommr | round() }}</td>
+                <td>{{data.dommr | round() | int() }}</td>
             </tr>
             <tr><td><b>Peak MMR</b></td>
-                <td>{{data.dohistory.mmrs|max() | round() }}</td>
+                <td>{{data.dohistory.mmrs|max() | round() | int() }}</td>
             </tr>
             <tr><td><b>Games played</b></td>
                 <td>{{data.dogames.total}}</td>
