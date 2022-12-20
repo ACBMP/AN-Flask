@@ -22,7 +22,7 @@
 	            <th>Average concedes</th>
         {%elif mode == "Domination"%}
             <th>K/D</th>
-        {%elif mode == "Total"%}
+        {%elif mode == "All Modes"%}
             <th>AA Defending</th>
             <th>AA Running</th>
             <th>Domination</th>
@@ -126,18 +126,38 @@
             <td>{{ entry.mhgames.won | winrate(entry.mhgames.lost) }}</td>
 	        <td>{{ entry.mhstats.totalscore|avgscore(entry.mhgames.total) }}</td>
 	        <td>{{ entry.mhstats.kills|kdratio(entry.mhstats.deaths) }}</td>
-        {%elif mode == "Total"%}
+        {%elif mode == "All Modes"%}
             <td>{{ entry.totalrank }}</td>
             <td><a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
             <td>{{ entry.totalmmr | round() }}</td>
             <td>{{ entry.totalgames }}</td>
             <td>{{ entry.totalwins | winrate(entry.totallosses) }}</td>
-            <td><img src="/static/badges/{{ entry.aadmmr|rank_pic_small() }}">{{ entry.aadmmr | round() }}</td>
-            <td><img src="/static/badges/{{ entry.aarmmr|rank_pic_small() }}">{{ entry.aarmmr | round() }}</td>
-            <td><img src="/static/badges/{{ entry.dommr|rank_pic_small() }}">{{ entry.dommr | round() }}</td>
-            <td><img src="/static/badges/{{ entry.emmr|rank_pic_small() }}">{{ entry.emmr | round() }}</td>
-            <td><img src="/static/badges/{{ entry.mhmmr|rank_pic_small() }}">{{ entry.mhmmr | round() }}</td>
+            {%if entry.aadgames.total < 10%}
+                <td>TBD</td>
+            {%else%}
+                <td><img src="/static/badges/{{ entry.aadmmr|rank_pic_small() }}">{{ entry.aadmmr | round() }}</td>
+            {%endif%}
+            {%if entry.aargames.total < 10%}
+                <td>TBD</td>
+            {%else%}
+                <td><img src="/static/badges/{{ entry.aarmmr|rank_pic_small() }}">{{ entry.aarmmr | round() }}</td>
+            {%endif%}
+            {%if entry.dogames.total < 10%}
+                <td>TBD</td>
+            {%else%}
+                <td><img src="/static/badges/{{ entry.dommr|rank_pic_small() }}">{{ entry.dommr | round() }}</td>
+            {%endif%}
+            {%if entry.egames.total < 10%}
+                <td>TBD</td>
+            {%else%}
+                <td><img src="/static/badges/{{ entry.emmr|rank_pic_small() }}">{{ entry.emmr | round() }}</td>
+            {%endif%}
+            {%if entry.mhgames.total < 10%}
+                <td>TBD</td>
+            {%else%}
+                <td><img src="/static/badges/{{ entry.mhmmr|rank_pic_small() }}">{{ entry.mhmmr | round() }}</td>
+            {%endif%}
         {%endif%}
     </tr>
     {% endfor %}
