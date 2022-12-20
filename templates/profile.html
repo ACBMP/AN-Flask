@@ -5,6 +5,7 @@
    <h1 align="center">{{data.name}} <img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/48/{{data.nation}}.png"></h1>
         <br \>
 <div align="center">
+   {%if data.mhgames.total > 9%}
    <div style="width: 200px;display: inline-block">
    <center>
    <p align="center" style="font-weight: bold">Manhunt Rank</p>
@@ -12,6 +13,8 @@
    <p align="center">{{ data.mhmmr|rank_title() }}</p>
    </center>
    </div>
+   {%endif%}
+   {%if data.egames.total > 9%}
    <div style="width: 200px;display: inline-block">
    <center>
    <p align="center" style="font-weight: bold">Escort Rank</p>
@@ -19,6 +22,8 @@
    <p align="center">{{ data.emmr|rank_title() }}</p>
     </center>
    </div>
+   {%endif%}
+   {%if data.aadgames.total > 9%}
       <div style="width: 200px;display: inline-block">
    <center>
    <p align="center" style="font-weight: bold">AA Defender Rank</p>
@@ -26,6 +31,8 @@
    <p align="center">{{ data.aadmmr|rank_title() }}</p>
    </center>
    </div>
+   {%endif%}
+   {%if data.aargames.total > 9%}
       <div style="width: 200px;display: inline-block">
    <center>
    <p align="center" style="font-weight: bold">AA Runner Rank</p>
@@ -33,12 +40,15 @@
    <p align="center">{{ data.aarmmr|rank_title() }}</p>
    </center>
    </div>
+   {%endif%}
+   {%if data.dogames.total > 9%}
       <div style="width: 200px;display: inline-block">
    <center>
    <p align="center" style="font-weight: bold">Domination Rank</p>
    <img src="/static/badges/{{ data.dommr|rank_pic_big() }}"><br \><br \>
    <p align="center">{{ data.dommr|rank_title() }}</p>
    </center>
+   {%endif%}
 </div>
 <br \>
     <div align="center">
@@ -90,12 +100,12 @@
                 <th>Escort</th>
             </tr>
             <tr><td><b>MMR</b></td>
-                <td>{{data.mhmmr}}</td>
-                <td>{{data.emmr}}</td>
+                <td>{{data.mhmmr | round() }}</td>
+                <td>{{data.emmr | round() }}</td>
             </tr>
             <tr><td><b>Peak MMR</b></td>
-                <td>{{data.mhhistory.mmrs|max()}}</td>
-                <td>{{data.ehistory.mmrs|max()}}</td>
+                <td>{{data.mhhistory.mmrs|max() | round() }}</td>
+                <td>{{data.ehistory.mmrs|max() | round() }}</td>
             </tr>
             <tr><td><b>Games played</b></td>
                 <td>{{data.mhgames.total}}</td>
@@ -159,10 +169,10 @@
                 <th>Defending</th>
             </tr>
             <tr><td><b>MMR</b></td>
-                <td>{{data.aadmmr}}</td>
+                <td>{{data.aadmmr | round() }}</td>
             </tr>
             <tr><td><b>Peak MMR</b></td>
-                <td>{{data.aadhistory.mmrs|max()}}</td>
+                <td>{{data.aadhistory.mmrs|max() | round() }}</td>
             </tr>
             <tr><td><b>Games played</b></td>
                 <td>{{data.aadgames.total}}</td>
@@ -193,10 +203,10 @@
                 <th>Running</th>
             </tr>
             <tr><td><b>MMR</b></td>
-                <td>{{data.aarmmr}}</td>
+                <td>{{data.aarmmr | round() }}</td>
             </tr>
             <tr><td><b>Peak MMR</b></td>
-                <td>{{data.aarhistory.mmrs|max()}}</td>
+                <td>{{data.aarhistory.mmrs|max() | round() }}</td>
             </tr>
             <tr><td><b>Games played</b></td>
                 <td>{{data.aargames.total}}</td>
@@ -243,10 +253,10 @@
     <div class="tab-pane fade" id="dotab" role="tabpanel" aria-labelledby="do-tab">
         <table class="profile-table">
             <tr><td><b>MMR</b></td>
-                <td>{{data.dommr}}</td>
+                <td>{{data.dommr | round() }}</td>
             </tr>
             <tr><td><b>Peak MMR</b></td>
-                <td>{{data.dohistory.mmrs|max()}}</td>
+                <td>{{data.dohistory.mmrs|max() | round() }}</td>
             </tr>
             <tr><td><b>Games played</b></td>
                 <td>{{data.dogames.total}}</td>

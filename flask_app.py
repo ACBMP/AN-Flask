@@ -58,6 +58,30 @@ def domination():
     data = extract_mode_data("do")
     return render_template('ranking.html', data=data, title = 'Domination | Assassins\' Network', mode='Domination' )
 
+@app.route('/total')
+def total():
+    players = mongo.db.players.find({})
+    players = list(players)
+    modes = ["mh", "e", "aar", "aad", "do"]
+    for p in players:
+        p["totalmmr"] = 0
+        p["totalgames"] = 0
+        p["totalwins"] = 0
+        p["totallosses"] = 0
+        for m in modes:
+            games = p[m + "games"]["total"]
+            if games > 9:
+                p["totalmmr"] += p[m + "mmr"]
+            p["totalgames"] += games
+            p["totalwins"] += p[m + "games"]["won"]
+            p["totallosses"] += p[m + "games"]["lost"]
+            p["totalmmr"] 
+    players.sort(key=lambda p: p["totalmmr"], reverse=True)
+    players = players[:10]
+    for i in range(len(players)):
+        players[i]["totalrank"] = i + 1
+    return render_template('ranking.html', data=players, title='Total | Assassins\' Network', mode='Total')
+
 @app.route('/virtualtraining')
 def vtraining():
     data = mongo.db.vtraining.find({})
