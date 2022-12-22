@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
     <h1>About Elo</h1>
+    <p>Elo refers to a rating system that takes into account players' ratings when put up against each other. As such, it grants more points for lower rated players beating higher rated players, and higher players lose more for losing against lower rated players. While it can't definitively figure out how good players are, our tests have shown that, over long periods of time, our modification of the algorithm is reasonably accurate at predicting match outcomes in Assassin's Creed multiplayer and performs better than comparable rating systems.
+    </p>
+    <h2>Our Implementation</h2>
     <p>The elo system for two players \(A\) and \(B\) with \(E\) being the expected score (chance of winning in percent) and \(R\) being the rating of the players says:
 $$E_{A}={\frac {1}{1+10^{(R_{B}-R_{A})\div400}}}$$
 or conversely
@@ -16,14 +19,18 @@ $$P = \frac{|p_A - p_B|}{(p_A + p_B) \div 2}$$
 This extends the \(R'\) calculation:
 $$R_{A}^{\prime }=R_{A}+(1 + P) \times K(S_{A}-E_{A})$$
 
-In the case of artifact assault, the above equation to find \(P\) is nonsense. Instead, we use a reference "stomp" value:
+In the case of Artifact Assault, the above equation to find \(P\) is nonsense. Instead, we use a reference "stomp" value:
 $$P = \frac{\mathrm{max}(|p_A - p_B| - 1, 0)}{4}$$
 
-In our case, we track 2v2 escort and 3v3/4v4 manhunt games, so we have to calculate the team rankings. We use a weighted mean \(m_w\) of the team's rankings in accordance to each player \(p\)'s difference \(d\) from the opposing team's mean ranking \(m_e\), whereby weights are calculated according to:
+In order to compensate for the inherent deflationary effect of the scaling factor \(K\), along with lower players' tendencies to abandon the game early into their "career", we add some artificial inflation by adding the outcome (either 0, 0.5, or 1) to the new rating:
+$$R_{A}^{\prime }=R_{A}+(1 + P) \times K(S_{A}-E_{A})+S$$
+
+In our case, we track team modes, so we have to calculate the team rankings. We use a weighted mean \(m_w\) of the team's rankings in accordance to each player \(p\)'s difference \(d\) from the opposing team's mean ranking \(m_e\), whereby weights are calculated according to:
 $$w = \frac{|p - m_e|}{d}$$
 
-As of season 2, we have added 10 so called "placement games", which replace the above formulas. During these 10 games, any win raises the player's rating by 50, while every loss lowers it by 10 and ties have no impact. To compensate, every player starts off with a ranking of 800.
-
-To view the function Assassins' Network uses to calculate elo, please refer to <A href="https://github.com/ACBMP/elo/blob/master/calculation.ipynb">our GitHub repository on elo calculation</A>.</p>
+As of season 2, we have added 10 so called "placement games", which replace the above formulas. During these 10 games, any win raises the player's rating by 50, while every loss lowers it by 10 and ties raise by 20. To compensate, every player starts off with a ranking of 800.
+<br>
+<br>
+As of season 4, we have added an automatic decay script. This script runs daily and lowers players' ratings by 5 if they have missed more than 3 sessions of play, have a rating above 1000, haven't played in over 7 days, and haven't decayed already within the last 7 days. To compensate for the decay's deflationary effect, the decayed rating is spread to the players who have not missed more than 3 sessions of play or have played within the last 7 days, assuming they have finished their placement games.
 
 {% endblock content %}

@@ -82,6 +82,33 @@ def allmodes():
         players[i]["totalrank"] = i + 1
     return render_template('ranking.html', data=players, title='All Modes | Assassins\' Network', mode='All Modes')
 
+@app.route('/average')
+def average():
+    modes = ["mh", "e", "aar", "aad", "do"]
+    players = mongo.db.players.find({"$or": [{f"{m}games.total": {"$gte": 10}} for m in modes]})
+    players = list(players)
+    for p in players:
+        played_modes = 0
+        p["totalmmr"] = 0
+        p["totalgames"] = 0
+        p["totalwins"] = 0
+        p["totallosses"] = 0
+        for m in modes:
+            games = p[m + "games"]["total"]
+            if games > 9:
+                played_modes += 1
+                p["totalmmr"] += p[m + "mmr"]
+            p["totalgames"] += games
+            p["totalwins"] += p[m + "games"]["won"]
+            p["totallosses"] += p[m + "games"]["lost"]
+            p["totalmmr"] 
+        p["totalmmr"] /= played_modes
+    players.sort(key=lambda p: p["totalmmr"], reverse=True)
+    #players = players[:10]
+    for i in range(len(players)):
+        players[i]["totalrank"] = i + 1
+    return render_template('ranking.html', data=players, title='Average | Assassins\' Network', mode='Average')
+
 @app.route('/virtualtraining')
 def vtraining():
     data = mongo.db.vtraining.find({})

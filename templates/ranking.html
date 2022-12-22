@@ -22,7 +22,7 @@
 	            <th>Average concedes</th>
         {%elif mode == "Domination"%}
             <th>K/D</th>
-        {%elif mode == "All Modes"%}
+        {%else%}
             <th>AA Defending</th>
             <th>AA Running</th>
             <th>Domination</th>
@@ -126,7 +126,7 @@
             <td>{{ entry.mhgames.won | winrate(entry.mhgames.lost) }}</td>
 	        <td>{{ entry.mhstats.totalscore|avgscore(entry.mhgames.total) }}</td>
 	        <td>{{ entry.mhstats.kills|kdratio(entry.mhstats.deaths) }}</td>
-        {%elif mode == "All Modes"%}
+        {%else%}
             <td>{{ entry.totalrank }}</td>
             <td><a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
