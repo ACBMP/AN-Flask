@@ -160,6 +160,20 @@ def display_profile(name):
     data_matches = mongo.db.matches.find({"$or": search}).sort("_id", -1).limit(10)
     return render_template('profile.html',data=data, data_matches=data_matches, title = 'Player\'s Profile | Assassins\' Network')
 
+@app.route('/maps')
+def maps():
+    data = []
+    for mode in ["aa", "e", "mh", "do"]:
+        modedata = mongo.db.maps.find({f"{mode}.games": {"$gt": 10}})
+        if not len(modedata):
+            continue
+        average_rating = sum([m[mode]["rating"] for m in modedata]) / len(modedata)
+        # switch out the rating for the displayed rating - probably dumb to do here tbh
+        for i in range(len(modedata)):
+            modedata[i][mode]["rating"] = (modedata[i][mode]["rating"] / average_rating - 1) * 100
+        data += modedata
+    return render_template('maps.html', data=data, title='Map Statistics | Assassins\' Network')
+
 @app.route('/status')
 def status_page():
     from status import status

@@ -3,57 +3,58 @@
     <h1 align="center">{{mode}} Map Statistics</h1>
     <br \>
     <div align="center">
-    <table style="white-space:nowrap;">
+    {% for mode in ["Escort", "Manhunt", "Artifact assault", "Domination"] %}
+        <table style="white-space:nowrap;">
+            <tr>
+                <th>Name</th>
+                <th>Games</th>
+            {%if mode == "Manhunt"%}
+	            <th>Average score</th>
+	            <th>Average kills</th>
+	            <th>Host winrate</th>
+            {%if mode == "Escort"%}
+	            <th>Average score</th>
+	            <th>Average kills</th>
+	            <th>Average deaths</th>
+	            <th>Host winrate</th>
+            {%elif mode == "Artifact assault"%}
+	            <th>Average scores</th>
+	            <th>Host winrate</th>
+            {%elif mode == "Domination"%}
+	            <th>Average score</th>
+	            <th>Average kills</th>
+	            <th>Host winrate</th>
+            {%endif%}
+            </tr>
+        {% for entry in data[mode] %}
         <tr>
-            <th>Name</th>
-            <th>Games</th>
-        {%if mode == "Manhunt"%}
-	        <th>Average score</th>
-	        <th>Average kills</th>
-	        <th>Host winrate</th>
-        {%if mode == "Escort"%}
-	        <th>Average score</th>
-	        <th>Average kills</th>
-	        <th>Average deaths</th>
-	        <th>Host winrate</th>
-        {%elif mode == "Artifact assault"%}
-	        <th>Average scores</th>
-	        <th>Host winrate</th>
-        {%elif mode == "Domination"%}
-	        <th>Average score</th>
-	        <th>Average kills</th>
-	        <th>Host winrate</th>
-        {%endif%}
+            {%if mode == "Escort"%}
+                <td>{{ entry.name }}</td>
+                <td>{{ entry.games }}</td>
+                <td>{{ entry.score }}</td>
+                <td>{{ entry.kills }}</td>
+                <td>{{ entry.deaths }}</td>
+                <td>{{ entry.host }}%</td>
+            {%elif mode == "Manhunt"%}
+                <td>{{ entry.name }}</td>
+                <td>{{ entry.games }}</td>
+                <td>{{ entry.score }}</td>
+                <td>{{ entry.kills }}</td>
+                <td>{{ entry.host }}%</td>
+            {%elif mode == "Artifact assault"%}
+                <td>{{ entry.name }}</td>
+                <td>{{ entry.games }}</td>
+                <td>{{ entry.scores }}</td>
+                <td>{{ entry.host }}%</td>
+            {%elif mode == "Domination"%}
+                <td>{{ entry.name }}</td>
+                <td>{{ entry.games }}</td>
+                <td>{{ entry.score }}</td>
+                <td>{{ entry.kills }}</td>
+                <td>{{ entry.host }}%</td>
+            {%endif%}
         </tr>
-    {% for entry in data %}
-    <tr>
-        {%if mode == "Escort"%}
-            <td>{{ entry.name }}</td>
-            <td>{{ entry.games }}</td>
-            <td>{{ entry.score }}</td>
-            <td>{{ entry.kills }}</td>
-            <td>{{ entry.deaths }}</td>
-            <td>{{ entry.host }}%</td>
-        {%elif mode == "Manhunt"%}
-            <td>{{ entry.name }}</td>
-            <td>{{ entry.games }}</td>
-            <td>{{ entry.score }}</td>
-            <td>{{ entry.kills }}</td>
-            <td>{{ entry.host }}%</td>
-        {%elif mode == "Artifact assault"%}
-            <td>{{ entry.name }}</td>
-            <td>{{ entry.games }}</td>
-            <td>{{ entry.scores }}</td>
-            <td>{{ entry.host }}%</td>
-        {%elif mode == "Domination"%}
-            <td>{{ entry.name }}</td>
-            <td>{{ entry.games }}</td>
-            <td>{{ entry.score }}</td>
-            <td>{{ entry.kills }}</td>
-            <td>{{ entry.host }}%</td>
-        {%endif%}
-    </tr>
-    {% endfor %}
-    </table>
-    </div>
+        {% endfor %}
+        </table>
+        </div>
     {% endblock content %}
