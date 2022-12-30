@@ -31,26 +31,26 @@
             {%if mode == "Escort"%}
                 <td>{{ entry.name }}</td>
                 <td>{{ entry.games }}</td>
-                <td>{{ entry.score }}</td>
-                <td>{{ entry.kills }}</td>
-                <td>{{ entry.deaths }}</td>
+                <td>{{ entry.score | avgscore(entry.games) }}</td>
+                <td>{{ entry.kills | avgscore(entry.games) }}</td>
+                <td>{{ entry.deaths | avgscore(entry.games) }}</td>
                 <td>{{ entry.host }}%</td>
             {%elif mode == "Manhunt"%}
                 <td>{{ entry.name }}</td>
-                <td>{{ entry.games }}</td>
-                <td>{{ entry.score }}</td>
-                <td>{{ entry.kills }}</td>
+                <td>{{ entry.games | avgscore(entry.games) }}</td>
+                <td>{{ entry.score | avgscore(entry.games) }}</td>
+                <td>{{ entry.kills | avgscore(entry.games) }}</td>
                 <td>{{ entry.host }}%</td>
             {%elif mode == "Artifact assault"%}
                 <td>{{ entry.name }}</td>
                 <td>{{ entry.games }}</td>
-                <td>{{ entry.scores }}</td>
+                <td>{{ entry.scores | avgscore(entry.games) }}</td>
                 <td>{{ entry.host }}%</td>
             {%elif mode == "Domination"%}
                 <td>{{ entry.name }}</td>
                 <td>{{ entry.games }}</td>
-                <td>{{ entry.score }}</td>
-                <td>{{ entry.kills }}</td>
+                <td>{{ entry.score | avgscore(entry.games) }}</td>
+                <td>{{ entry.kills | avgscore(entry.games) }}</td>
                 <td>{{ entry.host }}%</td>
             {%endif%}
         </tr>
