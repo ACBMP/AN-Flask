@@ -162,16 +162,17 @@ def display_profile(name):
 
 @app.route('/maps')
 def maps():
-    data = []
+    data = {}
     for mode in ["aa", "e", "mh", "do"]:
         modedata = mongo.db.maps.find({f"{mode}.games": {"$gt": 10}})
+        modedata = list(modedata)
         if not len(modedata):
-            continue
+            data[mode] = []
         average_rating = sum([m[mode]["rating"] for m in modedata]) / len(modedata)
         # switch out the rating for the displayed rating - probably dumb to do here tbh
         for i in range(len(modedata)):
             modedata[i][mode]["hostrating"] = int(round((modedata[i][mode]["hostrating"] / average_rating - 1) * 100))
-        data += modedata
+        data[mode] = modedata
     return render_template('maps.html', data=data, title='Map Statistics | Assassins\' Network')
 
 @app.route('/status')
