@@ -180,7 +180,7 @@ def maps():
         # switch out the rating for the displayed rating - probably dumb to do here tbh
         for i in range(len(modedata)):
             new_hr = int(round((modedata[i]["hostrating"] / average_rating - 1) * 100))
-            if modedata[i]["hostrating"] < 0:
+            if new_hr < 0:
                 modedata[i]["hostrating"] = str(new_hr)
             else:
                 modedata[i]["hostrating"] = f"+{new_hr}"
