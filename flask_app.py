@@ -179,7 +179,11 @@ def maps():
         average_rating = sum([m["hostrating"] for m in modedata]) / len(modedata)
         # switch out the rating for the displayed rating - probably dumb to do here tbh
         for i in range(len(modedata)):
-            modedata[i]["hostrating"] = int(round((modedata[i]["hostrating"] / average_rating - 1) * 100))
+            new_hr = int(round((modedata[i]["hostrating"] / average_rating - 1) * 100))
+            if modedata[i]["hostrating"] < 0:
+                modedata[i]["hostrating"] = str(new_hr)
+            else:
+                modedata[i]["hostrating"] = f"+{new_hr}"
         data[long_names[mode]] = modedata
     return render_template('maps.html', modes=long_names.values(), data=data, title='Map Statistics | Assassins\' Network')
 
