@@ -162,18 +162,26 @@ def display_profile(name):
 
 @app.route('/maps')
 def maps():
+    long_names = {
+            "e": "Escort",
+            "mh": "Manhunt",
+            "do": "Domination",
+            "aa": "Artifact Assault",
+            }
     data = {}
     for mode in ["aa", "e", "mh", "do"]:
-        modedata = mongo.db.maps.find({f"{mode}.games": {"$gt": 10}})
+        modedata = mongo.db.maps.find({f"{mode}.games": {"$gt": 0}})
+        modedata = [dict({"name": d["name"]}, **d[mode]) for d in modedata]
         modedata = list(modedata)
         if not len(modedata):
-            data[mode] = []
-        average_rating = sum([m[mode]["rating"] for m in modedata]) / len(modedata)
+            data[long_names[mode]] = []
+            continue
+        average_rating = sum([m["hostrating"] for m in modedata]) / len(modedata)
         # switch out the rating for the displayed rating - probably dumb to do here tbh
         for i in range(len(modedata)):
-            modedata[i][mode]["hostrating"] = int(round((modedata[i][mode]["hostrating"] / average_rating - 1) * 100))
-        data[mode] = modedata
-    return render_template('maps.html', data=data, title='Map Statistics | Assassins\' Network')
+            modedata[i]["hostrating"] = int(round((modedata[i]["hostrating"] / average_rating - 1) * 100))
+        data[long_names[mode]] = modedata
+    return render_template('maps.html', modes=long_names.values(), data=data, title='Map Statistics | Assassins\' Network')
 
 @app.route('/status')
 def status_page():
