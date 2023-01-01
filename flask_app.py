@@ -208,7 +208,7 @@ def teapot():
 @app.template_filter('winrate')
 def winrate(w,l):
     try:
-        winrate = (w*100)/(w+l)
+        winrate = round((w*100)/(w+l), 2)
         return "{0:.2f}%".format(winrate)
     except:
         return "0.00%"
@@ -216,7 +216,7 @@ def winrate(w,l):
 @app.template_filter('kdratio')
 def kdratio(k,d):
     try:
-        kdr = k/d
+        kdr = round(k/d, 2)
         return "{0:.2f}".format(kdr)
     except:
         return "0.00"
@@ -224,7 +224,7 @@ def kdratio(k,d):
 @app.template_filter('avgscore')
 def avgscore(s,g):
     try:
-        avgs = s/g
+        avgs = round(s/g, 2)
         return "{0:.2f}".format(avgs)
     except:
         return "0.00"
@@ -232,7 +232,7 @@ def avgscore(s,g):
 @app.template_filter('avgkills')
 def avgkills(k,g):
     try:
-        avgs = k/g
+        avgs = round(k/g, 2)
         return "{0:.2f}".format(avgs)
     except:
         return "0.00"
@@ -241,7 +241,7 @@ def avgkills(k,g):
 @app.template_filter('avgdeaths')
 def avgdeaths(d,g):
     try:
-        avgs = d/g
+        avgs = round(d/g, 2)
         return "{0:.2f}".format(avgs)
     except:
         return "0.00"
