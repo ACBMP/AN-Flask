@@ -245,6 +245,12 @@ def avgdeaths(d,g):
         return "{0:.2f}".format(avgs)
     except:
         return "0.00"
+
+
+@app.template_filter('vips')
+def vips(kills, deaths):
+    return kills - deaths
+
     
 @app.template_filter('rank_title')
 def rank_title(elo):
