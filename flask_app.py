@@ -261,6 +261,14 @@ def tierate(games, wins, losses):
         return "0.00%"
         
     
+@app.template_filter('try_value')
+def try_value(entry, value):
+    try:
+        return entry[value]
+    except:
+        return "Unknown"
+
+
 @app.template_filter('rank_title')
 def rank_title(elo):
     if elo < 801:

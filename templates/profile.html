@@ -317,6 +317,8 @@
                     <td style="width: 25%;border: 0px">Player</td><td style="width: 25%;border: 0px">Score</td>
                     <td style="width: 25%;border: 0px">Kills</td><td style="width: 25%;border: 0px">Deaths</td></tr></table></th>
             <th>Winner</th>
+            <th>Map</th>
+            <th>Host</th>
           </tr>
     {% for entry in data_matches %}
     <tr>
@@ -340,6 +342,8 @@
         {% else%}
         <td>Team {{entry.outcome}}</td>
         {%endif%}
+        <td>{{ entry | try_value("map") }}</td>
+        <td><a href="/profile/{{ entry | try_value('host') }}">{{ entry | try_value("host") }}</a></td>
     </tr>
     {% endfor %}
     </table>
