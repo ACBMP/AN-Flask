@@ -247,10 +247,19 @@ def avgdeaths(d,g):
         return "0.00"
 
 
-@app.template_filter('vips')
-def vips(kills, deaths):
-    return kills - deaths
+@app.template_filter('sub')
+def sub(a, b):
+    return a - b
 
+
+@app.template_filter('tierate')
+def tierate(games, wins, losses):
+    try:
+        r = round((games - wins - losses) / games * 100, 2)
+        return "{0:.2f}%".format(r)
+    except ZeroDivisionError:
+        return "0.00%"
+        
     
 @app.template_filter('rank_title')
 def rank_title(elo):

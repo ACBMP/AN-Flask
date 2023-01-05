@@ -12,25 +12,27 @@
                 <th>Name</th>
                 <th>Games</th>
             {%if mode == "Manhunt"%}
-	            <th>Avg score</th>
-	            <th>Avg kills</th>
-	            <th>Host rating</th>
-	            <th>Host winrate</th>
+	            <th title="Average score of an individual player in a game">Avg score</th>
+	            <th title="Average kills of an individual player in a game">Avg kills</th>
+	            <th title="Host team rating compared to other maps">Host rating</th>
+	            <th title="Host team win rate">Host winrate</th>
             {%elif mode == "Escort"%}
-	            <th>Avg score</th>
-	            <th>Avg VIPs</th>
-	            <th>Avg kills</th>
-	            <th>Host rating</th>
-	            <th>Host winrate</th>
+	            <th title="Average score of an individual player in a game">Avg score</th>
+	            <th title="Average VIP kills of an individual player in a game">Avg VIPs</th>
+	            <th title="Average defending kills of an individual player in a game">Avg kills</th>
+	            <th title="Host team rating compared to other maps">Host rating</th>
+	            <th title="Host team win rate">Host winrate</th>
             {%elif mode == "Artifact Assault"%}
-	            <th>Avg scores</th>
-	            <th>Host rating</th>
-	            <th>Host winrate</th>
+	            <th title="Average scores of non-host team in a game">Avg non-host scores</th>
+	            <th title="Average scores of host team in a game">Avg host scores</th>
+	            <th title="Host team rating compared to other maps">Host rating</th>
+	            <th title="Host team win rate">Host winrate</th>
+                <th title="Rate of ties">Tierate</th>
             {%elif mode == "Domination"%}
-	            <th>Avg score</th>
-	            <th>Avg kills</th>
-	            <th>Host rating</th>
-	            <th>Host winrate</th>
+	            <th title="Average score of an individual player in a game">Avg score</th>
+	            <th title="Average kills of an individual player in a game">Avg kills</th>
+	            <th title="Host team rating compared to other maps">Host rating</th>
+	            <th title="Host team win rate">Host winrate</th>
             {%endif%}
             </tr>
         {% for entry in data[mode] %}
@@ -39,7 +41,7 @@
                 <td>{{ entry.name }}</td>
                 <td>{{ entry.games }}</td>
                 <td>{{ entry.score | avgscore(entry.players) }}</td>
-                <td>{{ entry.kills | vips(entry.deaths) | avgscore(entry.players) }}</td>
+                <td>{{ entry.kills | sub(entry.deaths) | avgscore(entry.players) }}</td>
                 <td>{{ entry.deaths | avgscore(entry.players) }}</td>
                 <td>{{ entry.hostrating }}</td>
                 <td>{{ entry.hostwins | winrate(entry.hostlosses) }}</td>
@@ -53,9 +55,11 @@
             {%elif mode == "Artifact Assault"%}
                 <td>{{ entry.name }}</td>
                 <td>{{ entry.games }}</td>
-                <td>{{ entry.scores | avgscore(entry.players) }}</td>
+                <td>{{ entry.scored | sub(entry.hostscored) | avgscore(entry.games) }}</td>
+                <td>{{ entry.hostscored | avgscore(entry.games) }}</td>
                 <td>{{ entry.hostrating }}</td>
                 <td>{{ entry.hostwins | winrate(entry.hostlosses) }}</td>
+                <td>{{ entry.games | tierate(entry.hostwins, entry.hostlosses) }}</td>
             {%elif mode == "Domination"%}
                 <td>{{ entry.name }}</td>
                 <td>{{ entry.games }}</td>
