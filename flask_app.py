@@ -285,6 +285,14 @@ def try_value(entry, value):
         return "Unknown"
 
 
+@app.template_filter('try_value_paran')
+def try_value_paran(entry, value):
+    try:
+        return "(" + entry[value] + ")"
+    except:
+        return ""
+
+
 @app.template_filter('rank_title')
 def rank_title(elo):
     if elo < 801:
