@@ -158,6 +158,22 @@ def display_profile(name):
     search = [{"team1":{"$elemMatch":{"player":ign}}} for ign in igns]
     search += [{"team2":{"$elemMatch":{"player":ign}}} for ign in igns]
     data_matches = mongo.db.matches.find({"$or": search}).sort("_id", -1).limit(10)
+    data_matches = list(data_matches)
+    # save mmr change if present in data
+    # loop through all the matches then teams and players until we find the player
+    for i in range(len(data_matches)):
+        found = False
+        for j in [1, 2]:
+            for p in data_matches[i][f"team{j}"]:
+                if p["player"] == name:
+                    try:
+                        data_matches[i]["mmrchange"] = p["mmrchange"]
+                    except:
+                        data_matches[i]["mmrchange"] = "Unknown"
+                    found = True
+                    break
+            if found:
+                break
     return render_template('profile.html',data=data, data_matches=data_matches, title = 'Player\'s Profile | Assassins\' Network')
 
 @app.route('/maps')

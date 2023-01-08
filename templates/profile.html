@@ -319,6 +319,7 @@
             <th>Winner</th>
             <th>Map</th>
             <th>Host</th>
+            <th>Rating Change</th>
           </tr>
     {% for entry in data_matches %}
     <tr>
@@ -344,6 +345,7 @@
         {%endif%}
         <td>{{ entry | try_value("map") }}</td>
         <td><a href="/profile/{{ entry | try_value('host') }}">{{ entry | try_value("host") }}</a></td>
+        <td>{{ entry.mmrchange }}</td>
     </tr>
     {% endfor %}
     </table>
