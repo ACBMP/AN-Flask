@@ -58,9 +58,14 @@ def domination():
     data = extract_mode_data("do")
     return render_template('ranking.html', data=data, title = 'Domination | Assassins\' Network', mode='Domination' )
 
+@app.route('/deathmatch')
+def deathmatch():
+    data = extract_mode_data("dm")
+    return render_template('ranking.html', data=data, title = 'Deathmatch | Assassins\' Network', mode='Deathmatch' )
+
 @app.route('/allmodes')
 def allmodes():
-    modes = ["mh", "e", "aar", "aad", "do"]
+    modes = ["mh", "e", "aar", "aad", "do", "dm"]
     players = mongo.db.players.find({"$or": [{f"{m}games.total": {"$gte": 10}} for m in modes]})
     players = list(players)
     for p in players:
@@ -84,7 +89,7 @@ def allmodes():
 
 @app.route('/average')
 def average():
-    modes = ["mh", "e", "aar", "aad", "do"]
+    modes = ["mh", "e", "aar", "aad", "do", "dm"]
     players = mongo.db.players.find({"$or": [{f"{m}games.total": {"$gte": 10}} for m in modes]})
     players = list(players)
     for p in players:
@@ -183,9 +188,10 @@ def maps():
             "mh": "Manhunt",
             "do": "Domination",
             "aa": "Artifact Assault",
+            "dm": "Deathmatch"
             }
     data = {}
-    for mode in ["aa", "e", "mh", "do"]:
+    for mode in ["aa", "e", "mh", "do", "dm"]:
         modedata = mongo.db.maps.find({f"{mode}.games": {"$gt": 0}})
         modedata = [dict({"name": d["name"]}, **d[mode]) for d in modedata]
         modedata = list(modedata)
