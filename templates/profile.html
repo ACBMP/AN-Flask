@@ -52,6 +52,14 @@
    <p align="center">{{ data.dommr|rank_title() }}</p>
    </center>
    {%endif%}
+   {%if data.dmgames.total > 9%}
+   <div style="width: 200px;display: inline-block">
+    <center>
+    <p align="center" style="font-weight: bold">Deathmatch Rank</p>
+    <img src="/static/badges/{{ data.dmmmr|rank_pic_big() }}"><br \><br \>
+    <p align="center">{{ data.dmmmr|rank_title() }}</p>
+    </center>
+    {%endif%}
 </div>
 <br \>
     <div align="center">
@@ -90,6 +98,9 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="do-tab" data-toggle="tab" href="#dotab" role="tab" aria-controls="profile" aria-selected="false">Domination (AC4)</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="do-tab" data-toggle="tab" href="#dmtab" role="tab" aria-controls="profile" aria-selected="false">Free For All</a>
             </li>
             </ul>
     </div>
@@ -297,6 +308,57 @@
             </div>
         </div>
     </div>
+
+    <div class="tab-pane fade show active" id="emhtab" role="tabpanel" aria-labelledby="ffa-tab">
+        <table class="profile-table">
+            <tr>
+                <th> </th>
+                <th>Deathmatch (AC4)</th>
+            </tr>
+            <tr><td><b>MMR</b></td>
+                <td>{{data.dmmmr | round() | int() }}</td>
+            </tr>
+            <tr><td><b>Peak MMR</b></td>
+                <td>{{data.dmhistory.mmrs|max() | round() | int() }}</td>
+            </tr>
+            <tr><td><b>Games played</b></td>
+                <td>{{data.dmgames.total}}</td>
+            </tr>
+            <tr><td><b>Games won</b></td>
+                <td>{{data.dmgames.won}}</td>
+            </tr>
+            <tr><td><b>Games lost</b></td>
+                <td>{{data.dmgames.lost}}</td>
+            </tr>
+            <tr><td><b>Winrate</b></td>
+                <td>{{ data.dmgames.won|winrate(data.dmgames.lost) }}</td>
+            </tr>
+            <tr><td><b>Average score</b></td>
+                <td>{{ data.dmstats.totalscore|avgscore(data.dmgames.total) }}</td>
+            </tr>
+            <tr><td><b>Highest score</b></td>
+                <td>{{ data.dmstats.highscore }}</td>
+            </tr>
+            <tr><td><b>K/D ratio</b></td>
+                <td>{{ data.dmstats.kills|kdratio(data.dmstats.deaths) }}</td>
+            </tr>
+            <tr><td><b>Average kills</b></td>
+                <td>{{ data.dmstats.kills|avgkills(data.dmgames.total) }}</td>
+            </tr>
+            <tr><td><b>Average deaths</b></td>
+                <td>{{ data.dmstats.deaths|avgdeaths(data.dmgames.total) }}</td>
+            </tr>
+        </table>
+        <br \>
+
+        <div class="container">
+            <div class="pie-chart">
+                <canvas id="dmchart"></canvas>
+                <br \>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 </div>
@@ -353,37 +415,37 @@
 </div>
 
 <div class="tab-pane fade" id="mmrhistory" role="tabpanel" aria-labelledby="mmrhistory-tab">
-<h3 align="center">MMR History</h3>
-<br \>
-<div align="center">
-
-<div class="container">
-<div class="mmr-history">
-    <canvas id="mhhist"></canvas>
+    <h3 align="center">MMR History</h3>
     <br \>
+    <div align="center">
+        <div class="container">
+            <div class="mmr-history">
+                <canvas id="mhhist"></canvas>
+                <br \>
+            </div>
+            <div class="mmr-history">
+                <canvas id="ehist"></canvas>
+                <br \>
+            </div>
+            <div class="mmr-history">
+                <canvas id="aadhist"></canvas>
+                <br \>
+            </div>
+            <div class="mmr-history">
+                <canvas id="aarhist"></canvas>
+                <br \>
+            </div>
+            <div class="mmr-history">
+                <canvas id="dohist"></canvas>
+                <br \>
+            </div>
+            <div class="mmr-history">
+                <canvas id="dmhist"></canvas>
+                <br \>
+            </div>
+        </div>
+    </div>
 </div>
-<div class="mmr-history">
-    <canvas id="ehist"></canvas>
-    <br \>
-</div>
-   
-   <div class="mmr-history">
-    <canvas id="aadhist"></canvas>
-    <br \>
-</div>
-   <div class="mmr-history">
-    <canvas id="aarhist"></canvas>
-    <br \>
-</div>
-    <div class="mmr-history">
-    <canvas id="dohist"></canvas>
-    <br \>
-</div>
-
-</div>
-</div>
-</div>
-
 </div>
 
 {%else%}
@@ -449,6 +511,14 @@
             labels:['WINS', 'LOSSES', 'TIES'],
             datasets:
             [{data:[{{data.dogames.won}},{{data.dogames.lost}},{{data.dogames.total-data.dogames.won-data.dogames.lost}}],backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Domination game outcomes',fontSize: 25},}});
+    
+    var dmchart = document.getElementById('dmchart').getContext('2d');
+    var dmatchchart = new Chart(dmchart, {
+        type: 'doughnut',
+        data:{
+            labels:['WINS', 'PODIUM', 'LOSSES'],
+            datasets:
+            [{data:[{{data.dmgames.won}},{{data.dmgames.podium-data.dmgames.won}},{{data.dmgames.total-data.dmgames.podium}}],backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Deathmatch game outcomes',fontSize: 25},}});
 
     var ehist = document.getElementById('ehist').getContext('2d');
     var ehistchart = new Chart(ehist, {
@@ -534,6 +604,24 @@
                 }
             ],},
             options:{title:{display:true,text:'Domination MMR',fontSize: 25 },legend:{
+                display:false}
+            }});
+    
+    var dmhist = document.getElementById('dmhist').getContext('2d');
+    var dmhistchart = new Chart(dmhist, {
+        type: 'line',
+        data:{
+            labels: {{data.dmhistory.dates|safe}},
+            datasets:
+            [
+                {
+                    data: {{data.dmhistory.mmrs|safe}}, 
+                    backgroundColor:'rgba(226, 31, 31, 0.65)',
+                    borderColor:'rgba(255, 0, 0, 0.75)',
+                    lineTension:0
+                }
+            ],},
+            options:{title:{display:true,text:'Deatchmatch MMR',fontSize: 25 },legend:{
                 display:false}
             }});
 </script>

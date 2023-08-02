@@ -13,7 +13,10 @@
             <th>Points</th>
             <th>Games</th>
             <th>Winrate</th>
-        {%if mode in ["Escort", "Manhunt"]%}
+        {%if mode == "Deathmatch"%}
+            <th>Podium Rate</th>
+        {%endif%}
+        {%if mode in ["Escort", "Manhunt", "Deathmatch"]%}
 	            <th>Average score</th>
 	            <th>K/D</th>
         {%elif mode == "AA Running"%}
@@ -30,6 +33,7 @@
             <th>Domination</th>
             <th>Escort</th>
             <th>Manhunt</th>
+            <th>Deathmatch</th>
         {%endif%}
         </tr>
     {% for entry in data %}
@@ -128,6 +132,26 @@
             <td>{{ entry.mhgames.won | winrate(entry.mhgames.lost) }}</td>
 	        <td>{{ entry.mhstats.totalscore|avgscore(entry.mhgames.total) }}</td>
 	        <td>{{ entry.mhstats.kills|kdratio(entry.mhstats.deaths) }}</td>
+        {%elif mode == "Deathmatch"%}
+            {% if entry.dmrank == 0 %}
+                <td>TBD</td>
+            {% else %}
+                {%if entry.dmrankchange < 0%}
+                    <td>{{ entry.dmrank }} <span style="color:red;">&#9660;{{ -1 * entry.dmrankchange }}</span></td>
+                {%elif entry.dmrankchange > 0%}
+                    <td>{{ entry.dmrank }} <span style="color:green;">&#9650;{{ entry.dmrankchange }}</span></td>
+                {%else%}
+                    <td>{{ entry.dmrank }}</td>
+                {%endif%}
+            {%endif%}
+            <td><img src="/static/badges/{{ entry.dmmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
+            <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
+            <td>{{ entry.dmmmr | round() | int() }}</td>
+            <td>{{ entry.dmgames.total }}</td>
+            <td>{{ entry.dmgames.won | winrate(entry.dmgames.lost) }}</td>
+            <td>{{ entry.dmgames.podium| podiumrate(entry.dmgames.total) }}</td>
+	        <td>{{ entry.dmstats.totalscore|avgscore(entry.dmgames.total) }}</td>
+	        <td>{{ entry.dmstats.kills|kdratio(entry.dmstats.deaths) }}</td>
         {%else%}
             <td>{{ entry.totalrank }}</td>
             <td><a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
@@ -159,6 +183,11 @@
                 <td>TBD</td>
             {%else%}
                 <td><img src="/static/badges/{{ entry.mhmmr|rank_pic_small() }}">{{ entry.mhmmr | round() | int() }}</td>
+            {%endif%}
+            {%if entry.dmgames.total < 10%}
+                <td>TBD</td>
+            {%else%}
+                <td><img src="/static/badges/{{ entry.dmmmr|rank_pic_small() }}">{{ entry.dmmmr | round() | int() }}</td>
             {%endif%}
         {%endif%}
     </tr>
