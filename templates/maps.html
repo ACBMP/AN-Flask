@@ -33,7 +33,6 @@
 	            <th title="Average kills of an individual player in a game">Avg kills</th>
 	            <th title="Host team rating compared to other maps">Host rating</th>
 	            <th title="Host team win rate">Host winrate</th>
-            {%endif%}
             {%elif mode == "Deathmatch"%}
                 <th title="Average score of an individual player in a game">Avg score</th>
                 <th title="Average kills of an individual player in a game">Avg kills</th>
@@ -73,7 +72,6 @@
                 <td>{{ entry.kills | avgscore(entry.players) }}</td>
                 <td>{{ entry.hostrating }}</td>
                 <td>{{ entry.hostwins | winrate(entry.hostlosses) }}</td>
-            {%endif%}
             {%elif mode == "Deathmatch"%}
                 <td>{{ entry.name }}</td>
                 <td>{{ entry.games }}</td>
