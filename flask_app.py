@@ -172,7 +172,10 @@ def display_profile(name):
             for p in data_matches[i][f"team{j}"]:
                 if p["player"] == name:
                     try:
-                        data_matches[i]["mmrchange"] = p["mmrchange"]
+                        if p["mmrchange"] > 0:
+                            data_matches[i]["mmrchange"] = "+" + str(round(p["mmrchange"], 2))
+                        else:
+                            data_matches[i]["mmrchange"] = str(round(p["mmrchange"], 2))
                     except:
                         data_matches[i]["mmrchange"] = "Unknown"
                     found = True
@@ -208,6 +211,11 @@ def maps():
                 modedata[i]["hostrating"] = f"+{new_hr}"
         data[long_names[mode]] = modedata
     return render_template('maps.html', modes=long_names.values(), data=data, title='Map Statistics | Assassins\' Network')
+
+@app.route('/<mode>/statistics')
+def statistics(mode):
+    mode = mode.title()
+    return render_template("statistics.html", mode=mode, title=f"{mode} Statistics | Assassins\' Network")
 
 @app.route('/status')
 def status_page():
@@ -305,10 +313,12 @@ def rank_title(elo):
         return "Disciple"
     if elo < 1000:
         return "Cleric"
-    if elo < 1200:
+    if elo < 1100:
         return "Cleric Supreme"
-    if elo < 1400:
+    if elo < 1200:
         return "Grand Cleric"
+    if elo < 1400:
+        return "Grand Master Cleric"
     return "Supreme Overlord Cleric"
     
 @app.template_filter('rank_pic_small')
@@ -317,10 +327,12 @@ def rank_pic_small(elo):
         return "badge_1_small.png"
     if elo < 1000:
         return "badge_2_small.png"
-    if elo < 1200:
+    if elo < 1100:
         return "badge_3_small.png"
-    if elo < 1400:
+    if elo < 1200:
         return "badge_4_small.png"
+    if elo < 1400:
+        return "badge_6_small.png"
     return "badge_5_small.png"
 
 @app.template_filter('rank_pic_big')
@@ -329,10 +341,12 @@ def rank_pic_big(elo):
         return "badge_1_big.png"
     if elo < 1000:
         return "badge_2_big.png"
-    if elo < 1200:
+    if elo < 1100:
         return "badge_3_big.png"
-    if elo < 1400:
+    if elo < 1200:
         return "badge_4_big.png"
+    if elo < 1400:
+        return "badge_6_big.png"
     return "badge_5_big.png"
 
 # from Scripts/util.py
