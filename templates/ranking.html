@@ -149,7 +149,7 @@
             <td>{{ entry.dmmmr | round() | int() }}</td>
             <td>{{ entry.dmgames.total }}</td>
             <td>{{ entry.dmgames.won | winrate(entry.dmgames.lost) }}</td>
-            <td>{{ entry.dmgames.podium| podiumrate(entry.dmgames.total) }}</td>
+            <td>{{ entry.dmgames.podium| winrate(entry.dmgames.total) }}</td>
 	        <td>{{ entry.dmstats.totalscore|avgscore(entry.dmgames.total) }}</td>
 	        <td>{{ entry.dmstats.kills|kdratio(entry.dmstats.deaths) }}</td>
         {%else%}
