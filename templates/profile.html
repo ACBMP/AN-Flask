@@ -100,7 +100,7 @@
                 <a class="nav-link" id="do-tab" data-toggle="tab" href="#dotab" role="tab" aria-controls="profile" aria-selected="false">Domination (AC4)</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="do-tab" data-toggle="tab" href="#dmtab" role="tab" aria-controls="profile" aria-selected="false">Free For All</a>
+                <a class="nav-link" id="ffa-tab" data-toggle="tab" href="#ffatab" role="tab" aria-controls="profile" aria-selected="false">Free For All</a>
             </li>
             </ul>
     </div>
@@ -309,7 +309,7 @@
         </div>
     </div>
 
-    <div class="tab-pane fade show active" id="emhtab" role="tabpanel" aria-labelledby="ffa-tab">
+    <div class="tab-pane fade show active" id="ffatab" role="tabpanel" aria-labelledby="ffa-tab">
         <table class="profile-table">
             <tr>
                 <th> </th>
@@ -516,9 +516,9 @@
     var dmatchchart = new Chart(dmchart, {
         type: 'doughnut',
         data:{
-            labels:['WINS', 'PODIUM', 'LOSSES'],
+            labels:['WINS', 'LOSSES', 'PODIUM'],
             datasets:
-            [{data:[{{data.dmgames.won}},{{data.dmgames.podium-data.dmgames.won}},{{data.dmgames.total-data.dmgames.podium}}],backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Deathmatch game outcomes',fontSize: 25},}});
+            [{data:[{{data.dmgames.won}},{{data.dmgames.total-data.dmgames.podium}},{{data.dmgames.podium-data.dmgames.won}}],backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Deathmatch game outcomes',fontSize: 25},}});
 
     var ehist = document.getElementById('ehist').getContext('2d');
     var ehistchart = new Chart(ehist, {
@@ -621,7 +621,7 @@
                     lineTension:0
                 }
             ],},
-            options:{title:{display:true,text:'Deatchmatch MMR',fontSize: 25 },legend:{
+            options:{title:{display:true,text:'Deathmatch MMR',fontSize: 25 },legend:{
                 display:false}
             }});
 </script>
