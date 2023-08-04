@@ -339,7 +339,10 @@
                 <td>{{ data.dmgames.won|winrate(data.dmgames.lost) }}</td>
             </tr>
             <tr><td><b>Podium Rate</b></td>
-                <td>{{ data.dmgames.podium|winrate(data.dmgames.lost) }}</td>
+                <td>{{ data.dmgames.podium|winrate(data.dmgames.total) }}</td>
+            </tr>
+            <tr><td><b>Average Finish</b></td>
+                <td>{{ data.dmgames.finishes|divide(data.dmgames.total) }}</td>
             </tr>
             <tr><td><b>Average score</b></td>
                 <td>{{ data.dmstats.totalscore|avgscore(data.dmgames.total) }}</td>

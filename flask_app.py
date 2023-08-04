@@ -281,6 +281,9 @@ def avgdeaths(d,g):
 def sub(a, b):
     return a - b
 
+@app.template_filter('divide')
+def divide(a, b):
+    return a / b
 
 @app.template_filter('tierate')
 def tierate(games, wins, losses):
