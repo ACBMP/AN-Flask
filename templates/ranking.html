@@ -151,7 +151,7 @@
             <td>{{ entry.dmgames.total }}</td>
             <td>{{ entry.dmgames.won | winrate(entry.dmgames.lost) }}</td>
             <td>{{ entry.dmgames.podium| winrate(entry.dmgames.total) }}</td>
-            <td>{{ entry.dmstats.finishes| kdratio(entry.dmgames.total) }}</td>
+            <td>{{ entry.dmgames.finishes| kdratio(entry.dmgames.total) }}</td>
 	        <td>{{ entry.dmstats.totalscore|avgscore(entry.dmgames.total) }}</td>
 	        <td>{{ entry.dmstats.kills|kdratio(entry.dmstats.deaths) }}</td>
         {%else%}
