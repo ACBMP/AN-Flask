@@ -15,6 +15,7 @@
             <th>Winrate</th>
         {%if mode == "Deathmatch"%}
             <th>Podium Rate</th>
+            <th>Average Finish</th>
         {%endif%}
         {%if mode in ["Escort", "Manhunt", "Deathmatch"]%}
 	        <th>Average score</th>
@@ -150,6 +151,7 @@
             <td>{{ entry.dmgames.total }}</td>
             <td>{{ entry.dmgames.won | winrate(entry.dmgames.lost) }}</td>
             <td>{{ entry.dmgames.podium| winrate(entry.dmgames.total) }}</td>
+            <td>{{ entry.dmstats.finishes| kdratio(entry.dmgames.total) }}</td>
 	        <td>{{ entry.dmstats.totalscore|avgscore(entry.dmgames.total) }}</td>
 	        <td>{{ entry.dmstats.kills|kdratio(entry.dmstats.deaths) }}</td>
         {%else%}
