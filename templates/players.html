@@ -12,6 +12,7 @@
             <th>Nation</th>
             <th>IGNs</th>
             <th>Platform</th>
+            <th>Achievements</th>
           </tr>
     {% for entry in data %}
     <tr>
@@ -19,6 +20,7 @@
         <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
         <td>{{entry.ign|join(", ") }}</td>
         <td>{{entry.platforms|join(", ") }}</td>
+        <td>{{ entry.badges|transform_badges(mode)|safe}}</td>
     </tr>
     {% endfor %}
     </table>
