@@ -162,15 +162,21 @@ def display_profile(name):
         igns += [name]
     search = [{"team1":{"$elemMatch":{"player":ign}}} for ign in igns]
     search += [{"team2":{"$elemMatch":{"player":ign}}} for ign in igns]
+    search += [{"players":{"$elemMatch":{"player":ign}}} for ign in igns]
     data_matches = mongo.db.matches.find({"$or": search}).sort("_id", -1).limit(10)
     data_matches = list(data_matches)
     # save mmr change if present in data
     # loop through all the matches then teams and players until we find the player
     for i in range(len(data_matches)):
-        found = False
-        for j in [1, 2]:
-            for p in data_matches[i][f"team{j}"]:
+        if data_matches[i]["mode"] == "Deathmatch":
+            data_matches[i]["team1"] = data_matches[i]["players"]
+            j = 0
+            found = False
+            while not found:
+                p = data_matches[i]["players"][j]
+                j += 1
                 if p["player"] == name:
+                    found = True
                     try:
                         if p["mmrchange"] > 0:
                             data_matches[i]["mmrchange"] = "+" + str(round(p["mmrchange"], 2))
@@ -178,10 +184,22 @@ def display_profile(name):
                             data_matches[i]["mmrchange"] = str(round(p["mmrchange"], 2))
                     except:
                         data_matches[i]["mmrchange"] = "Unknown"
-                    found = True
+        else:
+            found = False
+            for j in [1, 2]:
+                for p in data_matches[i][f"team{j}"]:
+                    if p["player"] == name:
+                        try:
+                            if p["mmrchange"] > 0:
+                                data_matches[i]["mmrchange"] = "+" + str(round(p["mmrchange"], 2))
+                            else:
+                                data_matches[i]["mmrchange"] = str(round(p["mmrchange"], 2))
+                        except:
+                            data_matches[i]["mmrchange"] = "Unknown"
+                        found = True
+                        break
+                if found:
                     break
-            if found:
-                break
     return render_template('profile.html',data=data, data_matches=data_matches, title = 'Player\'s Profile | Assassins\' Network')
 
 @app.route('/maps')
