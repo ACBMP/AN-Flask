@@ -38,6 +38,11 @@
                 <th title="Average kills of an individual player in a game">Avg kills</th>
                 <th title="Host rating compared to other maps">Host rating</th>
                 <th title="Host win rate">Host winrate</th>
+            {%elif mode == "Assassinate Brotherhood"%}
+                <th title="Average score of an individual player in a game">Avg score</th>
+                <th title="Average kills of an individual player in a game">Avg kills</th>
+                <th title="Host rating compared to other maps">Host rating</th>
+                <th title="Host win rate">Host winrate</th>
             {%endif%}
             </tr>
         {% for entry in data[mode] %}
@@ -73,6 +78,13 @@
                 <td>{{ entry.hostrating }}</td>
                 <td>{{ entry.hostwins | winrate(entry.hostlosses) }}</td>
             {%elif mode == "Deathmatch"%}
+                <td>{{ entry.name }}</td>
+                <td>{{ entry.games }}</td>
+                <td>{{ entry.score | avgscore(entry.players) }}</td>
+                <td>{{ entry.kills | avgscore(entry.players) }}</td>
+                <td>{{ entry.hostrating }}</td>
+                <td>{{ entry.hostwins | winrate(entry.hostlosses) }}</td>
+            {%elif mode == "Assassinate Brotherhood"%}
                 <td>{{ entry.name }}</td>
                 <td>{{ entry.games }}</td>
                 <td>{{ entry.score | avgscore(entry.players) }}</td>

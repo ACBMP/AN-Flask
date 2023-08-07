@@ -66,7 +66,7 @@ def deathmatch():
 @app.route('/assassinate_brotherhood')
 def assa_acb():
     data = extract_mode_data("asb")
-    return render_template('ranking.html', data=data, title = 'Assassinate (Brotherhood) | Assassins\' Network', mode='Assassinate (Brotherhood)' )
+    return render_template('ranking.html', data=data, title = 'Assassinate (Brotherhood) | Assassins\' Network', mode='Assassinate Brotherhood' )
 
 @app.route('/allmodes')
 def allmodes():
@@ -173,7 +173,7 @@ def display_profile(name):
     # save mmr change if present in data
     # loop through all the matches then teams and players until we find the player
     for i in range(len(data_matches)):
-        if data_matches[i]["mode"] == "Deathmatch":
+        if data_matches[i]["mode"] in ["Deathmatch", "Assassinate Brotherhood"]:
             data_matches[i]["team1"] = data_matches[i]["players"]
             j = 0
             found = False
@@ -215,7 +215,7 @@ def maps():
             "do": "Domination",
             "aa": "Artifact Assault",
             "dm": "Deathmatch",
-            "asb": "Assassinate (Brotherhood)"
+            "asb": "Assassinate Brotherhood"
             }
     data = {}
     for mode in long_names.keys():

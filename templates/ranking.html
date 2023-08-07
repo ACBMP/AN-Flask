@@ -13,11 +13,11 @@
             <th>Points</th>
             <th>Games</th>
             <th>Winrate</th>
-        {%if mode in ["Deathmatch", "Assassinate (Brotherhood)"]%}
+        {%if mode in ["Deathmatch", "Assassinate Brotherhood"]%}
             <th>Podium Rate</th>
             <th>Average Finish</th>
         {%endif%}
-        {%if mode in ["Escort", "Manhunt", "Deathmatch", "Assassinate (Brotherhood)"]%}
+        {%if mode in ["Escort", "Manhunt", "Deathmatch", "Assassinate Brotherhood"]%}
 	        <th>Average score</th>
 	        <th>K/D</th>
         {%elif mode == "AA Running"%}
@@ -155,7 +155,7 @@
             <td>{{ entry.dmgames.finishes| kdratio(entry.dmgames.total) }}</td>
 	        <td>{{ entry.dmstats.totalscore|avgscore(entry.dmgames.total) }}</td>
 	        <td>{{ entry.dmstats.kills|kdratio(entry.dmstats.deaths) }}</td>
-        {%elif mode == "Assassinate (Brotherhood)"%}
+        {%elif mode == "Assassinate Brotherhood"%}
             {% if entry.asbrank == 0 %}
                 <td>TBD</td>
             {% else %}
