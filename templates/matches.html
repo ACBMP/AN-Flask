@@ -28,7 +28,7 @@
           </tr>
     {% for entry in data %}
     <tr>
-        {% if entry.mode not in ["Deathmatch", "Assassinate Brotherhood"] %}
+        {% if entry.mode not in ["Deathmatch", "Assassinate brotherhood"] %}
         <td>{{entry.mode}}</td>
         <td><table style="width:100%">{% for player in entry.team1 %}
                 <tr style="background: transparent;width: 100%">

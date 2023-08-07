@@ -173,7 +173,7 @@ def display_profile(name):
     # save mmr change if present in data
     # loop through all the matches then teams and players until we find the player
     for i in range(len(data_matches)):
-        if data_matches[i]["mode"] in ["Deathmatch", "Assassinate Brotherhood"]:
+        if data_matches[i]["mode"] in ["Deathmatch", "Assassinate brotherhood"]:
             data_matches[i]["team1"] = data_matches[i]["players"]
             j = 0
             found = False
