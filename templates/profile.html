@@ -65,7 +65,7 @@
     {%if data.asbgames.total > 9%}
     <div style="width: 200px;display: inline-block">
     <center>
-    <p align="center" style="font-weight: bold">Assassinate(B) Rank</p>
+    <p align="center" style="font-weight: bold">Assassinate (ACB) Rank</p>
     <img src="/static/badges/{{ data.asbmmr|rank_pic_big() }}"><br \><br \>
     <p align="center">{{ data.asbmmr|rank_title() }}</p>
     </center>
@@ -571,7 +571,7 @@
         data:{
             labels:['WINS', 'LOSSES', 'PODIUM'],
             datasets:
-            [{data:[{{data.asbgames.won}},{{data.asbgames.total-data.asbgames.podium}},{{data.asbgames.podium-data.asbgames.won}}],backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Assassinate(B) game outcomes',fontSize: 25},}});
+            [{data:[{{data.asbgames.won}},{{data.asbgames.total-data.asbgames.podium}},{{data.asbgames.podium-data.asbgames.won}}],backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Assassinate (ACB) game outcomes',fontSize: 25},}});
 
     var ehist = document.getElementById('ehist').getContext('2d');
     var ehistchart = new Chart(ehist, {
@@ -692,7 +692,7 @@
                     lineTension:0
                 }
             ],},
-            options:{title:{display:true,text:'Assassinate(B) MMR',fontSize: 25 },legend:{
+            options:{title:{display:true,text:'Assassinate (ACB) MMR',fontSize: 25 },legend:{
                 display:false}
             }});
 </script>
