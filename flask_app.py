@@ -63,9 +63,14 @@ def deathmatch():
     data = extract_mode_data("dm")
     return render_template('ranking.html', data=data, title = 'Deathmatch | Assassins\' Network', mode='Deathmatch' )
 
+@app.route('/assassinate_brotherhood')
+def assa_acb():
+    data = extract_mode_data("asb")
+    return render_template('ranking.html', data=data, title = 'Assassinate (Brotherhood) | Assassins\' Network', mode='Assassinate (Brotherhood)' )
+
 @app.route('/allmodes')
 def allmodes():
-    modes = ["mh", "e", "aar", "aad", "do", "dm"]
+    modes = ["mh", "e", "aar", "aad", "do", "dm", "asb"]
     players = mongo.db.players.find({"$or": [{f"{m}games.total": {"$gte": 10}} for m in modes]})
     players = list(players)
     for p in players:
@@ -89,7 +94,7 @@ def allmodes():
 
 @app.route('/average')
 def average():
-    modes = ["mh", "e", "aar", "aad", "do", "dm"]
+    modes = ["mh", "e", "aar", "aad", "do", "dm", "asb"]
     players = mongo.db.players.find({"$or": [{f"{m}games.total": {"$gte": 10}} for m in modes]})
     players = list(players)
     for p in players:
@@ -209,10 +214,11 @@ def maps():
             "mh": "Manhunt",
             "do": "Domination",
             "aa": "Artifact Assault",
-            "dm": "Deathmatch"
+            "dm": "Deathmatch",
+            "asb": "Assassinate (Brotherhood)"
             }
     data = {}
-    for mode in ["aa", "e", "mh", "do", "dm"]:
+    for mode in long_names.keys():
         modedata = mongo.db.maps.find({f"{mode}.games": {"$gt": 0}})
         modedata = [dict({"name": d["name"]}, **d[mode]) for d in modedata]
         modedata = list(modedata)

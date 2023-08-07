@@ -4,7 +4,7 @@
 <meta content="Assassins' Network | {{ data.name }}" property="og:title" />
 <meta content="{{ data.name }}'s Assassins' Network Profile." property="og:description" />
 <meta content="https://assassins.network/profile/{{ data.name }}" property="og:url" />
-<p align="center">{{ [data.mhmmr, data.emmr, data.aarmmr, data.aadmmr, data.dommr, data.dmmmr]|max()|rank_title() }}</p>
+<p align="center">{{ [data.mhmmr, data.emmr, data.aarmmr, data.aadmmr, data.dommr, data.dmmmr, data.asbmmr]|max()|rank_title() }}</p>
    <h1 align="center">{{data.name}} <img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/48/{{data.nation}}.png"></h1>
         <br \>
 <div align="center">
@@ -59,6 +59,15 @@
     <p align="center" style="font-weight: bold">Deathmatch Rank</p>
     <img src="/static/badges/{{ data.dmmmr|rank_pic_big() }}"><br \><br \>
     <p align="center">{{ data.dmmmr|rank_title() }}</p>
+    </center>
+    </div>
+    {%endif%}
+    {%if data.asbgames.total > 9%}
+    <div style="width: 200px;display: inline-block">
+    <center>
+    <p align="center" style="font-weight: bold">Assassinate(B) Rank</p>
+    <img src="/static/badges/{{ data.asbmmr|rank_pic_big() }}"><br \><br \>
+    <p align="center">{{ data.asbmmr|rank_title() }}</p>
     </center>
     </div>
     {%endif%}
@@ -316,48 +325,63 @@
             <tr>
                 <th> </th>
                 <th>Deathmatch (AC4)</th>
+                <th>Assassinate (ACB)</th>
             </tr>
             <tr><td><b>MMR</b></td>
                 <td>{{data.dmmmr | round() | int() }}</td>
+                <td>{{data.asbmmr | round() | int() }}</td>
             </tr>
             <tr><td><b>Peak MMR</b></td>
                 <td>{{data.dmhistory.mmrs|max() | round() | int() }}</td>
+                <td>{{data.asbhistory.mmrs|max() | round() | int() }}</td>
             </tr>
             <tr><td><b>Games played</b></td>
                 <td>{{data.dmgames.total}}</td>
+                <td>{{data.asbgames.total}}</td>
             </tr>
             <tr><td><b>Games won</b></td>
                 <td>{{data.dmgames.won}}</td>
+                <td>{{data.asbgames.won}}</td>
             </tr>
             <tr><td><b>Podium Finishes</b></td>
                 <td>{{data.dmgames.podium}}</td>
+                <td>{{data.asbgames.podium}}</td>
             </tr>
             <tr><td><b>Games lost</b></td>
                 <td>{{data.dmgames.lost}}</td>
+                <td>{{data.asbgames.lost}}</td>
             </tr>
             <tr><td><b>Winrate</b></td>
                 <td>{{ data.dmgames.won|winrate(data.dmgames.lost) }}</td>
+                <td>{{ data.asbgames.won|winrate(data.asbgames.lost) }}</td>
             </tr>
             <tr><td><b>Podium Rate</b></td>
                 <td>{{ data.dmgames.podium|winrate(data.dmgames.total-data.dmgames.podium)}}</td>
+                <td>{{ data.asbgames.podium|winrate(data.asbgames.total-data.asbgames.podium)}}</td>
             </tr>
             <tr><td><b>Average Finish</b></td>
                 <td>{{ data.dmgames.finishes|kdratio(data.dmgames.total) }}</td>
+                <td>{{ data.asbgames.finishes|kdratio(data.asbgames.total) }}</td>
             </tr>
             <tr><td><b>Average score</b></td>
                 <td>{{ data.dmstats.totalscore|avgscore(data.dmgames.total) }}</td>
+                <td>{{ data.asbstats.totalscore|avgscore(data.asbgames.total) }}</td>
             </tr>
             <tr><td><b>Highest score</b></td>
                 <td>{{ data.dmstats.highscore }}</td>
+                <td>{{ data.asbstats.highscore }}</td>
             </tr>
             <tr><td><b>K/D ratio</b></td>
                 <td>{{ data.dmstats.kills|kdratio(data.dmstats.deaths) }}</td>
+                <td>{{ data.asbstats.kills|kdratio(data.asbstats.deaths) }}</td>
             </tr>
             <tr><td><b>Average kills</b></td>
                 <td>{{ data.dmstats.kills|avgkills(data.dmgames.total) }}</td>
+                <td>{{ data.asbstats.kills|avgkills(data.asbgames.total) }}</td>
             </tr>
             <tr><td><b>Average deaths</b></td>
                 <td>{{ data.dmstats.deaths|avgdeaths(data.dmgames.total) }}</td>
+                <td>{{ data.asbstats.deaths|avgdeaths(data.asbgames.total) }}</td>
             </tr>
         </table>
         <br \>
@@ -365,6 +389,12 @@
         <div class="container">
             <div class="pie-chart">
                 <canvas id="dmchart"></canvas>
+                <br \>
+            </div>
+        </div>
+        <div class="container">
+            <div class="pie-chart">
+                <canvas id="asbchart"></canvas>
                 <br \>
             </div>
         </div>
@@ -454,6 +484,10 @@
                 <canvas id="dmhist"></canvas>
                 <br \>
             </div>
+            <div class="mmr-history">
+                <canvas id="asbhist"></canvas>
+                <br \>
+            </div>
         </div>
     </div>
 </div>
@@ -530,6 +564,14 @@
             labels:['WINS', 'LOSSES', 'PODIUM'],
             datasets:
             [{data:[{{data.dmgames.won}},{{data.dmgames.total-data.dmgames.podium}},{{data.dmgames.podium-data.dmgames.won}}],backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Deathmatch game outcomes',fontSize: 25},}});
+        
+    var asbchart = document.getElementById('asbchart').getContext('2d');
+    var asbrochart = new Chart(asbchart, {
+        type: 'doughnut',
+        data:{
+            labels:['WINS', 'LOSSES', 'PODIUM'],
+            datasets:
+            [{data:[{{data.asbgames.won}},{{data.asbgames.total-data.asbgames.podium}},{{data.asbgames.podium-data.asbgames.won}}],backgroundColor:['#0099ff','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Deathmatch game outcomes',fontSize: 25},}});
 
     var ehist = document.getElementById('ehist').getContext('2d');
     var ehistchart = new Chart(ehist, {
@@ -627,6 +669,24 @@
             [
                 {
                     data: {{data.dmhistory.mmrs|safe}}, 
+                    backgroundColor:'rgba(226, 31, 31, 0.65)',
+                    borderColor:'rgba(255, 0, 0, 0.75)',
+                    lineTension:0
+                }
+            ],},
+            options:{title:{display:true,text:'Deathmatch MMR',fontSize: 25 },legend:{
+                display:false}
+            }});
+    
+    var asbhist = document.getElementById('asbhist').getContext('2d');
+    var asbhistchart = new Chart(asbhist, {
+        type: 'line',
+        data:{
+            labels: {{data.asbhistory.dates|safe}},
+            datasets:
+            [
+                {
+                    data: {{data.asbhistory.mmrs|safe}}, 
                     backgroundColor:'rgba(226, 31, 31, 0.65)',
                     borderColor:'rgba(255, 0, 0, 0.75)',
                     lineTension:0

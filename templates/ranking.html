@@ -13,11 +13,11 @@
             <th>Points</th>
             <th>Games</th>
             <th>Winrate</th>
-        {%if mode == "Deathmatch"%}
+        {%if mode in ["Deathmatch", "Assassinate (Brotherhood)"]%}
             <th>Podium Rate</th>
             <th>Average Finish</th>
         {%endif%}
-        {%if mode in ["Escort", "Manhunt", "Deathmatch"]%}
+        {%if mode in ["Escort", "Manhunt", "Deathmatch", "Assassinate (Brotherhood)"]%}
 	        <th>Average score</th>
 	        <th>K/D</th>
         {%elif mode == "AA Running"%}
@@ -35,6 +35,7 @@
             <th>Escort</th>
             <th>Manhunt</th>
             <th>Deathmatch</th>
+            <th>Assassinate(B)</th>
         {%endif%}
         </tr>
     {% for entry in data %}
@@ -154,6 +155,27 @@
             <td>{{ entry.dmgames.finishes| kdratio(entry.dmgames.total) }}</td>
 	        <td>{{ entry.dmstats.totalscore|avgscore(entry.dmgames.total) }}</td>
 	        <td>{{ entry.dmstats.kills|kdratio(entry.dmstats.deaths) }}</td>
+        {%elif mode == "Assassinate (Brotherhood)"%}
+            {% if entry.asbrank == 0 %}
+                <td>TBD</td>
+            {% else %}
+                {%if entry.asbrankchange < 0%}
+                    <td>{{ entry.asbrank }} <span style="color:red;">&#9660;{{ -1 * entry.asbrankchange }}</span></td>
+                {%elif entry.asbrankchange > 0%}
+                    <td>{{ entry.asbrank }} <span style="color:green;">&#9650;{{ entry.asbrankchange }}</span></td>
+                {%else%}
+                    <td>{{ entry.asbrank }}</td>
+                {%endif%}
+            {%endif%}
+            <td><img src="/static/badges/{{ entry.asbmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
+            <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
+            <td>{{ entry.asbmmr | round() | int() }}</td>
+            <td>{{ entry.asbgames.total }}</td>
+            <td>{{ entry.asbgames.won | winrate(entry.asbgames.lost) }}</td>
+            <td>{{ entry.asbgames.podium| winrate(entry.asbgames.total-entry.asbgames.podium) }}</td>
+            <td>{{ entry.asbgames.finishes| kdratio(entry.asbgames.total) }}</td>
+	        <td>{{ entry.asbstats.totalscore|avgscore(entry.asbgames.total) }}</td>
+	        <td>{{ entry.asbstats.kills|kdratio(entry.asbstats.deaths) }}</td>
         {%else%}
             <td>{{ entry.totalrank }}</td>
             <td><a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
@@ -190,6 +212,11 @@
                 <td>TBD</td>
             {%else%}
                 <td><img src="/static/badges/{{ entry.dmmmr|rank_pic_small() }}">{{ entry.dmmmr | round() | int() }}</td>
+            {%endif%}
+            {%if entry.asbgames.total < 10%}
+                <td>TBD</td>
+            {%else%}
+                <td><img src="/static/badges/{{ entry.asbmmr|rank_pic_small() }}">{{ entry.asbmmr | round() | int() }}</td>
             {%endif%}
         {%endif%}
     </tr>
