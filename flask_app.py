@@ -28,8 +28,8 @@ def concat_results(*results):
                yield v
 
 def extract_mode_data(mode):
-    data = mongo.db.players.find({ f"{mode}games.total": { '$gte': 10 } }).sort(f"{mode}mmr",-1)
-    tbd = mongo.db.players.find({'$and': [ {f"{mode}games.total": {"$gt": 0}}, {f"{mode}games.total": {"$lt": 10}}]}).sort(f"{mode}mmr", -1)
+    data = mongo.db.players.find({ f"{mode}games.total": { '$gte': 10 }, "hidden": False}).sort(f"{mode}mmr",-1)
+    tbd = mongo.db.players.find({'$and': [ {f"{mode}games.total": {"$gt": 0}}, {f"{mode}games.total": {"$lt": 10}}], "hidden": False}).sort(f"{mode}mmr", -1)
     return list(concat_results(data, tbd))
 
 # Page displaying the ranking
@@ -71,7 +71,7 @@ def assa_acb():
 @app.route('/allmodes')
 def allmodes():
     modes = ["mh", "e", "aar", "aad", "do", "dm", "asb"]
-    players = mongo.db.players.find({"$or": [{f"{m}games.total": {"$gte": 10}} for m in modes]})
+    players = mongo.db.players.find({"$or": [{f"{m}games.total": {"$gte": 10}} for m in modes], "hidden": False})
     players = list(players)
     for p in players:
         p["totalmmr"] = 0
@@ -95,7 +95,7 @@ def allmodes():
 @app.route('/average')
 def average():
     modes = ["mh", "e", "aar", "aad", "do", "dm", "asb"]
-    players = mongo.db.players.find({"$or": [{f"{m}games.total": {"$gte": 10}} for m in modes]})
+    players = mongo.db.players.find({"$or": [{f"{m}games.total": {"$gte": 10}} for m in modes], "hidden": False})
     players = list(players)
     for p in players:
         played_modes = 0
@@ -139,6 +139,15 @@ def matches():
     data = mongo.db.matches.find().sort("_id", -1).limit(20)
     return render_template('matches.html',data=data, page_no=0, title = 'Match History | Assassins\' Network')
 
+#@app.route('/achievements')
+#def achievements():
+#    players = mongo.db.players.find()
+#    badged = []
+#    for p in players:
+#        if p["badges"]:
+#            badged.append(p)
+#    return render_template('achievements.html', data=data, title="Achievements | Assassins\' Network")
+
 #paginated matches
 @app.route('/matches/<page>')
 def paged_matches(page):
@@ -153,12 +162,12 @@ def paged_matches(page):
 
 @app.route('/players')
 def players():
-    data = mongo.db.players.find().sort("name")
+    data = mongo.db.players.find({"hidden": False}).sort("name")
     return render_template('players.html',data=data, title = 'Players | Assassins\' Network')
 
 @app.route('/profile/<name>')
 def display_profile(name):
-    data = mongo.db.players.find_one({"name": name})
+    data = mongo.db.players.find_one({"name": name, "hidden": False})
     # load and search for all igns plus name so we don't get empty match histories
     igns = data["ign"]
     if type(igns) == str:
