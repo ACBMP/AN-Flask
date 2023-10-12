@@ -261,9 +261,9 @@ def teapot():
     return render_template('418.html')
 
 # Special tournament page
-#@app.route('/tournament')
-#def tournament():
-#    return render_template('tournament.html', title = 'Tournament | Assassins\' Network' )
+@app.route('/tournament')
+def tournament():
+    return render_template('tournament.html', title = 'Tournament | Assassins\' Network' )
 
 ###End of pages
 
@@ -396,6 +396,9 @@ def name_in_db(name):
             player = db.players.find_one({"ign": rename})
         if player is None:
             raise ValueError(f"identify_player: player {name} not found")
+        
+        if player["hidden"]:
+            return "HIDDEN"
 
         return f"<a href=\"/profile/{player['name']}\">{player['name']}</a>"
     except ValueError:
@@ -506,6 +509,11 @@ def filter_badges(badges, mode):
         except:
             break
     return filtered
+
+@app.template_filter("is_hidden")
+def is_hidden(name):
+    player = mongo.db.players.find_one({"name" : name})
+    return player["hidden"]
 
 # WE CAN'T RUN A LIVE APP IN DEBUG MODE! 
 if __name__ == '__main__':

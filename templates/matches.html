@@ -19,69 +19,85 @@
             <th>Team 1<table style="width:100%"><tr style="background: transparent;width: 100%">
                 <td style="width: 25%;border: 0px">Player</td><td style="width: 25%;border: 0px">Score</td>
                 <td style="width: 25%;border: 0px">Kills</td><td style="width: 25%;border: 0px">Deaths</td></tr></table></th>
-                <th>Team 2<table style="width:100%"><tr style="background: transparent;width: 100%">
-                    <td style="width: 25%;border: 0px">Player</td><td style="width: 25%;border: 0px">Score</td>
-                    <td style="width: 25%;border: 0px">Kills</td><td style="width: 25%;border: 0px">Deaths</td></tr></table></th>
+            <th>Team 2<table style="width:100%"><tr style="background: transparent;width: 100%">
+                <td style="width: 25%;border: 0px">Player</td><td style="width: 25%;border: 0px">Score</td>
+                <td style="width: 25%;border: 0px">Kills</td><td style="width: 25%;border: 0px">Deaths</td></tr></table></th>
             <th>Winner</th>
             <th>Map</th>
             <th>Host</th>
-          </tr>
+        </tr>
     {% for entry in data %}
     <tr>
         {% if entry.mode not in ["Deathmatch", "Assassinate brotherhood"] %}
-        <td>{{entry.mode}}</td>
-        <td><table style="width:100%">{% for player in entry.team1 %}
+            <td>{{entry.mode}}</td>
+            <td><table style="width:100%">{% for player in entry.team1 %}
                 <tr style="background: transparent;width: 100%">
+                {% if player.hidden %}
+                {% else %}
                     <td style="width: 25%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a> {{ player | try_value_paran("mmrchange") }}</td><td style="width: 25%;border: 0px">{{player.score if entry.mode != "Artifact assault" else player.scored}}</td>
                     <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
-            {% endfor %}
-        </table>
-        </td>
-        <td><table style="width:100%">{% for player in entry.team2 %}
-            <tr style="background: transparent;width: 100%">
-                <td style="width: 25%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.score if entry.mode != "Artifact assault" else player.scored}}</td>
-                <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
-        {% endfor %}
-        </table>
-        </td>
-        {% if entry.outcome == 0%}
-        <td>Tie</td>
-        {% else%}
-        <td>Team {{entry.outcome}}</td>
-        {%endif%}
-        {% else %}
-        <td>{{entry.mode}}</td>
-        <td><table style="width:100%">{% for player in entry.players %}
-                <tr style="background: transparent;width: 100%">
-                    <td style="width: 25%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a> {{ player | try_value_paran("mmrchange") }}</td><td style="width: 25%;border: 0px">{{player.score}}</td>
-                    <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
-            {% endfor %}
-        </table>
-        </td>
-        <td><table style="width:100%">{% for player in entry.team2 %}
-            <tr style="background: transparent;width: 100%; border: 0px">
-                <td style="width: 25%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.score}}</td>
-                <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
-        {% endfor %}
-        </table>
-        </td>
-        <td><table style="width:100%">
-            {% for player in entry.players %}
-            {% if player.score == entry.players[0].score %}
-            <tr style="background: transparent;width: 100%">
-                <td style="width: 100%; border: 0px">
-            <a href="/profile/{{ player.player }}">{{ player.player }}</a> {{ player | try_value_paran("mmrchange") }}
-                </td>
-            </tr>
-            {% endif %}
+                {% endif %}
             {% endfor %}
             </table>
             </td>
-        </td>
+            <td><table style="width:100%">{% for player in entry.team2 %}
+                <tr style="background: transparent;width: 100%">
+                {% if player.hidden %}
+                {% else %}
+                    <td style="width: 25%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.score if entry.mode != "Artifact assault" else player.scored}}</td>
+                    <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
+                {% endif %}
+            {% endfor %}
+            </table>
+            </td>
+            {% if entry.outcome == 0%}
+                <td>Tie</td>
+            {% else%}
+                <td>Team {{entry.outcome}}</td>
+            {%endif%}
+        {% else %}
+            <td>{{entry.mode}}</td>
+            <td><table style="width:100%">{% for player in entry.players %}
+                <tr style="background: transparent;width: 100%">
+                {% if player.player | is_hidden %}
+                {% else %}
+                    <td style="width: 25%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a> {{ player | try_value_paran("mmrchange") }}</td><td style="width: 25%;border: 0px">{{player.score}}</td>
+                    <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
+                {% endif %}
+            {% endfor %}
+            </table>
+            </td>
+            <td><table style="width:100%">{% for player in entry.team2 %}
+                <tr style="background: transparent;width: 100%; border: 0px">
+                {% if player.hidden %}
+                {% else %}
+                    <td style="width: 25%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.score}}</td>
+                    <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
+                {% endif %}
+            {% endfor %}
+            </table>
+            </td>
+            <td><table style="width:100%">
+                {% for player in entry.players %}
+                    {% if player.score == entry.players[0].score %}
+                        <tr style="background: transparent;width: 100%">
+                        <td style="width: 100%; border: 0px">
+                        {% if player.hidden %}
+                            HIDDEN
+                        {% else %}
+                            <a href="/profile/{{ player.player }}">{{ player.player }}</a> {{ player | try_value_paran("mmrchange") }}
+                        {% endif %}
+                        </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                </table>
+                </td>
+            </td>
         {% endif %}
         <td>{{ entry | try_value("map") }}</td>
         <td><a href="/profile/{{ entry | try_value('host') }}">{{ entry | try_value("host") }}</a></td>
-    </tr>
+        </tr>
     {% endfor %}
     </table>
     </div>
@@ -93,4 +109,4 @@
     <div style="float:left">&emsp;<a href="https://assassins.network/matches/{{ page_no+1 }}">Next >></a></div>
     </div>
     <br \><br \>
-    {% endblock content %}
+{% endblock content %}
