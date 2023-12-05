@@ -261,9 +261,9 @@ def teapot():
     return render_template('418.html')
 
 # Special tournament page
-@app.route('/tournament')
-def tournament():
-    return render_template('tournament.html', title = 'Tournament | Assassins\' Network' )
+# @app.route('/tournament')
+# def tournament():
+#     return render_template('tournament.html', title = 'Tournament | Assassins\' Network' )
 
 ###End of pages
 
