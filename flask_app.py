@@ -85,7 +85,7 @@ def allmodes():
             p["totalgames"] += games
             p["totalwins"] += p[m + "games"]["won"]
             p["totallosses"] += p[m + "games"]["lost"]
-            p["totalmmr"] 
+            p["totalmmr"]
     players.sort(key=lambda p: p["totalmmr"], reverse=True)
     #players = players[:10]
     for i in range(len(players)):
@@ -111,7 +111,7 @@ def average():
             p["totalgames"] += games
             p["totalwins"] += p[m + "games"]["won"]
             p["totallosses"] += p[m + "games"]["lost"]
-            p["totalmmr"] 
+            p["totalmmr"]
         p["totalmmr"] /= played_modes
     players.sort(key=lambda p: p["totalmmr"], reverse=True)
     #players = players[:10]
@@ -234,14 +234,22 @@ def maps():
         if not len(modedata):
             data[long_names[mode]] = []
             continue
-        average_rating = sum([m["hostrating"] for m in modedata]) / len(modedata)
+        num = 0
+        den = 0
+        for m in modedata:
+            if "hostrating" in m:
+                num += m["hostrating"]
+                den += 1
+        average_rating = num / den
+        # average_rating = sum([m["hostrating"] for m in modedata]) / len(modedata)
         # switch out the rating for the displayed rating - probably dumb to do here tbh
         for i in range(len(modedata)):
-            new_hr = int(round((modedata[i]["hostrating"] / average_rating - 1) * 100))
-            if new_hr < 0:
-                modedata[i]["hostrating"] = str(new_hr)
-            else:
-                modedata[i]["hostrating"] = f"+{new_hr}"
+            if "hostrating" in modedata[i]:
+                new_hr = int(round((modedata[i]["hostrating"] / average_rating - 1) * 100))
+                if new_hr < 0:
+                    modedata[i]["hostrating"] = str(new_hr)
+                else:
+                    modedata[i]["hostrating"] = f"+{new_hr}"
         data[long_names[mode]] = modedata
     return render_template('maps.html', modes=long_names.values(), data=data, title='Map Statistics | Assassins\' Network')
 
@@ -275,7 +283,7 @@ def winrate(w,l):
         return "{0:.2f}%".format(winrate)
     except:
         return "0.00%"
-    
+
 @app.template_filter('kdratio')
 def kdratio(k,d):
     try:
@@ -283,7 +291,7 @@ def kdratio(k,d):
         return "{0:.2f}".format(kdr)
     except:
         return "0.00"
-      
+
 @app.template_filter('avgscore')
 def avgscore(s,g):
     try:
@@ -300,7 +308,7 @@ def avgkills(k,g):
     except:
         return "0.00"
 
-   
+
 @app.template_filter('avgdeaths')
 def avgdeaths(d,g):
     try:
@@ -322,8 +330,8 @@ def tierate(games, wins, losses):
         return "{0:.2f}%".format(r)
     except ZeroDivisionError:
         return "0.00%"
-        
-    
+
+
 @app.template_filter('try_value')
 def try_value(entry, value):
     try:
@@ -353,7 +361,7 @@ def rank_title(elo):
     if elo < 1400:
         return "Grand Master Cleric"
     return "Supreme Overlord Cleric"
-    
+
 @app.template_filter('rank_pic_small')
 def rank_pic_small(elo):
     if elo < 801:
@@ -396,7 +404,7 @@ def name_in_db(name):
             player = db.players.find_one({"ign": rename})
         if player is None:
             raise ValueError(f"identify_player: player {name} not found")
-        
+
         if player["hidden"]:
             return "HIDDEN"
 
@@ -424,7 +432,7 @@ def transform_badges(badges, mode=None):
     # we need to support no mode for user profiles
     if mode:
         badges = filter_badges(badges, mode)
-    
+
     badges_str = ""
 
     for i in range(len(badges)):
@@ -515,6 +523,6 @@ def is_hidden(name):
     player = mongo.db.players.find_one({"name" : name})
     return player["hidden"]
 
-# WE CAN'T RUN A LIVE APP IN DEBUG MODE! 
+# WE CAN'T RUN A LIVE APP IN DEBUG MODE!
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')
