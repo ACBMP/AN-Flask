@@ -1,0 +1,6 @@
+env/
+venv/
+log
+dump
+__pycache__/
+myprojectenv

@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block content %}
+<meta content="Assassins' Network | Maps" property="og:title" />
+<meta content="{{mode}} statistics for Assassin's Creed multiplayer." property="og:description" />
+<meta content="https://assassins.network/maps" property="og:url" />
+    <h1 align="center">{{mode}} Statistics</h1>
+    <br \>
+    <div align="center">
+        {% if mode == "Escort" %}
+            {% include 'Escort_Deaths_Kills.html' %}
+            {% include 'Escort_score.html' %}
+            {% include 'Escort-ttt.html' %}
+        {% elif mode == "Manhunt" %}
+            {% include 'Manhunt_Deaths_Kills.html' %}
+            {% include 'Manhunt_score.html' %}
+            {% include 'Manhunt-ttt.html' %}
+        {% elif mode == "Domination" %}
+            {% include 'Domination_Deaths_Kills.html' %}
+            {% include 'Domination-ttt.html' %}
+        {% elif mode == "Artifact Assault" %}
+            {% include 'Artifact assault_score.html' %}
+            {% include 'Artifact assault-ttt.html' %}
+        {% endif %}
+    </div>
+{% endblock content %}
