@@ -4,3 +4,4 @@ log
 dump
 __pycache__/
 myprojectenv
+static/
