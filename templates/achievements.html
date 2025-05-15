@@ -2,24 +2,64 @@
 {% block content %}
 <meta content="Assassins' Network | Achievements Leaderboard" property="og:title" />
 <meta content="Achievements leaderboard." property="og:description" />
-    {% for badge in data %}
-        <h1 align="center">{{ badge.badge }} Leaderboard</h1>
-        <br \>
+        <h1 align="center">Achievements Leaderboard</h1>
         <div align="center">
         <table style="white-space:nowrap;">
             <tr>
                 <th>Rank</th>
                 <th>Player</th>
                 <th>Nation</th>
-                <th>Count</th>
+                <th>Achievements</th>
+                <th>Score</th>
             </tr>
-            {% for entry in badges.entries %}
-                <td></td>
+            {% for entry in data %}
+            <tr>
+                <td>{{ entry.rank }}</td>
                 <td><a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
-                <td>{{ entry.nation }}</td>
-                <td></td>
+                <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
+                <td>{{ entry.badges | full_badge_names() | safe }}</td>
+                <td>{{ entry.score }}</td>
+            </tr>
             {% endfor %}
         </table>
+        <br>
+            <table style="white-space:nowrap;">
+                <tr>
+                    <th>Achievement</th>
+                    <th>Points</th>
+                </tr>
+                <tr>
+                    <td>1st &#129351</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td>2nd &#129352</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td>3rd &#129353</td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <td>All-Star &#11088</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>All-Star Champion &#127775</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>Rookie of the Season &#128304</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>Tournament Win &#127942</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td>Others</td>
+                    <td>2</td>
+                </tr>
+            </table>
         </div>
-    {% endfor %}
 {% endblock content %}

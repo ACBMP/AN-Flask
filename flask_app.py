@@ -31,6 +31,35 @@ def extract_mode_data(mode):
     data = mongo.db.players.find({ f"{mode}games.total": { '$gte': 10 }, "hidden": False}).sort(f"{mode}mmr",-1)
     tbd = mongo.db.players.find({'$and': [ {f"{mode}games.total": {"$gt": 0}}, {f"{mode}games.total": {"$lt": 10}}], "hidden": False}).sort(f"{mode}mmr", -1)
     return list(concat_results(data, tbd))
+ 
+@app.route('/achievements')
+def achievements():
+    players = mongo.db.players.find()
+    badged = []
+    for p in players:
+        if p["badges"]:
+            score = 0
+            for b in p["badges"]:
+                if b["rank"] == "1st":
+                    score += 5
+                elif b["rank"] == "2nd":
+                    score += 4
+                elif b["rank"] == "3rd":
+                    score += 3
+                elif b["rank"] == "All-Star":
+                    score += 1
+                elif b["rank"] == "Custom":
+                    score += 2
+                elif b["rank"] == "Rookie":
+                    score += 2
+                elif b["rank"] == "Trophy":
+                    score += 5
+            p["score"] = score
+            badged.append(p)
+    badged = sorted(badged, key=lambda p: p["score"], reverse=True)
+    for i in range(len(badged)):
+        badged[i]["rank"] = i + 1
+    return render_template('achievements.html', data=badged, title="Achievements | Assassins\' Network")
 
 # Page displaying the ranking
 @app.route('/manhunt')
@@ -138,15 +167,6 @@ def about():
 def matches():
     data = mongo.db.matches.find().sort("_id", -1).limit(20)
     return render_template('matches.html',data=data, page_no=0, title = 'Match History | Assassins\' Network')
-
-#@app.route('/achievements')
-#def achievements():
-#    players = mongo.db.players.find()
-#    badged = []
-#    for p in players:
-#        if p["badges"]:
-#            badged.append(p)
-#    return render_template('achievements.html', data=data, title="Achievements | Assassins\' Network")
 
 #paginated matches
 @app.route('/matches/<page>')
