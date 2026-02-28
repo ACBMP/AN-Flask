@@ -1,38 +1,57 @@
-# acb pc login ips from wireshark captures
-ips = {"PC Login A": "216.98.48.133", "PC Login B": "216.98.55.165"}
+import socket
+import os
+import psutil
+import requests
+import subprocess
+ACB2_SERVER = "147.93.4.239"
+#ips = {
+#        "ACB 2.0 Online Config Service": [ACB2_SERVER, 80, "tcp"],
+#        "ACB 2.0 Authentication": [ACB2_SERVER, 21030, "udp"],
+#        "ACB 2.0 Matchmaking": [ACB2_SERVER, 21031, "udp"],
+#        }
 
-def test_server(ip):
-    """
-    test a server for availability via simple pinging
-    """
-    import os
-    return not os.system("ping -c 1 -w 2 " + ip)
+processes = {
+        "Matchmaking Bot": "python3 queue_bot.py",
+        "Main Bot": "python3 bot.py",
+        }
 
-# https://www.ubisoft.com/en-au/help/game/assassins-creed-brotherhood just parses this json
-url = "https://game-status-api.ubisoft.com/v1/instances?appIds=a2296d44-5ea3-430e-bdc5-9771cea01531,6e2c60d5-594f-438b-af2d-72a8184198fe,95c47b46-067e-41e8-aaeb-d7cfa4148526,e421a897-4eb7-45a7-a4dc-6aaf4d7bd8a9"
 
-def official_status(url, statuses={}):
-    """
-    https://stackoverflow.com/a/50360059
-    """
-    import urllib.request
-    import json
-    req = urllib.request.Request(url)
-    resp = urllib.request.urlopen(req)
-    data = json.load(resp)
+def check_tcp(host, port, timeout=2):
+    try:
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
+    except Exception:
+        return False
 
-    for platform in data:
-        statuses[platform["Platform"]] = platform["Status"] == "Online"
 
-    return statuses
+def check_udp(host, port):
+    try:
+        return "open|" in subprocess.getoutput(f"/usr/bin/nmap --privileged -sU -p {port} {host}")
+    except:
+        return False
+
+def check_process(name):
+    return name in (" ".join(p.cmdline()) for p in psutil.process_iter(attrs=['cmdline']))
+
+def check_ocs(host):
+    url = f"http://{host}/OnlineConfigService.svc/GetOnlineConfig"
+    params = {"onlineConfigID": "ACB"}
+    
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        return True
+    return False
 
 def main():
     statuses = {}
-    print("Testing game servers via official status page...")
-    statuses = official_status(url, statuses)
-    print("Testing PC login servers...")
-    for k in ips.keys():
-        statuses[k] = test_server(ips[k])
+    statuses["ACB 2.0 Server"] = check_ocs(ACB2_SERVER)
+    #for k in ips.keys():
+    #    if ips[k][2] == "tcp":
+    #        statuses[k] = check_tcp(ips[k][0], ips[k][1])
+    #    else:
+    #        statuses[k] = check_udp(ips[k][0], ips[k][1])
+    for k, v in processes.items():
+        statuses[k] = check_process(v)
     # convert form dict to list for laziness reasons
     s = []
     for k in statuses.keys():

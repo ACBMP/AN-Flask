@@ -1,0 +1,425 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+.image-overlay-wrapper {
+    position: relative;
+    display: inline-block;
+}
+    .overlay-text {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+        font-weight: bold;
+        color: white;
+        -webkit-text-stroke: 1px black;
+        z-index: 10;
+        font-size: 20px;
+    }
+    .highlight {
+        color: magenta;
+        font-size: 32px;
+        text-shadow: 0px 0px 10px black;
+        font-weight: bold;
+        -webkit-text-stroke: 1px white;
+    }
+    #overlayCanvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 5;
+    }
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+    }
+    #overlayLegend {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 120px;
+    }
+    #overlayLegend > div {
+        display: flex;
+        align-items: center;
+    }
+
+
+
+</style>
+
+<meta content="Assassins' Network | {{ name }} Spawns" property="og:title" />
+<meta content="Interactive Spawn Map for {{ name }}" property="og:description" />
+<h1 align="center">{{ name }} Spawns</h1>
+<p>Hover over a spawn to see its radii:</p>
+<p style="color: blue;">Minimum</p>
+<p style="color: green;">Ideal</p>
+<p style="color: red;">Maximum</p>
+<p>Left click on the map to add an enemy's position and see the resulting spawn.
+<br \>
+Shift + left click on the map to add a teammate's position and see the resulting spawn.
+<br \>
+Ctrl + left click on the map to add an objective's position and see the resulting spawn. This is only relevant for chest capture.
+<br \>
+Right click on the map to clear all player positions.
+<br \>
+You can also click on the "Show Overlay" button to see a player would spawn at every enemy position.
+<br \>
+Please keep in mind that the spawn points, radii, and results aren't guaranteed to be completely accurate. These are simply estimates.
+</p>
+
+<div class="d-flex justify-content-center my-2">
+    <button id="toggleOverlayBtn" class="btn btn-primary">Show Overlay</button>
+</div>
+
+
+<main role="main" class="image-overlay-wrapper">
+    <body>
+        <div class="d-flex justify-content-center align-items-start">
+            <!-- image + overlay -->
+            <div id="imageContainer" class="position-relative">
+                <img id="baseImage" src="{{ url_for('static', filename=image_file) }}" class="img-fluid">
+                <canvas id="overlayCanvas"></canvas>
+            </div>
+
+            <!-- legend next to it -->
+            <div id="overlayLegend" style="display:none; margin-left:20px;"></div>
+        </div>
+
+
+
+        <script>
+            const points = {{ points|tojson }};
+            const minR = {{ minR }};
+            const maxR = {{ maxR }};
+            const smallR = {{ smallR }};
+            const largeR = {{ largeR }};
+            const w = {{ w }};
+
+            const img = document.getElementById('baseImage');
+            const canvas = document.getElementById('overlayCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Source - https://stackoverflow.com/questions/11301438/return-index-of-greatest-value-in-an-array
+// Posted by Ry-
+// Retrieved 11/5/2025, License - CC-BY-SA 4.0
+
+function indexOfMax(arr) {
+    if (arr.length === 0) {
+        return -1;
+    }
+
+    var max = arr[0];
+    var maxIndex = 0;
+
+    for (var i = 1; i < arr.length; i++) {
+        if (arr[i] > max) {
+            maxIndex = i;
+            max = arr[i];
+        }
+    }
+
+    return maxIndex;
+}
+
+
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                const container = document.getElementById('imageContainer');
+                const centerX = img.width / 2;
+                const centerY = img.height / 2;
+
+                points.forEach(([x, y], idx) => {
+                    const screenX = x;
+                    const screenY = y;
+
+                    const el = document.createElement('div');
+                    el.className = 'overlay-text';
+                    el.style.left = screenX + 'px';
+                    el.style.top = screenY + 'px';
+                    el.textContent = idx + 1;
+
+                    el.addEventListener('mouseenter', (e) => {
+                        if (!overlayVisible) {
+                            if (e.shiftKey) {
+                                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                                ctx.beginPath();
+                                ctx.arc(screenX, screenY, smallR[1], 0, 2 * Math.PI);
+                                ctx.arc(screenX, screenY, minR[1], 0, 2 * Math.PI, true);
+                                ctx.fillStyle = 'rgba(0, 0, 255, 0.35)';
+                                ctx.fill();
+
+                                ctx.beginPath();
+                                ctx.arc(screenX, screenY, largeR[1], 0, 2 * Math.PI);
+                                ctx.arc(screenX, screenY, smallR[1], 0, 2 * Math.PI, true);
+                                ctx.fillStyle = 'rgba(0, 255, 0, 0.35)';
+                                ctx.fill();
+
+                                ctx.beginPath();
+                                ctx.arc(screenX, screenY, maxR[1], 0, 2 * Math.PI);
+                                ctx.arc(screenX, screenY, largeR[1], 0, 2 * Math.PI, true);
+                                ctx.fillStyle = 'rgba(255, 0, 0, 0.35)';
+                                ctx.fill();
+                            }
+                            else {
+                                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                                ctx.beginPath();
+                                ctx.arc(screenX, screenY, smallR[0], 0, 2 * Math.PI);
+                                ctx.arc(screenX, screenY, minR[0], 0, 2 * Math.PI, true);
+                                ctx.fillStyle = 'rgba(0, 0, 255, 0.35)';
+                                ctx.fill();
+
+                                ctx.beginPath();
+                                ctx.arc(screenX, screenY, largeR[0], 0, 2 * Math.PI);
+                                ctx.arc(screenX, screenY, smallR[0], 0, 2 * Math.PI, true);
+                                ctx.fillStyle = 'rgba(0, 255, 0, 0.35)';
+                                ctx.fill();
+
+                                ctx.beginPath();
+                                ctx.arc(screenX, screenY, maxR[0], 0, 2 * Math.PI);
+                                ctx.arc(screenX, screenY, largeR[0], 0, 2 * Math.PI, true);
+                                ctx.fillStyle = 'rgba(255, 0, 0, 0.35)';
+                                ctx.fill();
+                            }
+                        }
+                    });
+
+
+                    el.addEventListener('mouseleave', () => {
+                        if (!overlayVisible) {
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        }
+                    });
+
+                    container.appendChild(el);
+                });
+            };
+
+            const pursuerPoints = [];
+            const teammatePoints = [];
+            const targetPoints = [];
+
+            img.addEventListener('contextmenu', e => e.preventDefault());
+
+            img.addEventListener('mousedown', (e) => {
+                const rect = img.getBoundingClientRect();
+                const xClick = e.clientX - rect.left;
+                const yClick = e.clientY - rect.top;
+
+                if (e.button === 2) {
+                    pursuerPoints.length = 0;
+                    targetPoints.length = 0;
+                    teammatePoints.length = 0;
+                    document.querySelectorAll('.overlay-text').forEach(el => el.classList.remove('highlight'));
+                    document.querySelectorAll('.click-dot').forEach(el => el.remove());
+
+                    return;
+                }
+
+                if (e.button === 0) {
+                    const dot = document.createElement('div');
+                    dot.className = 'click-dot';
+                    dot.style.position = 'absolute';
+                    dot.style.width = '8px';
+                    dot.style.height = '8px';
+                    dot.style.borderRadius = '50%';
+
+                    if (e.shiftKey) {
+                        teammatePoints.push([xClick, yClick]);
+                        dot.style.background = 'green';
+                    } else if (e.ctrlKey) {
+                        targetPoints.push([xClick, yClick]);
+                        dot.style.background = 'blue';
+                    } else {
+                        pursuerPoints.push([xClick, yClick]);
+                        dot.style.background = 'red';
+                    }
+
+                    dot.style.left = (xClick - 4) + 'px';
+                    dot.style.top = (yClick - 4) + 'px';
+                    dot.style.zIndex = 20;
+                    document.getElementById('imageContainer').appendChild(dot);
+
+                    let chosenIdx = null;
+                    let scores = [];
+
+                    for (let [idx, [x, y]] of points.entries()) {
+                        let score = 1;
+
+                        for (const [cx, cy] of pursuerPoints) {
+                            score *= calculateScore(cx, cy, x, y, smallR[0], largeR[0], minR[0], maxR[0], w[0]);
+                        }
+                        for (const [cx, cy] of teammatePoints) {
+                            score *= calculateScore(cx, cy, x, y, smallR[1], largeR[1], minR[1], maxR[1], w[1]);
+                        }
+                        for (const [cx, cy] of targetPoints) {
+                            score *= calculateScore(cx, cy, x, y, smallR[2], largeR[2], minR[2], maxR[2], w[2]);
+                        }
+                        scores.push(score)
+                    }
+
+                    chosenIdx = indexOfMax(scores);
+
+                    document.querySelectorAll('.overlay-text').forEach(el => el.classList.remove('highlight'));
+                    if (chosenIdx !== null) {
+                        const el = [...document.querySelectorAll('.overlay-text')]
+                            .find(el => el.textContent == (chosenIdx + 1));
+                        if (el) el.classList.add('highlight');
+                    }
+
+                }
+            });
+
+            function calculateScore(cx, cy, screenX, screenY, r2, r3, r1, r4, w) {
+                const dx = cx - screenX;
+                const dy = cy - screenY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist > r2 && dist < r3) {
+                    // Case 2: valid spawn point
+                    return 1;
+                } else if (dist >= r1 && dist <= r2) {
+                    // Case 1: linear increase from 0 to 1
+                    return (dist - r1) / (r2 - r1);
+                } else if (dist >= r3 && dist <= r4) {
+                    // Case 3: linear decrease from 1 to w
+                    return 1 - ((dist - r3) / (r4 - r3)) * (1 - w);
+                } else if (dist < r1) {
+                    return 0;
+                } else {
+                    // Outside all ranges
+                    return w;
+                }
+                return score
+            }
+
+            function evaluateSpawnAt(xClick, yClick) {
+                let chosenIdx = null;
+                let bestScore = -Infinity;
+                let bestIdx = null;
+
+                for (let [idx, [x, y]] of points.entries()) {
+                    const screenX = x;
+                    const screenY = y;
+
+                    let valid = true;
+                    let score = 0;
+
+                    for (const [cx, cy] of [[xClick, yClick]]) {
+                        const dx = cx - screenX;
+                        const dy = cy - screenY;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist > smallR[0] && dist < largeR[0]) {
+                            continue;
+                        } else if (dist >= minR[0] && dist <= smallR[0]) {
+                            const s = (dist - minR[0]) / (smallR[0] - minR[0]);
+                            score += s;
+                            valid = false;
+                        } else if (dist >= largeR[0] && dist <= maxR[0]) {
+                            const s = 1 - ((dist - largeR[0]) / (maxR[0] - largeR[0])) * (1 - w);
+                            score += s;
+                            valid = false;
+                        } else {
+                            valid = false;
+                            score = -Infinity;
+                            break;
+                        }
+                    }
+
+                    if (valid) {
+                        chosenIdx = idx;
+                        break;
+                    }
+
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestIdx = idx;
+                    }
+                }
+
+                if (chosenIdx === null) {
+                    chosenIdx = bestScore > -Infinity ? bestIdx : 0;
+                }
+                return chosenIdx;
+            }
+
+            function generateColors(n) {
+                const colors = [];
+                const goldenAngle = 137.5;
+                for (let i = 0; i < n; i++) {
+                    const hue = (i * goldenAngle) % 360;
+                    const sat = 60 + (i % 3) * 20; 
+                    const val = 40 + (i % 2) * 40;
+                    colors.push(`hsla(${hue}, ${sat}%, ${val}%, 0.6)`);
+                }
+                return colors;
+            }
+
+
+            function buildLegend(colors) {
+                const legend = document.getElementById('overlayLegend');
+                legend.innerHTML = '';
+                colors.forEach((color, idx) => {
+                    const item = document.createElement('div');
+                    item.style.margin = '0 10px';
+                    item.innerHTML = `<span style="display:inline-block;width:20px;height:20px;background:${color};border:1px solid #000;"></span> Spawn ${idx+1}`;
+                    legend.appendChild(item);
+                });
+            }
+
+
+            let overlayVisible = false;
+            let bandColors = [];
+
+            function drawOverlay() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const step = 6;
+                let max_idx = 0;
+
+                for (let y = 0; y < canvas.height; y += step) {
+                    for (let x = 0; x < canvas.width; x += step) {
+                        const idx = evaluateSpawnAt(x, y);
+                        const color = bandColors[idx % bandColors.length];
+                        ctx.fillStyle = color;
+                        ctx.fillRect(x, y, step, step);
+                        if (idx > max_idx) {
+                            max_idx = idx;
+                        }
+                    }
+                }
+                return max_idx;
+            }
+
+
+
+            document.getElementById('toggleOverlayBtn').addEventListener('click', () => {
+                overlayVisible = !overlayVisible;
+                const btn = document.getElementById('toggleOverlayBtn');
+                const legend = document.getElementById('overlayLegend');
+                let max_idx = 0;
+
+                if (overlayVisible) {
+                    btn.textContent = "Hide Overlay";
+                    bandColors = generateColors(points.length);
+                    max_idx = drawOverlay();
+                    buildLegend(bandColors.slice(0, max_idx));
+                    legend.style.display = "flex";
+                } else {
+                    btn.textContent = "Show Overlay";
+                    legend.style.display = "none";
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            });
+
+
+
+        </script>
+    </body>
+    {% endblock content %}

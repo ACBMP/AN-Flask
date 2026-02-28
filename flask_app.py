@@ -1,12 +1,17 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, jsonify, request
 from flask_pymongo import PyMongo
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.exceptions import HTTPException
 import json
+from patch.routes import patch_bp
+from guides.routes import guides_bp
 app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb://localhost:27017/public"
 mongo = PyMongo(app)
 app.wsgi_app = ProxyFix(app.wsgi_app)
+
+app.register_blueprint(patch_bp)
+app.register_blueprint(guides_bp)
 
 @app.errorhandler(Exception)
 def error_handler():
@@ -92,10 +97,10 @@ def deathmatch():
     data = extract_mode_data("dm")
     return render_template('ranking.html', data=data, title = 'Deathmatch | Assassins\' Network', mode='Deathmatch' )
 
-@app.route('/assassinate_brotherhood')
+@app.route('/assassinate')
 def assa_acb():
     data = extract_mode_data("asb")
-    return render_template('ranking.html', data=data, title = 'Assassinate (Brotherhood) | Assassins\' Network', mode='Assassinate Brotherhood' )
+    return render_template('ranking.html', data=data, title = 'Assassinate | Assassins\' Network', mode='Assassinate' )
 
 @app.route('/allmodes')
 def allmodes():
@@ -283,6 +288,30 @@ def status_page():
     from status import status
     data = status.main()
     return render_template('status.html', data=data, title='Status Page | Assassins\' Network')
+
+@app.route('/check_udp_route', methods=['GET'])
+def check_udp_route():
+    from status.status import check_udp
+    requester_ip = request.remote_addr
+    port_str = request.args.get('port')
+
+    # Validate and convert port
+    try:
+        port = int(port_str)
+        if not (0 < port < 65536):
+            raise ValueError("Invalid port range")
+    except (TypeError, ValueError):
+        return jsonify({"error": "Invalid or missing 'port' parameter"}), 400
+
+    print(requester_ip)
+    print(port)
+    result = check_udp(requester_ip, port)
+
+    return jsonify({
+        "checked_ip": requester_ip,
+        "port": port,
+        "udp_reachable": result
+    })
 
 @app.route('/418')
 def teapot():

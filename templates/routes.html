@@ -1,0 +1,234 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+.image-overlay-wrapper {
+    position: relative;
+    display: inline-block;
+}
+    .overlay-text {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+        font-weight: bold;
+        color: white;
+        -webkit-text-stroke: 1px black;
+        z-index: 10;
+        font-size: 20px;
+    }
+    .highlight {
+        color: magenta;
+        font-size: 32px;
+        text-shadow: 0px 0px 10px black;
+        font-weight: bold;
+        -webkit-text-stroke: 1px white;
+    }
+    #overlayCanvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: auto;
+        z-index: 10;
+    }
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: auto;
+    }
+    #overlayLegend {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 120px;
+    }
+    #overlayLegend > div {
+        display: flex;
+        align-items: center;
+    }
+
+
+
+</style>
+
+<meta content="Assassins' Network | {{ name }} Routes" property="og:title" />
+<meta content="Interactive Routes Map for {{ name }}" property="og:description" />
+<h1 align="center">{{ name }} Routes</h1>
+
+
+<main role="main" class="image-overlay-wrapper">
+        <div class="d-flex justify-content-center align-items-start">
+            <!-- image + overlay -->
+            <div id="imageContainer" class="position-relative">
+                <img id="baseImage" src="{{ url_for('static', filename=image_file) }}" class="img-fluid">
+                <canvas id="overlayCanvas"></canvas>
+            </div>
+
+            <!-- legend next to it -->
+            <div id="overlayLegend" style="margin-left:20px;"></div>
+        </div>
+
+
+
+        <script>
+document.addEventListener("DOMContentLoaded", () => {
+    const canvas = document.getElementById("overlayCanvas");
+    const ctx = canvas.getContext("2d");
+    const baseImage = document.getElementById("baseImage");
+    const legend = document.getElementById("overlayLegend");
+
+    const routes = {{ routes|tojson }};
+    const colors = ["red", "blue", "green", "orange", "purple", "magenta"];
+    const routeSettings = {};
+
+    let hoveredRoute = null; // track which route is hovered
+
+// Store image natural size for scaling
+let naturalW = 0, naturalH = 0;
+    window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("load", resizeCanvas);
+    naturalW = baseImage.naturalWidth;
+    naturalH = baseImage.naturalHeight;
+        resizeCanvas();
+
+    function resizeCanvas() {
+        canvas.width = baseImage.clientWidth;
+        canvas.height = baseImage.clientHeight;
+        drawRoutes();
+    }
+// Flask injects this value, e.g. checkpointRadius = 20
+const checkpointRadius = {{ checkpoint_radius|tojson }};
+
+function drawRoutes() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const { sx, sy } = getScale();
+
+    Object.entries(routes).forEach(([name, coords], idx) => {
+        if (!routeSettings[name]?.visible) return;
+
+        const isHovered = hoveredRoute === name;
+        ctx.strokeStyle = routeSettings[name].color;
+        ctx.fillStyle = routeSettings[name].color;
+        ctx.lineWidth = isHovered ? 4 : 2;
+        ctx.globalAlpha = isHovered || hoveredRoute === null ? 1.0 : 0.3;
+
+        // Draw connecting lines + arrows
+        for (let i = 0; i < coords.length; i++) {
+            const [x, y, isCheckpoint] = coords[i];
+            const px = x * sx;
+            const py = y * sy;
+
+            // Connect to next point (wrap around for closed loop)
+            const nextIndex = (i + 1) % coords.length;
+            const [nx, ny] = coords[nextIndex];
+            const nxScaled = nx * sx;
+            const nyScaled = ny * sy;
+
+            ctx.beginPath();
+            ctx.moveTo(px, py);
+            ctx.lineTo(nxScaled, nyScaled);
+            ctx.stroke();
+
+            // Draw arrowhead at current point pointing toward next
+            drawArrowhead(px, py, nxScaled, nyScaled, isHovered ? 10 : 7);
+
+            // If checkpoint, draw circle around it
+            if (isCheckpoint) {
+                ctx.beginPath();
+                ctx.arc(px, py, checkpointRadius * sx, 0, 2 * Math.PI);
+                ctx.strokeStyle = routeSettings[name].color;
+                ctx.stroke();
+            }
+        }
+    });
+
+    ctx.globalAlpha = 1.0;
+}
+
+
+// Compute scale factors from natural image size to current canvas size
+function getScale() {
+    const sx = canvas.width / naturalW;
+    const sy = canvas.height / naturalH;
+    return { sx, sy };
+}
+
+
+// Utility to draw an arrowhead at (x1,y1) pointing toward (x2,y2)
+function drawArrowhead(x1, y1, x2, y2, size) {
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x1 - size * Math.cos(angle - Math.PI / 6),
+               y1 - size * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(x1 - size * Math.cos(angle + Math.PI / 6),
+               y1 - size * Math.sin(angle + Math.PI / 6));
+    ctx.closePath();
+    ctx.fill();
+}
+
+
+
+    function buildLegend() {
+        legend.innerHTML = "";
+        Object.keys(routes).forEach((name, idx) => {
+            const color = colors[idx % colors.length];
+            routeSettings[name] = { visible: true, color };
+
+            const wrapper = document.createElement("div");
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.checked = true;
+            checkbox.addEventListener("change", () => {
+                routeSettings[name].visible = checkbox.checked;
+                drawRoutes();
+            });
+
+            const label = document.createElement("span");
+            label.textContent = name;
+            label.style.color = color;
+            label.style.fontWeight = "bold";
+
+            wrapper.appendChild(checkbox);
+            wrapper.appendChild(label);
+            legend.appendChild(wrapper);
+        });
+    }
+
+    // Detect hover over points
+    canvas.addEventListener("mousemove", (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        let foundRoute = null;
+        Object.entries(routes).forEach(([name, coords]) => {
+            if (!routeSettings[name]?.visible) return;
+            coords.forEach(([x, y]) => {
+                const dx = mouseX - x;
+                const dy = mouseY - y;
+                if (Math.sqrt(dx*dx + dy*dy) < 6) {
+                    foundRoute = name;
+                }
+            });
+        });
+
+        if (foundRoute !== hoveredRoute) {
+            hoveredRoute = foundRoute;
+            drawRoutes();
+        }
+    });
+
+    canvas.addEventListener("mouseleave", () => {
+        hoveredRoute = null;
+        drawRoutes();
+    });
+
+
+    buildLegend();
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+});
+</script>
+
+    {% endblock content %}
