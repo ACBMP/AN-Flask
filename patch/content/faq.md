@@ -82,11 +82,11 @@ Otherwise, complain to the server host.
 
 Follow [this tutorial](https://www.youtube.com/watch?v=9kmmKjLxpXk&pp=ygUfcHMzIGNvbnRyb2xsZXIgdHJpZ2dlciBzd2FwIHNjcA%3D%3D). Choose the Xbox controller option in ACB.
 
-### My PS4 controller doesn't work.
+### My PS4/5 controller doesn't work.
 
 Try following [this guide](https://ds4-windows.com/get-started/#installation-setup). Choose the Xbox controller option in ACB.
 
-### My non-PS3/4 controller doesn't work properly (e.g. triggers don't work).
+### My non-PS3/4/5 controller doesn't work properly (e.g. triggers don't work).
 
 Downloads [the xinput.asi hack](https://assassins.network/static/xinput.asi) and place it in the ACB game folder. This is the folder listed in the launcher and should contain a file called `dinput8`. Choose `Xinput Controller 1` as your controller in ACB.
 

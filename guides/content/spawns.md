@@ -25,22 +25,14 @@ The scoring method is calculated using the following parameters.
 * Maximum radius: 100
 * `w`: 0.2
 
-#### Opponent
+#### Opponents
 
 * Minimum radius: 30
 * Minimum ideal radius: 40
 * Maximum ideal radius: 60
 * Maximum radius: 90
-* `w`: 0.2
-
-#### Objective (e.g. chests)
-
-* Minimum radius: 30
-* Minimum ideal radius: 40
-* Maximum ideal radius: 60
-* Maximum radius: 90
-* `w`: 0.5
+* `w`: 0.2 or 0.5 depending on target or pursuer
 
 ### Host
 
-The host player's spawn logic is the same, but opponent (and maybe objective) positions are ignored. Death positions (of all players on the team who haven't respawned yet) are used as opponent positions instead.
+The host player's spawn logic is the same, but opponent positions are ignored. Death positions (of all players on the team who haven't respawned yet) are used as opponent positions instead.

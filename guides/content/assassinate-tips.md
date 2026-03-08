@@ -12,6 +12,7 @@ The lock button can also be used to unlock, but this is riskier, as it can also 
 ## General Gameplay
 
 Assassinate can take some getting used to, but newcomers can usually quickly get into it using a few simple rules:
+
 * Use the lock and unlock so you never chase. If you don't immediately get a kill after locking, your best bet is to unlock and try again.
 * Never let go of the high profile button.
 * Use poison and sprint boost until you feel comfortable, then switch out sprint boost for smoke bomb.
