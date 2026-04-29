@@ -17,6 +17,10 @@ app.register_blueprint(guides_bp)
 def error_handler():
     return redirect("https://assassins.network", code=302)
 
+@app.route("/train")
+def train():
+    return render_template("train.html")
+
 # The main landing page
 @app.route('/')
 @app.route('/home')
@@ -36,7 +40,7 @@ def extract_mode_data(mode):
     data = mongo.db.players.find({ f"{mode}games.total": { '$gte': 10 }, "hidden": False}).sort(f"{mode}mmr",-1)
     tbd = mongo.db.players.find({'$and': [ {f"{mode}games.total": {"$gt": 0}}, {f"{mode}games.total": {"$lt": 10}}], "hidden": False}).sort(f"{mode}mmr", -1)
     return list(concat_results(data, tbd))
- 
+
 @app.route('/achievements')
 def achievements():
     players = mongo.db.players.find()
