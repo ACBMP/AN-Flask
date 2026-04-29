@@ -76,7 +76,7 @@ const scene = new THREE.Scene();
 let cameraYaw = 0;
 const camera = new THREE.PerspectiveCamera(
   75,
-  window.innerWidth / window.innerHeight,
+  16 / 9,
   0.1,
   1000
 );
@@ -87,7 +87,7 @@ const renderer = new THREE.WebGLRenderer({
 });
 
 console.log(window);
-renderer.setSize(1140, window.innerHeight - 40);
+renderer.setSize(1140, Math.round(1140 * 9 / 16));
 renderer.setPixelRatio(window.devicePixelRatio);
 
 const controls = new PointerLockControls(camera, renderer.domElement);
