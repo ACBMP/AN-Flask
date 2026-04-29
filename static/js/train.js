@@ -3,9 +3,72 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 
 
+const minR = [30, 4, 30]
+const smallR = [40, 5, 40]
+const largeR = [60, 15, 60]
+const maxR = [90, 100, 90]
+const w = [0.2, 0.2, 0.5]
 
-// fake spawn data
-let correctSpawn = 2;
+function indexOfMax(arr) {
+    if (arr.length === 0) {
+        return -1;
+    }
+
+    var max = arr[0];
+    var maxIndex = 0;
+
+    for (var i = 1; i < arr.length; i++) {
+        if (arr[i] > max) {
+            maxIndex = i;
+            max = arr[i];
+        }
+    }
+
+    return maxIndex;
+}
+
+            function calculateScore(cx, cy, screenX, screenY, r2, r3, r1, r4, w) {
+                const dx = cx - screenX;
+                const dy = cy - screenY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist > r2 && dist < r3) {
+                    // Case 2: valid spawn point
+                    return 1;
+                } else if (dist >= r1 && dist <= r2) {
+                    // Case 1: linear increase from 0 to 1
+                    return (dist - r1) / (r2 - r1);
+                } else if (dist >= r3 && dist <= r4) {
+                    // Case 3: linear decrease from 1 to w
+                    return 1 - ((dist - r3) / (r4 - r3)) * (1 - w);
+                } else if (dist < r1) {
+                    return 0;
+                } else {
+                    // Outside all ranges
+                    return w;
+                }
+                return score
+            }
+
+
+function getCorrectSpawn(spawnPoints, pursuerPoints, targetPoints) {
+    let scores = [];
+
+    for (let [idx, x, y] of spawnPoints.entries()) {
+        let score = 1;
+
+        pursuerPoints.forEach(p => {
+            score *= calculateScore(p.x, p.z, x, y, smallR[0], largeR[0], minR[0], maxR[0], w[0]);
+        });
+        targetPoints.forEach(p => {
+            score *= calculateScore(p.x, p.z, x, y, smallR[2], largeR[2], minR[2], maxR[2], w[2]);
+        });
+        scores.push(score)
+    }
+    return indexOfMax(scores) + 1;
+}
+
+
 let hasGuessed = false;
 
 const scene = new THREE.Scene();
@@ -23,14 +86,18 @@ const renderer = new THREE.WebGLRenderer({
   antialias: true
 });
 
-renderer.setSize(window.innerWidth, window.innerHeight);
+console.log(window);
+renderer.setSize(1140, window.innerHeight - 40);
 renderer.setPixelRatio(window.devicePixelRatio);
 
 const controls = new PointerLockControls(camera, renderer.domElement);
 
 // lock pointer on click
-document.body.addEventListener('click', () => {
-  controls.lock();
+document.body.addEventListener('click', (e) => {
+  // Only lock pointer if the click was NOT on the minimap
+  if (!controls.isLocked && e.target !== minimap) {
+    controls.lock();
+  }
 });
 
 // optional: movement via keyboard
@@ -69,7 +136,7 @@ function loadMap(name = "siena") {
     console.error("Error loading OBJ:", error);
   });
   return  [
-      {id: 1, x: 10, y: 20, mapX: 10, mapY: 20},
+      {id: 1, x: 30, y: 20, mapX: 30, mapY: 20},
       {id: 2, x: 20, y: 10, mapX: 20, mapY: 10}
   ]
 }
@@ -86,6 +153,13 @@ function worldToMap(x, z, scale = 2) {
   return {
     x: minimap.width / 2 + x * scale,
     y: minimap.height / 2 + z * scale
+  };
+}
+
+function mapToWorld(mx, my, scale = 2) {
+  return {
+    x: (mx - minimap.width / 2) / scale,
+    z: (my - minimap.height / 2) / scale
   };
 }
 
@@ -132,13 +206,24 @@ function drawMinimap(scenario) {
   spawnPoints.forEach(sp => {
     const m = worldToMap(sp.mapX, sp.mapY);
 
+
     ctx.fillStyle = "white";
+    if (scenario.selectedSpawn) {
+        if (sp.id === scenario.correctSpawn) {
+          ctx.fillStyle = "green";
+        } else if (sp.id === scenario.selectedSpawn) {
+          ctx.fillStyle = "red";
+        }
+    };
+
     ctx.beginPath();
-    ctx.arc(m.x, m.y, 4, 0, Math.PI * 2);
+    ctx.arc(m.x, m.y, 8, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.fillStyle = "black";
-    ctx.fillText(sp.id, m.x + 6, m.y);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(sp.id, m.x, m.y);
   });
 }
 
@@ -150,67 +235,113 @@ function addMarker(x, y, z, color) {
   scene.add(mesh);
 }
 
-function newRound(scenario) {
-  hasGuessed = false;
-  correctSpawn = spawnPoints[Math.floor(Math.random() * spawnPoints.length)].id;
-  drawMinimap(scenario);
+function addMarker3D(x, y, z, color = 0xffffff, size = 0.5, shape = "sphere") {
+    let mesh;
+    if (shape === "sphere") {
+        const geo = new THREE.SphereGeometry(size, 16, 16);
+        const mat = new THREE.MeshBasicMaterial({ color });
+        mesh = new THREE.Mesh(geo, mat);
+    } else if (shape === "star") {
+        const geo = new THREE.OctahedronGeometry(size); // simple star-like
+        const mat = new THREE.MeshBasicMaterial({ color });
+        mesh = new THREE.Mesh(geo, mat);
+    }
+    mesh.position.set(x, y, z);
+    scene.add(mesh);
+    return mesh;
 }
 
-setTimeout(newRound, 2000);
+function addNumberedMarker(x, y, z, num, color = 0x888888, size = 0.5) {
+    // 3D marker sphere
+    const sphereGeo = new THREE.SphereGeometry(size, 16, 16);
+    const sphereMat = new THREE.MeshBasicMaterial({ color });
+    const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+    sphere.position.set(x, y, z);
+    scene.add(sphere);
+
+    // Create canvas for number
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const context = canvas.getContext('2d');
+    context.fillStyle = "white";
+    context.font = "bold 48px Arial";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText(num, canvas.width / 2, canvas.height / 2);
+
+    // Create texture & sprite
+    const texture = new THREE.CanvasTexture(canvas);
+    const spriteMat = new THREE.SpriteMaterial({ map: texture });
+    const sprite = new THREE.Sprite(spriteMat);
+    sprite.scale.set(1, 1, 1);  // adjust size
+    sprite.position.set(x, y + size + 0.3, z); // slightly above the sphere
+    scene.add(sprite);
+
+    return sphere;
+}
+
+// function newRound(scenario) {
+//   hasGuessed = false;
+
+//   // Pick one random spawn as the correct one
+//   const randomIndex = Math.floor(Math.random() * spawnPoints.length);
+//   scenario.correctSpawn = spawnPoints[randomIndex].id;
+
+//   drawMinimap(scenario);
+// }
+
+// setTimeout(newRound, 2000);
 
 function generateScenario() {
-  return {
+  let s = {
     player: { x: 10, y: 0, z: 20 },
     teammate: { x: -5, y: 0, z: 15 },
     vip: { x: 3, y: 0, z: 8 },
-    correctSpawn: null, // computed later
+    selectedSpawn: null,
   };
+  s.correctSpawn = getCorrectSpawn(spawnPoints, [s.player, s.teammate], [s.vip]);
+  return s;
 }
 
 let scenario = generateScenario();
 
-addMarker(scenario.teammate.x, 0, scenario.teammate.z, 0xffffff);
-addMarker(scenario.vip.x, 0, scenario.vip.z, 0xffff00);
+addMarker3D(scenario.teammate.x, 5, scenario.teammate.z, 0xffffff);
+addMarker3D(scenario.vip.x, 5, scenario.vip.z, 0xffff00, 0.5, "star");
 
 spawnPoints.forEach(sp => {
-  addMarker(sp.x, 0, sp.y, 0x888888);
+  addNumberedMarker(sp.x, 5, sp.y, sp.id, 0x888888);
 });
 
-// animation loop
-function animate() {
-  requestAnimationFrame(animate);
-  handleMovement();
-  drawMinimap(scenario);
-  renderer.render(scene, camera);
-}
-
-animate();
 
 // --------------------
 // guessing logic
 // --------------------
 minimap.addEventListener("click", (e) => {
+  e.stopPropagation();  // Prevent the click from bubbling up
+  e.preventDefault();  // prevent focus/locking
+
   const rect = minimap.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
-
+  const worldClick = mapToWorld(x, y);
   const clicked = spawnPoints.find(p =>
-    Math.hypot(p.mapX - x, p.mapY - y) < 10
+    Math.hypot(p.mapX - worldClick.x, p.mapY - worldClick.z) < 8
   );
 
-  if (clicked && !hasGuessed) {
-    hasGuessed = true;
+  if (!clicked || hasGuessed) return;
 
-    // drawMinimap(scenario, clicked.id, correctSpawn);
+  hasGuessed = true;
 
-    if (clicked.id === correctSpawn) {
-      console.log("Correct!");
-    } else {
-      console.log("Wrong! Correct was:", correctSpawn);
-    }
+  scenario.selectedSpawn = clicked.id;
+  drawMinimap(scenario);
+
+  if (clicked.id === scenario.correctSpawn) {
+    console.log("Correct!");
+  } else {
+    console.log("Wrong! Correct was:", scenario.correctSpawn);
   }
 });
-
 
 // Place the player at the scenario start
 controls.getObject().position.set(
@@ -218,3 +349,21 @@ controls.getObject().position.set(
   scenario.player.y + 2,  // eye height above ground
   scenario.player.z
 );
+
+// animation loop
+function animate() {
+  requestAnimationFrame(animate);
+  handleMovement();
+  drawMinimap(scenario);
+  if (scenario.selectedSpawn) {
+      let cp = spawnPoints[scenario.correctSpawn - 1];
+      addNumberedMarker(cp.x, 5, cp.y, cp.id, 0x00ff00);
+      if (scenario.correctSpawn != scenario.selectedSpawn) {
+          let sp = spawnPoints[scenario.selectedSpawn - 1];
+          addNumberedMarker(sp.x, 5, sp.y, sp.id, 0xff0000);
+      };
+  };
+  renderer.render(scene, camera);
+}
+
+animate();
