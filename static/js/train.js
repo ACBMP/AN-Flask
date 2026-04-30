@@ -65,8 +65,6 @@ function getCorrectSpawn(spawnPoints, pursuerPoints, targetPoints) {
         });
         scores.push(score)
     }
-    console.log(pursuerPoints);
-    console.log(scores);
     return indexOfMax(scores) + 1;
 }
 
@@ -88,7 +86,6 @@ const renderer = new THREE.WebGLRenderer({
   antialias: true
 });
 
-console.log(window);
 renderer.setSize(1140, Math.round(1140 * 9 / 16));
 renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -129,8 +126,8 @@ document.addEventListener('mousemove', (event) => {
 });
 
 // lighting
-const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(10, 10, 10);
+const light = new THREE.DirectionalLight(0xffffff, 2);
+light.position.set(0, 30, 0);
 scene.add(light);
 
 const ambient = new THREE.AmbientLight(0x888888);
@@ -147,7 +144,6 @@ async function loadMap(name = "florence") {
         if (!response.ok) throw new Error(`Failed to fetch spawns: ${response.status}`);
         const data = await response.json();
         spawns = data.spawns;
-        console.log("Loaded spawns:", spawns);
     } catch (err) {
         console.error("Error loading spawns:", err);
         return [];
@@ -158,6 +154,24 @@ async function loadMap(name = "florence") {
         loader.load(
             `static/maps/${name}.obj`,
             (obj) => {
+                obj.traverse((child) => {
+    if (child.isMesh) {
+        // Optional: recompute normals for shading
+        child.geometry.computeVertexNormals();
+
+        // Assign material
+        child.material = new THREE.MeshStandardMaterial({
+            color: 0x888888, // or 0x888888 for gray
+            side: THREE.DoubleSide
+        });
+    const edges = new THREE.EdgesGeometry(child.geometry);
+    const line = new THREE.LineSegments(
+        edges,
+        new THREE.LineBasicMaterial({ color: 0xffffff })
+    );
+    child.add(line);
+}
+});
                 obj.scale.set(1, 1, 1);
                 obj.rotation.x = -Math.PI / 2; // adjust if needed
                 obj.rotation.y = Math.PI / 2
@@ -177,7 +191,6 @@ async function loadMap(name = "florence") {
 }
 
 let spawnPoints = await loadMap();
-console.log(spawnPoints);
 
 // --------------------
 // minimap
@@ -199,7 +212,7 @@ function mapToWorld(mx, my, scale = 2) {
   };
 }
 
-function drawMinimap(scenario) {
+function drawMinimap(scenario, hoveredId = null) {
   ctx.clearRect(0, 0, minimap.width, minimap.height);
 
   const p = scenario.player;
@@ -239,11 +252,19 @@ function drawMinimap(scenario) {
   // -------------------
   // SPAWN POINTS
   // -------------------
-  spawnPoints.forEach(sp => {
+  spawnPoints.slice().reverse().forEach(sp => {
+      let color = "white";
+      if (sp.id === hoveredId) {
+          color = "magenta";
+      }
+      drawPointMinimap(scenario, ctx, sp, color);
+  });
+}
+
+function drawPointMinimap(scenario, ctx, sp, color = "white") {
     const m = worldToMap(sp.x, sp.y);
 
-
-    ctx.fillStyle = "white";
+    ctx.fillStyle = color;
     if (scenario.selectedSpawn) {
         if (sp.id === scenario.correctSpawn) {
           ctx.fillStyle = "green";
@@ -253,14 +274,13 @@ function drawMinimap(scenario) {
     };
 
     ctx.beginPath();
-    ctx.arc(m.x, m.y, 8, 0, Math.PI * 2);
+    ctx.arc(m.x, m.y, 10, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(sp.id, m.x, m.y);
-  });
 }
 
 function addMarker(x, y, z, color) {
@@ -433,9 +453,9 @@ function onMinimapHover(e) {
 
     const worldPos = mapToWorld(mx, my);
 
-    // Find the spawn we're hovering over (radius 8 in minimap units)
+    // Find the spawn we're hovering over (radius 4 in minimap units)
     const hovered = spawnPoints.find(sp =>
-        Math.hypot(sp.x - worldPos.x, sp.y - worldPos.z) < 8
+        Math.hypot(sp.x - worldPos.x, sp.y - worldPos.z) < 5
     );
 
     if (hovered) {
@@ -483,7 +503,7 @@ function onMinimapHover(e) {
     }
 
     // Redraw minimap so the hover color can be applied
-    drawMinimap(scenario);
+    drawMinimap(scenario, hoverSpawnId);
 }
 
 // Listen for mouse move over the minimap
@@ -496,7 +516,7 @@ minimap.addEventListener("mouseleave", () => {
     hoverSpawnId = null;
     hoverArrowMesh = null;
     hoverMarkerMesh = null;
-    drawMinimap(scenario);
+    drawMinimap(scenario, hoverSpawnId);
 });
 
 // Place the player at the scenario start
@@ -512,7 +532,7 @@ scene.add(controls.getObject());
 function animate() {
   requestAnimationFrame(animate);
   handleMovement();
-  drawMinimap(scenario);
+  drawMinimap(scenario, hoverSpawnId);
   if (scenario.selectedSpawn) {
       let cp = spawnPoints[scenario.correctSpawn - 1];
       addNumberedMarker(cp.x, 5, cp.y, cp.id, 0x00ff00);
