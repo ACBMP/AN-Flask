@@ -139,7 +139,7 @@ scene.add(ambient);
 
 // load OBJ
 const loader = new OBJLoader();
-async function loadMap(name = "siena") {
+async function loadMap(name = "florence") {
     // Load spawn points
     let spawns = [];
     try {
@@ -160,6 +160,7 @@ async function loadMap(name = "siena") {
             (obj) => {
                 obj.scale.set(1, 1, 1);
                 obj.rotation.x = -Math.PI / 2; // adjust if needed
+                obj.rotation.y = Math.PI / 2
                 obj.rotation.z = Math.PI / 2;
                 scene.add(obj);
                 resolve();
