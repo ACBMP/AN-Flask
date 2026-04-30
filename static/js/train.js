@@ -283,7 +283,7 @@ function addMarker3D(x, y, z, color = 0xffffff, size = 0.5, shape = "sphere") {
     return mesh;
 }
 
-function addNumberedMarker(x, y, z, num, color = 0x888888, size = 0.5) {
+function addNumberedMarker(x, y, z, num, color = 0xaaaaaa, size = 0.5) {
     // 3D marker sphere
     const sphereGeo = new THREE.SphereGeometry(size, 16, 16);
     const sphereMat = new THREE.MeshBasicMaterial({ color });
@@ -377,7 +377,7 @@ addMarker3D(scenario.vip.x, 5, scenario.vip.z, 0xffff00, 0.5, "star");
 addMarker3D(scenario.vip.x, 15, scenario.vip.z, 0xffff00, 1, "arrowDown");
 
 spawnPoints.forEach(sp => {
-  addNumberedMarker(sp.x, 5, sp.y, sp.id, 0x888888);
+  addNumberedMarker(sp.x, 5, sp.y, sp.id);
 });
 
 
@@ -412,60 +412,82 @@ minimap.addEventListener("click", (e) => {
 
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
-let hoveredSpawn = null;
-let hoverArrow = null;
+let hoverSpawnId = null;
+let hoverArrowMesh = null;
+let hoverMarkerMesh = null;
 
-// Convert screen coordinates to normalized device coordinates
-function updateMouse(event) {
-    const rect = renderer.domElement.getBoundingClientRect();
-    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-}
+function onMinimapHover(e) {
+    const rect = minimap.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
 
-// Store meshes for spawns
-const spawnMeshes = spawnPoints.map(sp => {
-    const mesh = addNumberedMarker(sp.x, 5, sp.y, sp.id, 0x888888);
-    return { id: sp.id, mesh, position: sp };
-});
+    const worldPos = mapToWorld(mx, my);
 
-function onMouseMove(event) {
-    updateMouse(event);
+    // Find the spawn we're hovering over (radius 8 in minimap units)
+    const hovered = spawnPoints.find(sp =>
+        Math.hypot(sp.x - worldPos.x, sp.y - worldPos.z) < 8
+    );
 
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(spawnMeshes.map(s => s.mesh));
-
-    if (intersects.length > 0) {
-        const intersected = spawnMeshes.find(s => s.mesh === intersects[0].object);
-
-        if (!hoveredSpawn || hoveredSpawn.id !== intersected.id) {
-            // Restore previous
-            if (hoveredSpawn) {
-                hoveredSpawn.mesh.material.color.set(0x888888);
-                if (hoverArrow) scene.remove(hoverArrow);
+    if (hovered) {
+        if (hoverSpawnId !== hovered.id) {
+            // Restore previous spawn
+            if (hoverSpawnId !== null) {
+                const prev = spawnPoints.find(sp => sp.id === hoverSpawnId);
+                if (prev && hoverArrowMesh) scene.remove(hoverArrowMesh);
+                if (prev && hoverMarkerMesh) scene.remove(hoverMarkerMesh);
             }
 
-            // Highlight new
-            hoveredSpawn = intersected;
-            hoveredSpawn.mesh.material.color.set(0xffffff);
-            hoverArrow = addMarker3D(
-                hoveredSpawn.position.x,
-                7, // slightly above
-                hoveredSpawn.position.y,
-                0xffffff,
+            // Set new hover
+            hoverSpawnId = hovered.id;
+
+            // Add arrow above spawn
+            hoverArrowMesh = addMarker3D(
+                hovered.x,
+                7,  // adjust height above
+                hovered.y,
+                0xff00ff,
                 0.5,
                 "arrowDown"
             );
+
+            // Change marker color (optional)
+            // You could store mesh references for each spawn if you want to recolor
+            hoverMarkerMesh = addMarker3D(
+                hovered.x,
+                5,
+                hovered.y,
+                0xff00ff,
+                0.6,
+                "sphere"
+            );
         }
-    } else if (hoveredSpawn) {
-        // Remove highlight if no longer hovering
-        hoveredSpawn.mesh.material.color.set(0x888888);
-        if (hoverArrow) scene.remove(hoverArrow);
-        hoveredSpawn = null;
-        hoverArrow = null;
+    } else {
+        // Not hovering any spawn
+        if (hoverSpawnId !== null) {
+            if (hoverArrowMesh) scene.remove(hoverArrowMesh);
+            if (hoverMarkerMesh) scene.remove(hoverMarkerMesh);
+            hoverSpawnId = null;
+            hoverArrowMesh = null;
+            hoverMarkerMesh = null;
+        }
     }
+
+    // Redraw minimap so the hover color can be applied
+    drawMinimap(scenario);
 }
 
-window.addEventListener("mousemove", onMouseMove);
+// Listen for mouse move over the minimap
+minimap.addEventListener("mousemove", onMinimapHover);
+
+// Optional: remove arrow if the mouse leaves the minimap
+minimap.addEventListener("mouseleave", () => {
+    if (hoverArrowMesh) scene.remove(hoverArrowMesh);
+    if (hoverMarkerMesh) scene.remove(hoverMarkerMesh);
+    hoverSpawnId = null;
+    hoverArrowMesh = null;
+    hoverMarkerMesh = null;
+    drawMinimap(scenario);
+});
 
 // Place the player at the scenario start
 controls.getObject().position.set(
