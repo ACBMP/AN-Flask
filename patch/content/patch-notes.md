@@ -1,5 +1,14 @@
 # ACB 2.0 Patch Notes
 
+### 1.4.0
+
+* Chest Capture: removed chases, made chests always visible on defense, changed spawn rule to remove spawn kills, and made compass inaccurate.
+* Re-enabled Templar Vision with 2.5 s duration and a 50 s cooldown.
+* Lowered poison delay from 6.5 s to 3.5 s.
+* Raised intercepted bonus from +50 to +150.
+* Wanted: contract system is now less leader-focused.
+* Raised score x2 required losses from 5 to 6.
+
 ### 1.3.0
 
 * Merged sprint boosts into one version with 4.5 s duration, 135% speed boost, 50 s cooldown.

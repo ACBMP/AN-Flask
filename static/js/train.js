@@ -115,8 +115,17 @@ function handleMovement() {
   if (keys['ShiftLeft']) controls.getObject().position.y -= moveSpeed;  // down
 }
 
+function getCameraYawAngle() {
+    // Forward vector in world space
+    const forward = new THREE.Vector3(0, 0, -1);
+    forward.applyQuaternion(controls.getObject().quaternion); // rotate by camera orientation
+
+    // Compute angle on XZ plane
+    const angle = Math.atan2(forward.x, forward.z); // atan2(x, z) gives compass-like heading
+    return angle + Math.PI;
+}
 document.addEventListener('mousemove', (event) => {
-    cameraYaw = controls.getObject().rotation.y;
+    cameraYaw = getCameraYawAngle();
 });
 
 // lighting
@@ -200,7 +209,7 @@ function drawMinimap(scenario) {
   // -------------------
   ctx.save();
   ctx.translate(playerMap.x, playerMap.y);
-  ctx.rotate(-cameraYaw);
+    ctx.rotate(-cameraYaw);
 
   ctx.fillStyle = "cyan";
   ctx.beginPath();
@@ -495,6 +504,7 @@ controls.getObject().position.set(
   scenario.player.y + 2,  // eye height above ground
   scenario.player.z
 );
+camera.lookAt(0, 5, 0);
 scene.add(controls.getObject());
 
 // animation loop
