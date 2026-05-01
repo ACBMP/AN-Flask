@@ -12,12 +12,37 @@ html, body {
 
 canvas#gameCanvas {
     display: block;
+    position: absolute;
+    z-index: 0;
 }
+
+#mapSelect, #nextBtn, #stats, #minimap {
+    position: absolute;   /* place them wherever you want */
+    z-index: 10;          /* above the canvas */
+}
+#mapSelect { top: 60px; left: 20px }
+#nextBtn { top: 60px;  right: 250px } 
+#minimap { top: 80px; right: 10px; }
+#stats { bottom: 10px; left: 10px; }
+#gameCanvas { top: 50px; left: 300px; right: 300px;}
 </style>
 <body>
   <select id="mapSelect"></select>
   <button id="nextBtn">Next</button>
-  <canvas id="gameCanvas"></canvas>
+  <div id="loadingOverlay" style="
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    color: white;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+">
+    Loading map...
+</div>
+<canvas id="gameCanvas"></canvas>
   <canvas id="minimap" width="300" height="300"></canvas>
   <div id="stats"></div>
 

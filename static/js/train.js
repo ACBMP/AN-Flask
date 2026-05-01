@@ -114,7 +114,8 @@ const renderer = new THREE.WebGLRenderer({
   antialias: true
 });
 
-renderer.setSize(1140, Math.round(1140 * 9 / 16));
+let gameWidth = 1320;
+renderer.setSize(gameWidth, Math.round(gameWidth * 9 / 16));
 renderer.setPixelRatio(window.devicePixelRatio);
 
 const controls = new PointerLockControls(camera, renderer.domElement);
@@ -162,11 +163,22 @@ scene.add(light);
 const ambient = new THREE.AmbientLight(0x888888);
 scene.add(ambient);
 
+const loadingOverlay = document.getElementById('loadingOverlay');
+let dots = 0;
+const loadingInterval = setInterval(() => {
+    if (loadingOverlay.style.display === 'flex') {
+        dots = (dots + 1) % 4;
+        loadingOverlay.innerText = "Loading map" + ".".repeat(dots);
+    } else {
+        clearInterval(loadingInterval);
+    }
+}, 500);
+
 async function loadMapList() {
     try {
         const res = await fetch("https://api.assassins.network/maps/list/Escort");
         const data = await res.json();
-        return data.map(m => m.name);
+        return data.map(m => m.name).sort();
     } catch (e) {
         console.error("Failed to load map list", e);
         return [];
@@ -186,6 +198,7 @@ maps.forEach(m => {
 // load OBJ
 const loader = new OBJLoader();
 async function loadMap(name = "siena") {
+    loadingOverlay.style.display = "flex";
     // Load spawn points
     let spawns = [];
     try {
@@ -226,6 +239,7 @@ async function loadMap(name = "siena") {
                 // obj.rotation.y = Math.PI / 2
                 obj.rotation.z = Math.PI / 2;
                 scene.add(obj);
+                loadingOverlay.style.display = "none";
                 resolve();
             },
             undefined,
@@ -266,6 +280,17 @@ function drawMinimap(scenario, hoveredId = null) {
   const playerMap = worldToMap(p.x, p.z);
 
   // -------------------
+  // SPAWN POINTS
+  // -------------------
+  spawnPoints.slice().reverse().forEach(sp => {
+      let color = "white";
+      if (sp.id === hoveredId) {
+          color = "magenta";
+      }
+      drawPointMinimap(scenario, ctx, sp, color);
+  });
+
+  // -------------------
   // PLAYER (rotating arrow)
   // -------------------
   ctx.save();
@@ -295,17 +320,6 @@ function drawMinimap(scenario, hoveredId = null) {
   // -------------------
   const v = worldToMap(scenario.vip.x, scenario.vip.z);
   ctx.fillText("⭐", v.x, v.y);
-
-  // -------------------
-  // SPAWN POINTS
-  // -------------------
-  spawnPoints.slice().reverse().forEach(sp => {
-      let color = "white";
-      if (sp.id === hoveredId) {
-          color = "magenta";
-      }
-      drawPointMinimap(scenario, ctx, sp, color);
-  });
 }
 
 function drawPointMinimap(scenario, ctx, sp, color = "white") {
@@ -483,6 +497,7 @@ function nextRound() {
         scenario.player.y + 2,
         scenario.player.z
     );
+    camera.lookAt(0, 5, 0);
 }
 
 // --------------------
