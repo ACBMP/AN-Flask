@@ -91,14 +91,6 @@ renderer.setPixelRatio(window.devicePixelRatio);
 
 const controls = new PointerLockControls(camera, renderer.domElement);
 
-// lock pointer on click
-document.body.addEventListener('click', (e) => {
-  // Only lock pointer if the click was NOT on the minimap
-  if (!controls.isLocked && e.target !== minimap) {
-    controls.lock();
-  }
-});
-
 // optional: movement via keyboard
 const moveSpeed = 0.2;
 const keys = {};
@@ -133,10 +125,30 @@ scene.add(light);
 const ambient = new THREE.AmbientLight(0x888888);
 scene.add(ambient);
 
+async function loadMapList() {
+    try {
+        const res = await fetch("https://api.assassins.network/maps/list/Escort");
+        const data = await res.json();
+        return data.map(m => m.name);
+    } catch (e) {
+        console.error("Failed to load map list", e);
+        return [];
+    }
+}
+
+const mapSelect = document.getElementById("mapSelect");
+
+const maps = await loadMapList();
+maps.forEach(m => {
+    const opt = document.createElement("option");
+    opt.value = m;
+    opt.textContent = m;
+    mapSelect.appendChild(opt);
+});
 
 // load OBJ
 const loader = new OBJLoader();
-async function loadMap(name = "florence") {
+async function loadMap(name = "siena") {
     // Load spawn points
     let spawns = [];
     try {
@@ -172,9 +184,9 @@ async function loadMap(name = "florence") {
     child.add(line);
 }
 });
-                obj.scale.set(1, 1, 1);
+                obj.scale.set(1.2, 1.2, 1.2);
                 obj.rotation.x = -Math.PI / 2; // adjust if needed
-                obj.rotation.y = Math.PI / 2
+                // obj.rotation.y = Math.PI / 2
                 obj.rotation.z = Math.PI / 2;
                 scene.add(obj);
                 resolve();
@@ -189,8 +201,6 @@ async function loadMap(name = "florence") {
 
     return spawns;
 }
-
-let spawnPoints = await loadMap();
 
 // --------------------
 // minimap
@@ -399,15 +409,30 @@ function generateScenario() {
   return s;
 }
 
+function populateScene(scenario, spawnPoints) {
+    addMarker3D(scenario.teammate.x, 5, scenario.teammate.z, 0x0000ff);
+    addMarker3D(scenario.teammate.x, 15, scenario.teammate.z, 0x0000ff, 1, "arrowDown");
+    addMarker3D(scenario.vip.x, 5, scenario.vip.z, 0xffff00, 0.5, "star");
+    addMarker3D(scenario.vip.x, 15, scenario.vip.z, 0xffff00, 1, "arrowDown");
+
+    spawnPoints.forEach(sp => {
+        addNumberedMarker(sp.x, 5, sp.y, sp.id);
+    });
+}
+
+
+// let spawnPoints = await loadMap(mapSelect.value.toLowerCase());
+let spawnPoints = await loadMap("siena");
 let scenario = generateScenario();
+populateScene(scenario, spawnPoints);
 
-addMarker3D(scenario.teammate.x, 5, scenario.teammate.z, 0x0000ff);
-addMarker3D(scenario.teammate.x, 15, scenario.teammate.z, 0x0000ff, 1, "arrowDown");
-addMarker3D(scenario.vip.x, 5, scenario.vip.z, 0xffff00, 0.5, "star");
-addMarker3D(scenario.vip.x, 15, scenario.vip.z, 0xffff00, 1, "arrowDown");
+mapSelect.addEventListener("change", async () => {
+    scene.clear();
 
-spawnPoints.forEach(sp => {
-  addNumberedMarker(sp.x, 5, sp.y, sp.id);
+    spawnPoints = await loadMap(mapSelect.value.toLowerCase());
+    scenario = generateScenario();
+
+    populateScene(scenario, spawnPoints);
 });
 
 
@@ -439,6 +464,15 @@ minimap.addEventListener("click", (e) => {
     console.log("Wrong! Correct was:", scenario.correctSpawn);
   }
 });
+
+// lock pointer on click
+document.body.addEventListener('click', (e) => {
+  // Only lock pointer if the click was NOT on the minimap
+  if (!controls.isLocked && e.target !== minimap) {
+    controls.lock();
+  }
+});
+
 
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
