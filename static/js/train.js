@@ -5,7 +5,8 @@ import { PointerLockControls } from 'three/addons/controls/PointerLockControls.j
 let stats = {
     total: 0,
     correct: 0,
-    streak: 0
+    streak: 0,
+    maxStreak: 0
 };
 
 function saveStats() {
@@ -25,7 +26,7 @@ function updateStatsUI() {
         : ((stats.correct / stats.total) * 100).toFixed(1);
 
     document.getElementById("stats").innerText =
-        `Total: ${stats.total} | Correct: ${stats.correct} | ${percent}% | Streak: ${stats.streak}`;
+        `Total: ${stats.total} | Correct: ${stats.correct} | ${percent}% | Streak: ${stats.streak} | Max Streak: ${stats.maxStreak}`;
 }
 
 loadStats();
@@ -557,7 +558,7 @@ minimap.addEventListener("click", (e) => {
   const y = e.clientY - rect.top;
   const worldClick = mapToWorld(x, y);
   const clicked = spawnPoints.find(p =>
-    Math.hypot(p.x - worldClick.x, p.y - worldClick.z) < 8
+    Math.hypot(p.x - worldClick.x, p.y - worldClick.z) < 5
   );
 
   if (!clicked || hasGuessed) return;
@@ -572,6 +573,7 @@ minimap.addEventListener("click", (e) => {
     console.log("Correct!");
     stats.correct++;
     stats.streak++;
+    if (stats.streak > stats.maxStreak) stats.maxStreak = stats.streak;
   } else {
     console.log("Wrong! Correct was:", scenario.correctSpawn);
     stats.streak = 0;
@@ -605,7 +607,7 @@ function onMinimapHover(e) {
 
     const worldPos = mapToWorld(mx, my);
 
-    // Find the spawn we're hovering over (radius 4 in minimap units)
+    // Find the spawn we're hovering over (radius 5 in minimap units)
     const hovered = spawnPoints.find(sp =>
         Math.hypot(sp.x - worldPos.x, sp.y - worldPos.z) < 5
     );
