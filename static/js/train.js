@@ -2,6 +2,34 @@ import * as THREE from 'three';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 
+let stats = {
+    total: 0,
+    correct: 0,
+    streak: 0
+};
+
+function saveStats() {
+    document.cookie = "stats=" + JSON.stringify(stats) + ";path=/";
+}
+
+function loadStats() {
+    const match = document.cookie.match(/stats=([^;]+)/);
+    if (match) {
+        stats = JSON.parse(match[1]);
+    }
+}
+
+function updateStatsUI() {
+    const percent = stats.total === 0
+        ? 0
+        : ((stats.correct / stats.total) * 100).toFixed(1);
+
+    document.getElementById("stats").innerText =
+        `Total: ${stats.total} | Correct: ${stats.correct} | ${percent}% | Streak: ${stats.streak}`;
+}
+
+loadStats();
+updateStatsUI();
 
 const minR = [30, 4, 30]
 const smallR = [40, 5, 40]
@@ -353,18 +381,7 @@ function addNumberedMarker(x, y, z, num, color = 0xaaaaaa, size = 0.5) {
     return sphere;
 }
 
-// function newRound(scenario) {
-//   hasGuessed = false;
 
-//   // Pick one random spawn as the correct one
-//   const randomIndex = Math.floor(Math.random() * spawnPoints.length);
-//   scenario.correctSpawn = spawnPoints[randomIndex].id;
-
-//   drawMinimap(scenario);
-// }
-
-// setTimeout(newRound, 2000);
-//
 function getBounds(spawnPoints) {
   let minX = Infinity, maxX = -Infinity;
   let minY = Infinity, maxY = -Infinity;
@@ -409,6 +426,7 @@ function generateScenario() {
   return s;
 }
 
+let spawnMarkers = [];
 function populateScene(scenario, spawnPoints) {
     addMarker3D(scenario.teammate.x, 5, scenario.teammate.z, 0x0000ff);
     addMarker3D(scenario.teammate.x, 15, scenario.teammate.z, 0x0000ff, 1, "arrowDown");
@@ -416,7 +434,7 @@ function populateScene(scenario, spawnPoints) {
     addMarker3D(scenario.vip.x, 15, scenario.vip.z, 0xffff00, 1, "arrowDown");
 
     spawnPoints.forEach(sp => {
-        addNumberedMarker(sp.x, 5, sp.y, sp.id);
+        spawnMarkers.push(addNumberedMarker(sp.x, 5, sp.y, sp.id));
     });
 }
 
@@ -435,6 +453,28 @@ mapSelect.addEventListener("change", async () => {
     populateScene(scenario, spawnPoints);
 });
 
+function nextRound() {
+    hasGuessed = false;
+    hoverSpawnId = null;
+
+    // remove hover meshes
+    if (hoverArrowMesh) scene.remove(hoverArrowMesh);
+    if (hoverMarkerMesh) scene.remove(hoverMarkerMesh);
+    hoverArrowMesh = null;
+    hoverMarkerMesh = null;
+
+    const basic_mesh = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
+    spawnMarkers[scenario.correctSpawn - 1].material = basic_mesh;
+    spawnMarkers[scenario.selectedSpawn - 1].material = basic_mesh;
+    scenario = generateScenario();
+
+    // reset player position
+    controls.getObject().position.set(
+        scenario.player.x,
+        scenario.player.y + 2,
+        scenario.player.z
+    );
+}
 
 // --------------------
 // guessing logic
@@ -458,11 +498,21 @@ minimap.addEventListener("click", (e) => {
   scenario.selectedSpawn = clicked.id;
   drawMinimap(scenario);
 
+  stats.total++;
   if (clicked.id === scenario.correctSpawn) {
     console.log("Correct!");
+    stats.correct++;
+    stats.streak++;
   } else {
     console.log("Wrong! Correct was:", scenario.correctSpawn);
+    stats.streak = 0;
   }
+  saveStats();
+  updateStatsUI();
+});
+
+document.getElementById("nextBtn").addEventListener("click", () => {
+    nextRound();
 });
 
 // lock pointer on click
@@ -568,11 +618,11 @@ function animate() {
   handleMovement();
   drawMinimap(scenario, hoverSpawnId);
   if (scenario.selectedSpawn) {
-      let cp = spawnPoints[scenario.correctSpawn - 1];
-      addNumberedMarker(cp.x, 5, cp.y, cp.id, 0x00ff00);
+      let cp = spawnMarkers[scenario.correctSpawn - 1];
+      cp.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
       if (scenario.correctSpawn != scenario.selectedSpawn) {
-          let sp = spawnPoints[scenario.selectedSpawn - 1];
-          addNumberedMarker(sp.x, 5, sp.y, sp.id, 0xff0000);
+          let sp = spawnMarkers[scenario.selectedSpawn - 1];
+          sp.material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
       };
   };
   renderer.render(scene, camera);
