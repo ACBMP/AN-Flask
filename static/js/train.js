@@ -207,7 +207,7 @@ maps.forEach(m => {
 
 // load OBJ
 const loader = new OBJLoader();
-async function loadMap(name = "siena") {
+async function loadMap(name = "florence") {
     loadingOverlay.style.display = "flex";
     // Load spawn points
     let spawns = [];
@@ -215,7 +215,7 @@ async function loadMap(name = "siena") {
         const response = await fetch(`https://api.assassins.network/maps/spawns/${name}`);
         if (!response.ok) throw new Error(`Failed to fetch spawns: ${response.status}`);
         const data = await response.json();
-        spawns = data.spawns;
+        spawns = data.spawns.map(sp => ({id: sp.id, x: sp.y, y: sp.x}));
     } catch (err) {
         console.error("Error loading spawns:", err);
         return [];
@@ -244,10 +244,10 @@ async function loadMap(name = "siena") {
     child.add(line);
 }
 });
-                obj.scale.set(1.2, 1.2, 1.2);
-                obj.rotation.x = -Math.PI / 2; // adjust if needed
+                obj.scale.set(1., 1., 1.);
+                // obj.rotation.x = -Math.PI / 2; // adjust if needed
                 // obj.rotation.y = Math.PI / 2
-                obj.rotation.z = Math.PI / 2;
+                // obj.rotation.z = 0.5 * Math.PI;
                 scene.add(obj);
                 loadingOverlay.style.display = "none";
                 resolve();
@@ -509,7 +509,7 @@ teammateToggle.addEventListener("change", restartScenario);
 vipCountSelect.addEventListener("change", restartScenario);
 
 // let spawnPoints = await loadMap(mapSelect.value.toLowerCase());
-let spawnPoints = await loadMap("siena");
+let spawnPoints = await loadMap("florence");
 let scenario = generateScenario();
 populateScene(scenario, spawnPoints);
 
