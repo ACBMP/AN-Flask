@@ -515,10 +515,9 @@ document.getElementById("nextBtn").addEventListener("click", () => {
     nextRound();
 });
 
-// lock pointer on click
+// lock pointer on click if in gameCanvas
 document.body.addEventListener('click', (e) => {
-  // Only lock pointer if the click was NOT on the minimap
-  if (!controls.isLocked && e.target !== minimap) {
+  if (!controls.isLocked && e.target === gameCanvas) {
     controls.lock();
   }
 });
