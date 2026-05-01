@@ -186,6 +186,15 @@ async function loadMapList() {
 }
 
 const mapSelect = document.getElementById("mapSelect");
+const teammateToggle = document.getElementById("teammateToggle");
+const vipCountSelect = document.getElementById("vipCount");
+
+function getSettings() {
+  return {
+    teammateEnabled: teammateToggle.checked,
+    vipCount: parseInt(vipCountSelect.value, 0)
+  };
+}
 
 const maps = await loadMapList();
 maps.forEach(m => {
@@ -310,16 +319,20 @@ function drawMinimap(scenario, hoveredId = null) {
   // -------------------
   // TEAMMATE (silhouette)
   // -------------------
+  if (scenario.teammate) {
   const t = worldToMap(scenario.teammate.x, scenario.teammate.z);
   ctx.fillStyle = "white";
   ctx.font = "16px Arial";
   ctx.fillText("🧑", t.x, t.y);
+  }
 
   // -------------------
   // VIP (star)
   // -------------------
-  const v = worldToMap(scenario.vip.x, scenario.vip.z);
-  ctx.fillText("⭐", v.x, v.y);
+  scenario.vips.forEach(vip => {
+    const v = worldToMap(vip.x, vip.z);
+    ctx.fillText("⭐", v.x, v.y);
+  });
 }
 
 function drawPointMinimap(scenario, ctx, sp, color = "white") {
@@ -425,42 +438,74 @@ function randomInRange(min, max) {
 
 function generateScenario() {
   const bounds = getBounds(spawnPoints);
+  const settings = getSettings();
 
-  let s = {
+  const s = {
     player: {
       x: randomInRange(bounds.minX, bounds.maxX),
       y: 0,
       z: randomInRange(bounds.minY, bounds.maxY)
     },
-    teammate: {
-      x: randomInRange(bounds.minX, bounds.maxX),
-      y: 0,
-      z: randomInRange(bounds.minY, bounds.maxY)
-    },
-    vip: {
-      x: randomInRange(bounds.minX, bounds.maxX),
-      y: 0,
-      z: randomInRange(bounds.minY, bounds.maxY)
-    },
+    teammate: null,
+    vips: [],
     selectedSpawn: null,
   };
 
-  s.correctSpawn = getCorrectSpawn(spawnPoints, [s.player, s.teammate], [s.vip]);
+  if (settings.teammateEnabled) {
+    s.teammate = {
+      x: randomInRange(bounds.minX, bounds.maxX),
+      y: 0,
+      z: randomInRange(bounds.minY, bounds.maxY)
+    };
+  }
+
+  for (let i = 0; i < settings.vipCount; i++) {
+    s.vips.push({
+      x: randomInRange(bounds.minX, bounds.maxX),
+      y: 0,
+      z: randomInRange(bounds.minY, bounds.maxY)
+    });
+  }
+
+  const pursuers = [s.player];
+  if (s.teammate) pursuers.push(s.teammate);
+
+  s.correctSpawn = getCorrectSpawn(spawnPoints, pursuers, s.vips);
+
   return s;
 }
 
 let spawnMarkers = [];
+let personaMarkers = [];
 function populateScene(scenario, spawnPoints) {
-    addMarker3D(scenario.teammate.x, 5, scenario.teammate.z, 0x0000ff);
-    addMarker3D(scenario.teammate.x, 15, scenario.teammate.z, 0x0000ff, 1, "arrowDown");
-    addMarker3D(scenario.vip.x, 5, scenario.vip.z, 0xffff00, 0.5, "star");
-    addMarker3D(scenario.vip.x, 15, scenario.vip.z, 0xffff00, 1, "arrowDown");
+  spawnMarkers = [];
 
-    spawnPoints.forEach(sp => {
-        spawnMarkers.push(addNumberedMarker(sp.x, 5, sp.y, sp.id));
-    });
+  personaMarkers = []
+  if (scenario.teammate) {
+    personaMarkers.push(addMarker3D(scenario.teammate.x, 5, scenario.teammate.z, 0x0000ff));
+    personaMarkers.push(addMarker3D(scenario.teammate.x, 15, scenario.teammate.z, 0x0000ff, 1, "arrowDown"));
+  }
+
+  scenario.vips.forEach(vip => {
+    personaMarkers.push(addMarker3D(vip.x, 5, vip.z, 0xffff00, 0.5, "star"));
+    personaMarkers.push(addMarker3D(vip.x, 15, vip.z, 0xffff00, 1, "arrowDown"));
+  });
+
+  spawnPoints.forEach(sp => {
+    spawnMarkers.push(addNumberedMarker(sp.x, 5, sp.y, sp.id));
+  });
 }
 
+function restartScenario() {
+  personaMarkers.forEach(m => {
+      scene.remove(m);
+  });
+  scenario = generateScenario();
+  populateScene(scenario, spawnPoints);
+}
+
+teammateToggle.addEventListener("change", restartScenario);
+vipCountSelect.addEventListener("change", restartScenario);
 
 // let spawnPoints = await loadMap(mapSelect.value.toLowerCase());
 let spawnPoints = await loadMap("siena");
