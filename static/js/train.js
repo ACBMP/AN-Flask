@@ -555,8 +555,7 @@ function restartScenario() {
 teammateToggle.addEventListener("change", restartScenario);
 vipCountSelect.addEventListener("change", restartScenario);
 
-// let spawnPoints = await loadMap(mapSelect.value.toLowerCase());
-let spawnPoints = await loadMap("florence");
+let spawnPoints = await loadMap(mapSelect.value.toLowerCase());
 let scenario = generateScenario();
 populateScene(scenario, spawnPoints);
 
