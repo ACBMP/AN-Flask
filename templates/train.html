@@ -16,13 +16,14 @@ canvas#gameCanvas {
     z-index: 0;
 }
 
-#mapSelect, #nextBtn, #stats, #minimap, #teammateToggleWrapper, #vipCount{
+#mapSelect, #nextBtn, #stats, #minimap, #teammateToggleWrapper, #vipCount, #cheatBtn{
     position: absolute;   /* place them wherever you want */
     z-index: 10;          /* above the canvas */
 }
 #mapSelect { top: 60px; left: 20px }
 #teammateToggleWrapper { top: 100px; left: 20px }
 #vipCount { top: 140px; left: 20px }
+#cheatBtn { top: 180px; left: 20px }
 #nextBtn { top: 60px;  right: 250px } 
 #minimap { top: 80px; right: 10px; }
 #stats { bottom: 10px; left: 10px; }
@@ -31,6 +32,7 @@ canvas#gameCanvas {
 <body>
   <select id="mapSelect"></select>
   <button id="nextBtn">Next</button>
+  <button id="cheatBtn">Enable Bands</button>
   <div id="teammateToggleWrapper">
   <label>
     <input type="checkbox" id="teammateToggle" checked />

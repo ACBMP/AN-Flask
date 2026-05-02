@@ -37,6 +37,8 @@ const smallR = [40, 5, 40]
 const largeR = [60, 15, 60]
 const maxR = [90, 100, 90]
 const w = [0.2, 0.2, 0.5]
+const baseSpawnColor = 0xffffff;
+const bandAlpha = 0.02;
 
 function indexOfMax(arr) {
     if (arr.length === 0) {
@@ -157,7 +159,7 @@ document.addEventListener('mousemove', (event) => {
 });
 
 // lighting
-const light = new THREE.DirectionalLight(0xffffff, 2);
+const light = new THREE.DirectionalLight(baseSpawnColor, 2);
 light.position.set(0, 30, 0);
 scene.add(light);
 
@@ -189,6 +191,13 @@ async function loadMapList() {
 const mapSelect = document.getElementById("mapSelect");
 const teammateToggle = document.getElementById("teammateToggle");
 const vipCountSelect = document.getElementById("vipCount");
+const cheatBtn = document.getElementById("cheatBtn");
+let cheatEnabled = false;
+
+cheatBtn.addEventListener("click", () => {
+    cheatEnabled = !cheatEnabled;
+    drawMinimap(scenario, hoverSpawnId);
+});
 
 function getSettings() {
   return {
@@ -233,13 +242,13 @@ async function loadMap(name = "florence") {
 
         // Assign material
         child.material = new THREE.MeshStandardMaterial({
-            color: 0x888888, // or 0x888888 for gray
+            color: 0x222222, // or 0x888888 for gray
             side: THREE.DoubleSide
         });
     const edges = new THREE.EdgesGeometry(child.geometry);
     const line = new THREE.LineSegments(
         edges,
-        new THREE.LineBasicMaterial({ color: 0xffffff })
+        new THREE.LineBasicMaterial({ color: baseSpawnColor })
     );
     child.add(line);
 }
@@ -356,6 +365,44 @@ function drawPointMinimap(scenario, ctx, sp, color = "white") {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(sp.id, m.x, m.y);
+
+    if (cheatEnabled) {
+
+        // Helper function to draw bands around a world position
+        function drawBands(worldX, worldZ, rIndex) {
+            const mapPos = worldToMap(worldX, worldZ);
+
+            // Blue: minR → smallR
+            ctx.beginPath();
+            ctx.arc(mapPos.x, mapPos.y, smallR[rIndex], 0, 2 * Math.PI);
+            ctx.arc(mapPos.x, mapPos.y, minR[rIndex], 0, 2 * Math.PI, true);
+            ctx.fillStyle = `rgba(0, 0, 255, ${bandAlpha})`;
+            ctx.fill();
+
+            // Green: smallR → largeR
+            ctx.beginPath();
+            ctx.arc(mapPos.x, mapPos.y, largeR[rIndex], 0, 2 * Math.PI);
+            ctx.arc(mapPos.x, mapPos.y, smallR[rIndex], 0, 2 * Math.PI, true);
+            ctx.fillStyle = `rgba(0, 255, 0, ${bandAlpha})`;
+            ctx.fill();
+
+            // Red: largeR → maxR
+            ctx.beginPath();
+            ctx.arc(mapPos.x, mapPos.y, maxR[rIndex], 0, 2 * Math.PI);
+            ctx.arc(mapPos.x, mapPos.y, largeR[rIndex], 0, 2 * Math.PI, true);
+            ctx.fillStyle = `rgba(255, 0, 0, ${bandAlpha})`;
+            ctx.fill();
+        }
+
+        // Draw bands around player (pursuer)
+        drawBands(scenario.player.x, scenario.player.z, 0);
+
+        // Draw bands around teammate if exists (pursuer)
+        if (scenario.teammate) drawBands(scenario.teammate.x, scenario.teammate.z, 0);
+
+        // Draw bands around VIPs (targets)
+        scenario.vips.forEach(vip => drawBands(vip.x, vip.z, 2));
+    }
 }
 
 function addMarker(x, y, z, color) {
@@ -366,7 +413,7 @@ function addMarker(x, y, z, color) {
   scene.add(mesh);
 }
 
-function addMarker3D(x, y, z, color = 0xffffff, size = 0.5, shape = "sphere") {
+function addMarker3D(x, y, z, color = baseSpawnColor, size = 0.5, shape = "sphere") {
     let mesh;
     if (shape === "sphere") {
         const geo = new THREE.SphereGeometry(size, 16, 16);
@@ -388,7 +435,7 @@ function addMarker3D(x, y, z, color = 0xffffff, size = 0.5, shape = "sphere") {
     return mesh;
 }
 
-function addNumberedMarker(x, y, z, num, color = 0xaaaaaa, size = 0.5) {
+function addNumberedMarker(x, y, z, num, color = baseSpawnColor, size = 0.5) {
     // 3D marker sphere
     const sphereGeo = new THREE.SphereGeometry(size, 16, 16);
     const sphereMat = new THREE.MeshBasicMaterial({ color });
@@ -532,7 +579,7 @@ function nextRound() {
     hoverArrowMesh = null;
     hoverMarkerMesh = null;
 
-    const basic_mesh = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
+    const basic_mesh = new THREE.MeshBasicMaterial({ color: baseSpawnColor });
     spawnMarkers[scenario.correctSpawn - 1].material = basic_mesh;
     if (scenario.selectedSpawn) spawnMarkers[scenario.selectedSpawn - 1].material = basic_mesh;
     personaMarkers.forEach(m => scene.remove(m));
