@@ -534,7 +534,7 @@ function nextRound() {
 
     const basic_mesh = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
     spawnMarkers[scenario.correctSpawn - 1].material = basic_mesh;
-    spawnMarkers[scenario.selectedSpawn - 1].material = basic_mesh;
+    if (scenario.selectedSpawn) spawnMarkers[scenario.selectedSpawn - 1].material = basic_mesh;
     scenario = generateScenario();
 
     // reset player position
