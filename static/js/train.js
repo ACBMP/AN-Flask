@@ -206,7 +206,9 @@ function getSettings() {
   };
 }
 
-const maps = await loadMapList();
+// const maps = await loadMapList();
+// since not all maps are ready let's just hardcode these for now
+const maps = ["Florence", "Siena"];
 maps.forEach(m => {
     const opt = document.createElement("option");
     opt.value = m;
