@@ -6,16 +6,12 @@ let stats = {
     total: 0,
     correct: 0,
     streak: 0,
-    maxStreak: 0
+    maxStreak: 0,
+    distanceTotal: 0,
+    distanceSum: 0
 };
 const guessDistanceToggle = document.getElementById("guessDistance");
 let guessDistanceMode = guessDistanceToggle.checked;
-
-let distanceStats = {
-    total: 0,
-    sum: 0
-};
-
 
 function saveStats() {
     document.cookie = "stats=" + JSON.stringify(stats) + ";path=/";
@@ -30,12 +26,12 @@ function loadStats() {
 
 function updateStatsUI() {
     if (guessDistanceMode) {
-        const avg = distanceStats.total === 0
+        const avg = stats.distanceTotal === 0
             ? 0
-            : (distanceStats.sum / distanceStats.total).toFixed(2);
+            : (stats.distanceSum / stats.distanceTotal).toFixed(2);
 
         document.getElementById("stats").innerText =
-            `Total: ${distanceStats.total} | Avg Distance: ${avg}`;
+            `Total: ${stats.distanceTotal} | Avg Distance: ${avg}`;
         return;
     }
 
