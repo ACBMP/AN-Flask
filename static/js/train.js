@@ -528,7 +528,7 @@ function drawPointMinimap(scenario, ctx, sp, color = "white") {
         drawBands(scenario.player.x, scenario.player.z, 0);
 
         // Draw bands around teammate if exists (pursuer)
-        if (scenario.teammate) drawBands(scenario.teammate.x, scenario.teammate.z, 0);
+        scenario.teammates.forEach(teammate => drawBands(teammate.x, teammate.z, 0));
 
         // Draw bands around VIPs (targets)
         scenario.vips.forEach(vip => drawBands(vip.x, vip.z, 2));
