@@ -8,6 +8,14 @@ let stats = {
     streak: 0,
     maxStreak: 0
 };
+const guessDistanceToggle = document.getElementById("guessDistance");
+let guessDistanceMode = guessDistanceToggle.checked;
+
+let distanceStats = {
+    total: 0,
+    sum: 0
+};
+
 
 function saveStats() {
     document.cookie = "stats=" + JSON.stringify(stats) + ";path=/";
@@ -21,6 +29,16 @@ function loadStats() {
 }
 
 function updateStatsUI() {
+    if (guessDistanceMode) {
+        const avg = distanceStats.total === 0
+            ? 0
+            : (distanceStats.sum / distanceStats.total).toFixed(2);
+
+        document.getElementById("stats").innerText =
+            `Total: ${distanceStats.total} | Avg Distance: ${avg}`;
+        return;
+    }
+
     const percent = stats.total === 0
         ? 0
         : ((stats.correct / stats.total) * 100).toFixed(1);
@@ -31,6 +49,11 @@ function updateStatsUI() {
 
 loadStats();
 updateStatsUI();
+
+guessDistanceToggle.addEventListener("change", () => {
+    guessDistanceMode = guessDistanceToggle.checked;
+    updateStatsUI();
+});
 
 const minR = [30, 4, 30]
 const smallR = [40, 5, 40]
@@ -191,10 +214,10 @@ async function loadMapList() {
 const mapSelect = document.getElementById("mapSelect");
 const teammateToggle = document.getElementById("teammateToggle");
 const vipCountSelect = document.getElementById("vipCount");
-const cheatBtn = document.getElementById("cheatBtn");
-let cheatEnabled = false;
+const cheatToggle = document.getElementById("bandsToggle");
+let cheatEnabled = cheatToggle.checked;
 
-cheatBtn.addEventListener("click", () => {
+cheatToggle.addEventListener("change", () => {
     cheatEnabled = !cheatEnabled;
     drawMinimap(scenario, hoverSpawnId);
 });
@@ -297,6 +320,41 @@ function mapToWorld(mx, my, scale = 2) {
 function drawMinimap(scenario, hoveredId = null) {
   ctx.clearRect(0, 0, minimap.width, minimap.height);
 
+        // -------------------
+    // AXES
+    // -------------------
+    ctx.strokeStyle = "gray";
+    ctx.lineWidth = 1;
+
+    // horizontal X axis
+    ctx.beginPath();
+    ctx.moveTo(0, minimap.height / 2);
+    ctx.lineTo(minimap.width, minimap.height / 2);
+    ctx.stroke();
+
+    // vertical Z axis
+    ctx.beginPath();
+    ctx.moveTo(minimap.width / 2, 0);
+    ctx.lineTo(minimap.width / 2, minimap.height);
+    ctx.stroke();
+
+    // optionally: add tick marks
+    const tickSize = 5;
+    const tickStep = 50; // pixels
+    for (let i = 0; i < minimap.width; i += tickStep) {
+        ctx.beginPath();
+        ctx.moveTo(i, minimap.height / 2 - tickSize);
+        ctx.lineTo(i, minimap.height / 2 + tickSize);
+        ctx.stroke();
+    }
+    for (let j = 0; j < minimap.height; j += tickStep) {
+        ctx.beginPath();
+        ctx.moveTo(minimap.width / 2 - tickSize, j);
+        ctx.lineTo(minimap.width / 2 + tickSize, j);
+        ctx.stroke();
+    }
+
+
   const p = scenario.player;
   const playerMap = worldToMap(p.x, p.z);
 
@@ -345,6 +403,59 @@ function drawMinimap(scenario, hoveredId = null) {
     const v = worldToMap(vip.x, vip.z);
     ctx.fillText("⭐", v.x, v.y);
   });
+
+    // -------------------
+// CLICK MARKER (X)
+// -------------------
+if (scenario.clickPosition) {
+    const m = worldToMap(
+        scenario.clickPosition.x,
+        scenario.clickPosition.z
+    );
+
+    ctx.strokeStyle = "magenta";
+    ctx.lineWidth = 2;
+
+    const size = 8;
+
+    ctx.beginPath();
+    ctx.moveTo(m.x - size, m.y - size);
+    ctx.lineTo(m.x + size, m.y + size);
+    ctx.moveTo(m.x - size, m.y + size);
+    ctx.lineTo(m.x + size, m.y - size);
+    ctx.stroke();
+
+        const click = worldToMap(scenario.clickPosition.x, scenario.clickPosition.z);
+    const correct = spawnPoints[scenario.correctSpawn - 1];
+    const correctMap = worldToMap(correct.x, correct.y);
+
+    ctx.strokeStyle = "magenta";
+    ctx.setLineDash([5, 5]);
+
+    ctx.beginPath();
+    ctx.moveTo(click.x, click.y);
+    ctx.lineTo(correctMap.x, correctMap.y);
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+}
+}
+
+let guessLine3D = null; // global
+
+function drawGuessLine3D(guessPos, correctPos) {
+    if (guessLine3D) scene.remove(guessLine3D);
+
+    const points = [
+        new THREE.Vector3(guessPos.x, 5, guessPos.z),
+        new THREE.Vector3(correctPos.x, 5, correctPos.y) // correct spawn uses y as z
+    ];
+
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const material = new THREE.LineBasicMaterial({ color: 0xff00ff });
+    guessLine3D = new THREE.Line(geometry, material);
+    scene.add(guessLine3D);
+    return guessLine3D;
 }
 
 function drawPointMinimap(scenario, ctx, sp, color = "white") {
@@ -354,7 +465,7 @@ function drawPointMinimap(scenario, ctx, sp, color = "white") {
     if (scenario.selectedSpawn) {
         if (sp.id === scenario.correctSpawn) {
           ctx.fillStyle = "green";
-        } else if (sp.id === scenario.selectedSpawn) {
+        } else if (sp.id === scenario.selectedSpawn && !guessDistanceMode) {
           ctx.fillStyle = "red";
         }
     };
@@ -467,6 +578,34 @@ function addNumberedMarker(x, y, z, num, color = baseSpawnColor, size = 0.5) {
     return sphere;
 }
 
+function addClickMarkerX(x, y, z, color = 0xff00ff, size = 1) {
+    const material = new THREE.LineBasicMaterial({ color });
+
+    const points1 = [
+        new THREE.Vector3(-size, 0, -size),
+        new THREE.Vector3(size, 0, size)
+    ];
+
+    const points2 = [
+        new THREE.Vector3(-size, 0, size),
+        new THREE.Vector3(size, 0, -size)
+    ];
+
+    const geo1 = new THREE.BufferGeometry().setFromPoints(points1);
+    const geo2 = new THREE.BufferGeometry().setFromPoints(points2);
+
+    const line1 = new THREE.Line(geo1, material);
+    const line2 = new THREE.Line(geo2, material);
+
+    const group = new THREE.Group();
+    group.add(line1);
+    group.add(line2);
+
+    group.position.set(x, y, z);
+    scene.add(group);
+
+    return group;
+}
 
 function getBounds(spawnPoints) {
   let minX = Infinity, maxX = -Infinity;
@@ -499,6 +638,7 @@ function generateScenario() {
     teammate: null,
     vips: [],
     selectedSpawn: null,
+    clickPosition: null,
   };
 
   if (settings.teammateEnabled) {
@@ -582,7 +722,14 @@ function nextRound() {
 
     const basic_mesh = new THREE.MeshBasicMaterial({ color: baseSpawnColor });
     spawnMarkers[scenario.correctSpawn - 1].material = basic_mesh;
-    if (scenario.selectedSpawn) spawnMarkers[scenario.selectedSpawn - 1].material = basic_mesh;
+    if (guessDistanceMode) {
+        if (clickMarkerMesh) {
+            scene.remove(clickMarkerMesh);
+            clickMarkerMesh = null;
+            scene.remove(guessLine3D);
+            guessLine3D = null;
+        }
+    } else if (scenario.selectedSpawn) spawnMarkers[scenario.selectedSpawn - 1].material = basic_mesh;
     personaMarkers.forEach(m => scene.remove(m));
     personaMarkers = [];
     scenario = generateScenario();
@@ -595,42 +742,114 @@ function nextRound() {
         scenario.player.z
     );
     camera.lookAt(0, 5, 0);
+
+    // reset distance
+    document.getElementById("distanceResult").innerText = "";
+
+    if (clickMarkerMesh) {
+        scene.remove(clickMarkerMesh);
+        clickMarkerMesh = null;
+    }
 }
 
 // --------------------
 // guessing logic
 // --------------------
+function getClosestSpawn(worldX, worldZ, spawnPoints) {
+    let closest = null;
+    let minDist = Infinity;
+
+    spawnPoints.forEach(sp => {
+        const dx = worldX - sp.x;
+        const dz = worldZ - sp.y; // spawn uses (x, y)
+
+        const dist = dx * dx + dz * dz; // squared distance (faster)
+
+        if (dist < minDist) {
+            minDist = dist;
+            closest = sp;
+        }
+    });
+
+    return closest;
+}
+
 minimap.addEventListener("click", (e) => {
   e.stopPropagation();  // Prevent the click from bubbling up
   e.preventDefault();  // prevent focus/locking
 
-  const rect = minimap.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  const worldClick = mapToWorld(x, y);
-  const clicked = spawnPoints.find(p =>
-    Math.hypot(p.x - worldClick.x, p.y - worldClick.z) < 5
-  );
+const rect = minimap.getBoundingClientRect();
+const x = e.clientX - rect.left;
+const y = e.clientY - rect.top;
+const worldClick = mapToWorld(x, y);
 
-  if (!clicked || hasGuessed) return;
+// ----------------------------
+// DISTANCE MODE
+// ----------------------------
+if (guessDistanceMode) {
+    const correct = spawnPoints[scenario.correctSpawn - 1];
+        scenario.clickPosition = {
+        x: worldClick.x,
+        z: worldClick.z
+    };
+    if (hasGuessed) return;
+    hasGuessed = true;
 
-  hasGuessed = true;
+    const dx = worldClick.x - correct.x;
+    const dz = worldClick.z - correct.y; // note: spawn uses (x, y)
+    const dist = Math.sqrt(dx * dx + dz * dz);
 
-  scenario.selectedSpawn = clicked.id;
-  drawMinimap(scenario);
+    // remove old marker
+if (clickMarkerMesh) scene.remove(clickMarkerMesh);
 
-  stats.total++;
-  if (clicked.id === scenario.correctSpawn) {
-    console.log("Correct!");
+// add new marker at exact click
+clickMarkerMesh = addClickMarkerX(
+    worldClick.x,
+    5,              // height above ground
+    worldClick.z,
+    0xff00ff,
+    1
+);
+        guessLine3D = drawGuessLine3D({x: worldClick.x, z: worldClick.z}, correct);
+
+// still keep closest spawn if you want stats/debug
+scenario.selectedSpawn = getClosestSpawn(worldClick.x, worldClick.z, spawnPoints);
+
+    // stats
+    distanceStats.total++;
+    distanceStats.sum += dist;
+
+    document.getElementById("distanceResult").innerText =
+        `Distance: ${dist.toFixed(2)}`;
+
+    updateStatsUI();
+    drawMinimap(scenario);
+
+    return;
+}
+
+// ----------------------------
+// NORMAL MODE (unchanged)
+// ----------------------------
+const clicked = getClosestSpawn(worldClick.x, worldClick.z, spawnPoints);
+if (!clicked || hasGuessed) return;
+
+hasGuessed = true;
+
+scenario.selectedSpawn = clicked.id;
+drawMinimap(scenario);
+
+stats.total++;
+if (clicked.id === scenario.correctSpawn) {
     stats.correct++;
     stats.streak++;
     if (stats.streak > stats.maxStreak) stats.maxStreak = stats.streak;
-  } else {
-    console.log("Wrong! Correct was:", scenario.correctSpawn);
+} else {
     stats.streak = 0;
-  }
-  saveStats();
-  updateStatsUI();
+}
+
+saveStats();
+updateStatsUI();
 });
 
 document.getElementById("nextBtn").addEventListener("click", () => {
@@ -650,6 +869,7 @@ const mouse = new THREE.Vector2();
 let hoverSpawnId = null;
 let hoverArrowMesh = null;
 let hoverMarkerMesh = null;
+let clickMarkerMesh = null;
 
 function onMinimapHover(e) {
     const rect = minimap.getBoundingClientRect();
@@ -741,7 +961,7 @@ function animate() {
   if (scenario.selectedSpawn) {
       let cp = spawnMarkers[scenario.correctSpawn - 1];
       cp.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-      if (scenario.correctSpawn != scenario.selectedSpawn) {
+      if (!guessDistanceMode && scenario.correctSpawn != scenario.selectedSpawn) {
           let sp = spawnMarkers[scenario.selectedSpawn - 1];
           sp.material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
       };

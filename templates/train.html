@@ -16,23 +16,36 @@ canvas#gameCanvas {
     z-index: 0;
 }
 
-#mapSelect, #nextBtn, #stats, #minimap, #teammateToggleWrapper, #vipCount, #cheatBtn{
+#mapSelect, #nextBtn, #stats, #minimap, #teammateToggleWrapper, #vipCount, #bandsToggleWrapper, #distanceResult, #guessDistanceWrapper{
     position: absolute;   /* place them wherever you want */
     z-index: 10;          /* above the canvas */
 }
 #mapSelect { top: 60px; left: 20px }
 #teammateToggleWrapper { top: 100px; left: 20px }
 #vipCount { top: 140px; left: 20px }
-#cheatBtn { top: 180px; left: 20px }
+#bandsToggleWrapper { top: 180px; left: 20px }
+#guessDistanceWrapper { top: 220px; left: 20px }
 #nextBtn { top: 60px;  right: 250px } 
 #minimap { top: 80px; right: 10px; }
+#distanceResult { top: 400px; right: 10px; }
 #stats { bottom: 10px; left: 10px; }
 #gameCanvas { top: 50px; left: 300px; right: 300px;}
 </style>
 <body>
   <select id="mapSelect"></select>
   <button id="nextBtn">Next</button>
-  <button id="cheatBtn">Enable Bands</button>
+  <div id="bandsToggleWrapper">
+  <label>
+    <input type="checkbox" id="bandsToggle"/>
+    Enable Bands
+  </label>
+</div>
+  <div id="guessDistanceWrapper">
+  <label>
+    <input type="checkbox" id="guessDistance"/>
+    Guess Distance
+  </label>
+</div>
   <div id="teammateToggleWrapper">
   <label>
     <input type="checkbox" id="teammateToggle" checked />
@@ -45,6 +58,7 @@ canvas#gameCanvas {
       <option value="1" selected>1 VIP</option>
       <option value="2">2 VIP</option>
     </select>
+    <div id="distanceResult"></div>
   <div id="loadingOverlay" style="
     position: absolute;
     top: 0; left: 0;
