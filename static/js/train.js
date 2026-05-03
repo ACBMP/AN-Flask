@@ -836,7 +836,9 @@ scenario.selectedSpawn = getClosestSpawn(worldClick.x, worldClick.z, spawnPoints
 // ----------------------------
 // NORMAL MODE (unchanged)
 // ----------------------------
-const clicked = getClosestSpawn(worldClick.x, worldClick.z, spawnPoints);
+const clicked = spawnPoints.find(sp =>
+        Math.hypot(sp.x - worldClick.x, sp.y - worldClick.z) < 5
+    );
 if (!clicked || hasGuessed) return;
 
 hasGuessed = true;
