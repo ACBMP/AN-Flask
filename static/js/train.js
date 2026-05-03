@@ -395,12 +395,12 @@ function drawMinimap(scenario, hoveredId = null) {
   // -------------------
   // TEAMMATE (silhouette)
   // -------------------
-  if (scenario.teammate) {
-  const t = worldToMap(scenario.teammate.x, scenario.teammate.z);
+    scenario.teammates.forEach(teammate => {
+  const t = worldToMap(teammate.x, teammate.z);
   ctx.fillStyle = "white";
   ctx.font = "16px Arial";
   ctx.fillText("🧑", t.x, t.y);
-  }
+  });
 
   // -------------------
   // VIP (star)
