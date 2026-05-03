@@ -838,8 +838,8 @@ clickMarkerMesh = addClickMarkerX(
 scenario.selectedSpawn = getClosestSpawn(worldClick.x, worldClick.z, spawnPoints);
 
     // stats
-    distanceStats.total++;
-    distanceStats.sum += dist;
+    stats.distanceTotal++;
+    stats.distanceSum += dist;
 
     document.getElementById("distanceResult").innerText =
         `Distance: ${dist.toFixed(2)}`;
