@@ -16,12 +16,12 @@ canvas#gameCanvas {
     z-index: 0;
 }
 
-#mapSelect, #nextBtn, #stats, #minimap, #teammateToggleWrapper, #vipCount, #bandsToggleWrapper, #distanceResult, #guessDistanceWrapper{
+#mapSelect, #nextBtn, #stats, #minimap, #teammateCount, #vipCount, #bandsToggleWrapper, #distanceResult, #guessDistanceWrapper{
     position: absolute;   /* place them wherever you want */
     z-index: 10;          /* above the canvas */
 }
 #mapSelect { top: 60px; left: 20px }
-#teammateToggleWrapper { top: 100px; left: 20px }
+#teammateCount { top: 100px; left: 20px }
 #vipCount { top: 140px; left: 20px }
 #bandsToggleWrapper { top: 180px; left: 20px }
 #guessDistanceWrapper { top: 220px; left: 20px }
@@ -46,13 +46,13 @@ canvas#gameCanvas {
     Guess Distance
   </label>
 </div>
-  <div id="teammateToggleWrapper">
-  <label>
-    <input type="checkbox" id="teammateToggle" checked />
-    Teammate
-  </label>
-</div>
     
+    <select id="teammateCount">
+      <option value="0">0 Teammates</option>
+      <option value="1" selected>1 Teammate</option>
+      <option value="2">2 Teammates</option>
+      <option value="3">3 Teammates</option>
+    </select>
     <select id="vipCount">
       <option value="0">0 VIP</option>
       <option value="1" selected>1 VIP</option>

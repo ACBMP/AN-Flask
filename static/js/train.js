@@ -212,7 +212,7 @@ async function loadMapList() {
 }
 
 const mapSelect = document.getElementById("mapSelect");
-const teammateToggle = document.getElementById("teammateToggle");
+const teammateCountSelect = document.getElementById("teammateCount");
 const vipCountSelect = document.getElementById("vipCount");
 const cheatToggle = document.getElementById("bandsToggle");
 let cheatEnabled = cheatToggle.checked;
@@ -224,7 +224,7 @@ cheatToggle.addEventListener("change", () => {
 
 function getSettings() {
   return {
-    teammateEnabled: teammateToggle.checked,
+    teammateCount: parseInt(teammateCountSelect.value, 0),
     vipCount: parseInt(vipCountSelect.value, 0)
   };
 }
@@ -317,43 +317,49 @@ function mapToWorld(mx, my, scale = 2) {
   };
 }
 
+function drawMinimapAxes() {
+    ctx.strokeStyle = "white";
+    ctx.fillStyle = "white";
+    ctx.lineWidth = 1;
+    const tickSize = 5;
+    const tickStep = 50; // pixels per tick
+
+    // --- X-axis (bottom) ---
+    ctx.beginPath();
+    ctx.moveTo(0, minimap.height - 1);
+    ctx.lineTo(minimap.width, minimap.height - 1);
+    ctx.stroke();
+
+    for (let i = 0; i <= minimap.width; i += tickStep) {
+        ctx.beginPath();
+        ctx.moveTo(i, minimap.height - 1);
+        ctx.lineTo(i, minimap.height - 1 - tickSize);
+        ctx.stroke();
+        ctx.fillText((i - minimap.width / 2) / 2, i, minimap.height - 1 - 10); // label in world units (scale 2)
+    }
+
+    // --- Z-axis (right) ---
+    ctx.beginPath();
+    ctx.moveTo(minimap.width - 1, 0);
+    ctx.lineTo(minimap.width - 1, minimap.height);
+    ctx.stroke();
+
+    for (let j = 0; j <= minimap.height; j += tickStep) {
+        ctx.beginPath();
+        ctx.moveTo(minimap.width - 1, j);
+        ctx.lineTo(minimap.width - 1 - tickSize, j);
+        ctx.stroke();
+        ctx.fillText((minimap.height / 2 - j) / 2, minimap.width - 1 - 12, j + 4); // label in world units
+    }
+}
+
 function drawMinimap(scenario, hoveredId = null) {
   ctx.clearRect(0, 0, minimap.width, minimap.height);
 
         // -------------------
     // AXES
     // -------------------
-    ctx.strokeStyle = "gray";
-    ctx.lineWidth = 1;
-
-    // horizontal X axis
-    ctx.beginPath();
-    ctx.moveTo(0, minimap.height / 2);
-    ctx.lineTo(minimap.width, minimap.height / 2);
-    ctx.stroke();
-
-    // vertical Z axis
-    ctx.beginPath();
-    ctx.moveTo(minimap.width / 2, 0);
-    ctx.lineTo(minimap.width / 2, minimap.height);
-    ctx.stroke();
-
-    // optionally: add tick marks
-    const tickSize = 5;
-    const tickStep = 50; // pixels
-    for (let i = 0; i < minimap.width; i += tickStep) {
-        ctx.beginPath();
-        ctx.moveTo(i, minimap.height / 2 - tickSize);
-        ctx.lineTo(i, minimap.height / 2 + tickSize);
-        ctx.stroke();
-    }
-    for (let j = 0; j < minimap.height; j += tickStep) {
-        ctx.beginPath();
-        ctx.moveTo(minimap.width / 2 - tickSize, j);
-        ctx.lineTo(minimap.width / 2 + tickSize, j);
-        ctx.stroke();
-    }
-
+    drawMinimapAxes();
 
   const p = scenario.player;
   const playerMap = worldToMap(p.x, p.z);
@@ -635,18 +641,18 @@ function generateScenario() {
       y: 0,
       z: randomInRange(bounds.minY, bounds.maxY)
     },
-    teammate: null,
+    teammates: [],
     vips: [],
     selectedSpawn: null,
     clickPosition: null,
   };
 
-  if (settings.teammateEnabled) {
-    s.teammate = {
+    for (let i = 0; i < settings.teammateCount; i++) {
+    s.teammates.push({
       x: randomInRange(bounds.minX, bounds.maxX),
       y: 0,
       z: randomInRange(bounds.minY, bounds.maxY)
-    };
+    });
   }
 
   for (let i = 0; i < settings.vipCount; i++) {
@@ -657,8 +663,7 @@ function generateScenario() {
     });
   }
 
-  const pursuers = [s.player];
-  if (s.teammate) pursuers.push(s.teammate);
+  const pursuers = [s.player].concat(s.teammates);
 
   s.correctSpawn = getCorrectSpawn(spawnPoints, pursuers, s.vips);
 
@@ -671,10 +676,10 @@ function populateScene(scenario, spawnPoints) {
   spawnMarkers = [];
 
   personaMarkers = []
-  if (scenario.teammate) {
-    personaMarkers.push(addMarker3D(scenario.teammate.x, 5, scenario.teammate.z, 0x0000ff));
-    personaMarkers.push(addMarker3D(scenario.teammate.x, 15, scenario.teammate.z, 0x0000ff, 1, "arrowDown"));
-  }
+    scenario.teammates.forEach(teammate => {
+    personaMarkers.push(addMarker3D(teammate.x, 5, teammate.z, 0x0000ff));
+    personaMarkers.push(addMarker3D(teammate.x, 15, teammate.z, 0x0000ff, 1, "arrowDown"));
+    });
 
   scenario.vips.forEach(vip => {
     personaMarkers.push(addMarker3D(vip.x, 5, vip.z, 0xffff00, 0.5, "star"));
@@ -694,7 +699,7 @@ function restartScenario() {
   populateScene(scenario, spawnPoints);
 }
 
-teammateToggle.addEventListener("change", restartScenario);
+teammateCountSelect.addEventListener("change", restartScenario);
 vipCountSelect.addEventListener("change", restartScenario);
 
 let spawnPoints = await loadMap(mapSelect.value.toLowerCase());
