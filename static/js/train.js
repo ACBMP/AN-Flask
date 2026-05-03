@@ -57,7 +57,7 @@ const largeR = [60, 15, 60]
 const maxR = [90, 100, 90]
 const w = [0.2, 0.2, 0.5]
 const baseSpawnColor = 0xffffff;
-const bandAlpha = 0.02;
+const bandAlpha = 0.01;
 
 function indexOfMax(arr) {
     if (arr.length === 0) {
@@ -92,6 +92,9 @@ function indexOfMax(arr) {
                     // Case 3: linear decrease from 1 to w
                     return 1 - ((dist - r3) / (r4 - r3)) * (1 - w);
                 } else if (dist < r1) {
+                    console.log(dist);
+                    console.log(r1);
+                    console.log("too close");
                     return 0;
                 } else {
                     // Outside all ranges
@@ -100,12 +103,12 @@ function indexOfMax(arr) {
                 return score
             }
 
-
 function getCorrectSpawn(spawnPoints, pursuerPoints, targetPoints) {
     let scores = [];
 
     for (let [idx, sp] of spawnPoints.entries()) {
         let score = 1;
+        console.log(idx);
 
         pursuerPoints.forEach(p => {
             score *= calculateScore(p.x, p.z, sp.x, sp.y, smallR[0], largeR[0], minR[0], maxR[0], w[0]);
@@ -114,6 +117,7 @@ function getCorrectSpawn(spawnPoints, pursuerPoints, targetPoints) {
             score *= calculateScore(p.x, p.z, sp.x, sp.y, smallR[2], largeR[2], minR[2], maxR[2], w[2]);
         });
         scores.push(score)
+        console.log(score);
     }
     return indexOfMax(scores) + 1;
 }
@@ -313,18 +317,19 @@ async function loadMap(name = "florence") {
 // --------------------
 const minimap = document.getElementById("minimap");
 const ctx = minimap.getContext("2d");
+const minimapScale = 2;
 
-function worldToMap(x, z, scale = 2) {
+function worldToMap(x, z) {
   return {
-    x: minimap.width / 2 + x * scale,
-    y: minimap.height / 2 + z * scale
+    x: minimap.width / 2 + x * minimapScale,
+    y: minimap.height / 2 + z * minimapScale
   };
 }
 
-function mapToWorld(mx, my, scale = 2) {
+function mapToWorld(mx, my) {
   return {
-    x: (mx - minimap.width / 2) / scale,
-    z: (my - minimap.height / 2) / scale
+    x: (mx - minimap.width / 2) / minimapScale,
+    z: (my - minimap.height / 2) / minimapScale
   };
 }
 
@@ -504,22 +509,22 @@ function drawPointMinimap(scenario, ctx, sp, color = "white") {
 
             // Blue: minR → smallR
             ctx.beginPath();
-            ctx.arc(mapPos.x, mapPos.y, smallR[rIndex], 0, 2 * Math.PI);
-            ctx.arc(mapPos.x, mapPos.y, minR[rIndex], 0, 2 * Math.PI, true);
+            ctx.arc(mapPos.x, mapPos.y, minimapScale * smallR[rIndex], 0, 2 * Math.PI);
+            ctx.arc(mapPos.x, mapPos.y, minimapScale * minR[rIndex], 0, 2 * Math.PI, true);
             ctx.fillStyle = `rgba(0, 0, 255, ${bandAlpha})`;
             ctx.fill();
 
             // Green: smallR → largeR
             ctx.beginPath();
-            ctx.arc(mapPos.x, mapPos.y, largeR[rIndex], 0, 2 * Math.PI);
-            ctx.arc(mapPos.x, mapPos.y, smallR[rIndex], 0, 2 * Math.PI, true);
+            ctx.arc(mapPos.x, mapPos.y, minimapScale * largeR[rIndex], 0, 2 * Math.PI);
+            ctx.arc(mapPos.x, mapPos.y, minimapScale * smallR[rIndex], 0, 2 * Math.PI, true);
             ctx.fillStyle = `rgba(0, 255, 0, ${bandAlpha})`;
             ctx.fill();
 
             // Red: largeR → maxR
             ctx.beginPath();
-            ctx.arc(mapPos.x, mapPos.y, maxR[rIndex], 0, 2 * Math.PI);
-            ctx.arc(mapPos.x, mapPos.y, largeR[rIndex], 0, 2 * Math.PI, true);
+            ctx.arc(mapPos.x, mapPos.y, minimapScale * maxR[rIndex], 0, 2 * Math.PI);
+            ctx.arc(mapPos.x, mapPos.y, minimapScale * largeR[rIndex], 0, 2 * Math.PI, true);
             ctx.fillStyle = `rgba(255, 0, 0, ${bandAlpha})`;
             ctx.fill();
         }
