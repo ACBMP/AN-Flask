@@ -227,7 +227,7 @@ function getSettings() {
 
 // const maps = await loadMapList();
 // since not all maps are ready let's just hardcode these for now
-const maps = ["Florence", "Siena"];
+const maps = ["Florence"];
 maps.forEach(m => {
     const opt = document.createElement("option");
     opt.value = m;
@@ -248,7 +248,22 @@ async function loadMap(name = "florence") {
         spawns = data.spawns.map(sp => ({id: sp.id, x: sp.y, y: sp.x}));
     } catch (err) {
         console.error("Error loading spawns:", err);
-        return [];
+        return [[], []];
+    }
+
+    // load routes
+    let routes = [];
+    try {
+        const response = await fetch(`https://api.assassins.network/maps/routes/${name}`);
+        if (!response.ok) throw new Error(`Failed to fetch checkpoints: ${response.status}`);
+        const data = await response.json();
+        // the api needs to be adjusted when we have time
+        routes = Object.values(data.routes)
+            .flat()
+            .map(([y, x]) => ({ x, y }));
+    } catch (err) {
+        console.error("Error loading routes:", err);
+        return [spawns, []];
     }
 
     // Load OBJ file
@@ -290,7 +305,7 @@ async function loadMap(name = "florence") {
         );
     });
 
-    return spawns;
+    return [spawns, routes];
 }
 
 // --------------------
@@ -652,10 +667,11 @@ function generateScenario() {
   }
 
   for (let i = 0; i < settings.vipCount; i++) {
+      let chosenPoint = checkPoints[Math.floor(Math.random() * checkPoints.length)];
     s.vips.push({
-      x: randomInRange(bounds.minX, bounds.maxX),
+      x: chosenPoint.x,
       y: 0,
-      z: randomInRange(bounds.minY, bounds.maxY)
+      z: chosenPoint.y
     });
   }
 
@@ -698,14 +714,14 @@ function restartScenario() {
 teammateCountSelect.addEventListener("change", restartScenario);
 vipCountSelect.addEventListener("change", restartScenario);
 
-let spawnPoints = await loadMap(mapSelect.value.toLowerCase());
+let [spawnPoints, checkPoints] = await loadMap(mapSelect.value.toLowerCase());
 let scenario = generateScenario();
 populateScene(scenario, spawnPoints);
 
 mapSelect.addEventListener("change", async () => {
     scene.clear();
 
-    spawnPoints = await loadMap(mapSelect.value.toLowerCase());
+    [spawnPoints, checkPoints] = await loadMap(mapSelect.value.toLowerCase());
     scenario = generateScenario();
 
     populateScene(scenario, spawnPoints);
