@@ -57,7 +57,7 @@ const largeR = [60, 15, 60]
 const maxR = [90, 100, 90]
 const w = [0.2, 0.2, 0.5]
 const baseSpawnColor = 0xffffff;
-const bandAlpha = 0.01;
+const bandAlpha = 0.1;
 
 function indexOfMax(arr) {
     if (arr.length === 0) {
@@ -383,6 +383,7 @@ function drawMinimap(scenario, hoveredId = null) {
   // -------------------
   // SPAWN POINTS
   // -------------------
+  if (!guessDistanceMode) {
   spawnPoints.slice().reverse().forEach(sp => {
       let color = "white";
       if (sp.id === hoveredId) {
@@ -390,7 +391,45 @@ function drawMinimap(scenario, hoveredId = null) {
       }
       drawPointMinimap(scenario, ctx, sp, color);
   });
+  }
 
+    if (cheatEnabled) {
+
+        // Helper function to draw bands around a world position
+        function drawBands(worldX, worldZ, rIndex) {
+            const mapPos = worldToMap(worldX, worldZ);
+
+            // Blue: minR → smallR
+            ctx.beginPath();
+            ctx.arc(mapPos.x, mapPos.y, minimapScale * smallR[rIndex], 0, 2 * Math.PI);
+            ctx.arc(mapPos.x, mapPos.y, minimapScale * minR[rIndex], 0, 2 * Math.PI, true);
+            ctx.fillStyle = `rgba(0, 0, 255, ${bandAlpha})`;
+            ctx.fill();
+
+            // Green: smallR → largeR
+            ctx.beginPath();
+            ctx.arc(mapPos.x, mapPos.y, minimapScale * largeR[rIndex], 0, 2 * Math.PI);
+            ctx.arc(mapPos.x, mapPos.y, minimapScale * smallR[rIndex], 0, 2 * Math.PI, true);
+            ctx.fillStyle = `rgba(0, 255, 0, ${bandAlpha})`;
+            ctx.fill();
+
+            // Red: largeR → maxR
+            ctx.beginPath();
+            ctx.arc(mapPos.x, mapPos.y, minimapScale * maxR[rIndex], 0, 2 * Math.PI);
+            ctx.arc(mapPos.x, mapPos.y, minimapScale * largeR[rIndex], 0, 2 * Math.PI, true);
+            ctx.fillStyle = `rgba(255, 0, 0, ${bandAlpha})`;
+            ctx.fill();
+        }
+
+        // Draw bands around player (pursuer)
+        drawBands(scenario.player.x, scenario.player.z, 0);
+
+        // Draw bands around teammate if exists (pursuer)
+        scenario.teammates.forEach(teammate => drawBands(teammate.x, teammate.z, 0));
+
+        // Draw bands around VIPs (targets)
+        scenario.vips.forEach(vip => drawBands(vip.x, vip.z, 2));
+    }
   // -------------------
   // PLAYER (rotating arrow)
   // -------------------
@@ -501,43 +540,6 @@ function drawPointMinimap(scenario, ctx, sp, color = "white") {
     ctx.textBaseline = "middle";
     ctx.fillText(sp.id, m.x, m.y);
 
-    if (cheatEnabled) {
-
-        // Helper function to draw bands around a world position
-        function drawBands(worldX, worldZ, rIndex) {
-            const mapPos = worldToMap(worldX, worldZ);
-
-            // Blue: minR → smallR
-            ctx.beginPath();
-            ctx.arc(mapPos.x, mapPos.y, minimapScale * smallR[rIndex], 0, 2 * Math.PI);
-            ctx.arc(mapPos.x, mapPos.y, minimapScale * minR[rIndex], 0, 2 * Math.PI, true);
-            ctx.fillStyle = `rgba(0, 0, 255, ${bandAlpha})`;
-            ctx.fill();
-
-            // Green: smallR → largeR
-            ctx.beginPath();
-            ctx.arc(mapPos.x, mapPos.y, minimapScale * largeR[rIndex], 0, 2 * Math.PI);
-            ctx.arc(mapPos.x, mapPos.y, minimapScale * smallR[rIndex], 0, 2 * Math.PI, true);
-            ctx.fillStyle = `rgba(0, 255, 0, ${bandAlpha})`;
-            ctx.fill();
-
-            // Red: largeR → maxR
-            ctx.beginPath();
-            ctx.arc(mapPos.x, mapPos.y, minimapScale * maxR[rIndex], 0, 2 * Math.PI);
-            ctx.arc(mapPos.x, mapPos.y, minimapScale * largeR[rIndex], 0, 2 * Math.PI, true);
-            ctx.fillStyle = `rgba(255, 0, 0, ${bandAlpha})`;
-            ctx.fill();
-        }
-
-        // Draw bands around player (pursuer)
-        drawBands(scenario.player.x, scenario.player.z, 0);
-
-        // Draw bands around teammate if exists (pursuer)
-        scenario.teammates.forEach(teammate => drawBands(teammate.x, teammate.z, 0));
-
-        // Draw bands around VIPs (targets)
-        scenario.vips.forEach(vip => drawBands(vip.x, vip.z, 2));
-    }
 }
 
 function addMarker(x, y, z, color) {
@@ -703,9 +705,11 @@ function populateScene(scenario, spawnPoints) {
     personaMarkers.push(addMarker3D(vip.x, 15, vip.z, 0xffff00, 1, "arrowDown"));
   });
 
+    if (!guessDistanceMode) {
   spawnPoints.forEach(sp => {
     spawnMarkers.push(addNumberedMarker(sp.x, 5, sp.y, sp.id));
   });
+    }
 }
 
 function restartScenario() {
@@ -982,7 +986,7 @@ function animate() {
   requestAnimationFrame(animate);
   handleMovement();
   drawMinimap(scenario, hoverSpawnId);
-  if (scenario.selectedSpawn) {
+  if (scenario.selectedSpawn && spawnMarkers) {
       let cp = spawnMarkers[scenario.correctSpawn - 1];
       cp.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
       if (!guessDistanceMode && scenario.correctSpawn != scenario.selectedSpawn) {
