@@ -210,7 +210,7 @@ document.addEventListener('mousemove', (event) => {
 
 // lighting
 const light = new THREE.DirectionalLight(baseSpawnColor, 2);
-light.position.set(0, 30, 0);
+light.position.set(75, 30, 75);
 scene.add(light);
 
 const ambient = new THREE.AmbientLight(0x888888);
@@ -307,7 +307,7 @@ async function loadMap(name = "florence") {
                 obj.traverse((child) => {
     if (child.isMesh) {
         // Optional: recompute normals for shading
-        child.geometry.computeVertexNormals();
+        // child.geometry.computeVertexNormals();
 
         // Assign material
         // child.material = new THREE.MeshStandardMaterial({
