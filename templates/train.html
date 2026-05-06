@@ -1,82 +1,107 @@
 {% extends "layout.html" %}
 {% block content %}
-<meta content="Assassins' Network | Train" property="og:title" />
-<meta content="Assassin's Creed: Brotherhood Training" property="og:description" />
-<meta content="https://assassins.network/train" property="og:url" />
+
 <style>
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
 }
+main.container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 100%;
+}
 
-canvas#gameCanvas {
-    display: block;
+#trainingRoot {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 50px);
+    top: 50px;
+    overflow: hidden;
+}
+
+#gameCanvas {
     position: absolute;
+    top: 0;
+    left: 300px;
+    right: 300px;
+    bottom: 0;
+    width: auto;
+    height: 100%;
     z-index: 0;
 }
 
-#mapSelect, #nextBtn, #stats, #minimap, #teammateCount, #vipCount, #bandsToggleWrapper, #distanceResult, #guessDistanceWrapper{
-    position: absolute;   /* place them wherever you want */
-    z-index: 10;          /* above the canvas */
-}
-#mapSelect { top: 60px; left: 20px }
-#teammateCount { top: 100px; left: 20px }
-#vipCount { top: 140px; left: 20px }
-#bandsToggleWrapper { top: 180px; left: 20px }
-#guessDistanceWrapper { top: 220px; left: 20px }
-#nextBtn { top: 60px;  right: 250px } 
-#minimap { top: 80px; right: 10px; }
-#distanceResult { top: 400px; right: 10px; }
-#stats { bottom: 10px; left: 10px; }
-#gameCanvas { top: 50px; left: 300px; right: 300px;}
-</style>
-<body>
-  <select id="mapSelect"></select>
-  <button id="nextBtn">Next</button>
-  <div id="bandsToggleWrapper">
-  <label>
-    <input type="checkbox" id="bandsToggle"/>
-    Enable Bands
-  </label>
-</div>
-  <div id="guessDistanceWrapper">
-  <label>
-    <input type="checkbox" id="guessDistance"/>
-    Guess Distance
-  </label>
-</div>
-    
-    <select id="teammateCount">
-      <option value="0">0 Teammates</option>
-      <option value="1" selected>1 Teammate</option>
-      <option value="2">2 Teammates</option>
-      <option value="3">3 Teammates</option>
-    </select>
-    <select id="vipCount">
-      <option value="0">0 VIP</option>
-      <option value="1" selected>1 VIP</option>
-      <option value="2">2 VIP</option>
-    </select>
-    <div id="distanceResult"></div>
-  <div id="loadingOverlay" style="
+#loadingOverlay {
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 160px;
+    right: 340px;
+    bottom: 0;
     color: white;
-    font-size: 24px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    z-index: 100;
-">
-    Loading map...
-</div>
-<canvas id="gameCanvas"></canvas>
+    align-items: center;
+    font-size: 24px;
+    z-index: 1000;
+}
+
+#mapSelect { top: 10px; left: 20px; position: absolute; z-index: 10; }
+#teammateCount { top: 50px; left: 20px; position: absolute; z-index: 10; }
+#vipCount { top: 90px; left: 20px; position: absolute; z-index: 10; }
+#bandsToggleWrapper { top: 130px; left: 20px; position: absolute; z-index: 10; }
+#guessDistanceWrapper { top: 170px; left: 20px; position: absolute; z-index: 10; }
+
+#nextBtn { top: 10px; right: 20px; position: absolute; z-index: 10; }
+#minimap { top: 50px; right: 20px; position: absolute; z-index: 10; }
+#distanceResult { top: 400px; right: 20px; position: absolute; z-index: 10; }
+
+#stats { bottom: 10px; left: 20px; position: absolute; z-index: 10; }
+</style>
+
+<div id="trainingRoot">
+  <select id="mapSelect"></select>
+  <button id="nextBtn" type="button">Next</button>
+
+  <div id="bandsToggleWrapper">
+    <label>
+      <input type="checkbox" id="bandsToggle"/>
+      Enable Bands
+    </label>
+  </div>
+
+  <div id="guessDistanceWrapper">
+    <label>
+      <input type="checkbox" id="guessDistance"/>
+      Guess Distance
+    </label>
+  </div>
+
+  <select id="teammateCount">
+    <option value="0">0 Teammates</option>
+    <option value="1" selected>1 Teammate</option>
+    <option value="2">2 Teammates</option>
+    <option value="3">3 Teammates</option>
+  </select>
+
+  <select id="vipCount">
+    <option value="0">0 VIP</option>
+    <option value="1" selected>1 VIP</option>
+    <option value="2">2 VIP</option>
+  </select>
+
+  <div id="distanceResult"></div>
+
+  <div id="loadingOverlay">Loading map...</div>
+
+  <canvas id="gameCanvas"></canvas>
   <canvas id="minimap" width="300" height="300"></canvas>
   <div id="stats"></div>
+</div>
 
-  <script type="importmap">
+<script type="importmap">
 {
   "imports": {
     "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -86,5 +111,5 @@ canvas#gameCanvas {
 </script>
 
 <script type="module" src="/static/js/train.js"></script>
-</body>
+
 {% endblock content %}

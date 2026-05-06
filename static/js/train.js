@@ -1,6 +1,20 @@
 import * as THREE from 'three';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+const root = document.getElementById("trainingRoot");
+
+const $ = (id) => root.querySelector(id);
+
+const state = new Proxy({
+    map: null,
+    bandsEnabled: false
+}, {
+    set(target, key, value) {
+        target[key] = value;
+        updateUI(key, value);
+        return true;
+    }
+});
 
 let stats = {
     total: 0,
@@ -10,7 +24,7 @@ let stats = {
     distanceTotal: 0,
     distanceSum: 0
 };
-const guessDistanceToggle = document.getElementById("guessDistance");
+const guessDistanceToggle = $("#guessDistance");
 let guessDistanceMode = guessDistanceToggle.checked;
 
 function saveStats() {
@@ -30,7 +44,7 @@ function updateStatsUI() {
             ? 0
             : (stats.distanceSum / stats.distanceTotal).toFixed(2);
 
-        document.getElementById("stats").innerText =
+        $("#stats").innerText =
             `Total: ${stats.distanceTotal} | Avg Distance: ${avg}`;
         return;
     }
@@ -39,7 +53,7 @@ function updateStatsUI() {
         ? 0
         : ((stats.correct / stats.total) * 100).toFixed(1);
 
-    document.getElementById("stats").innerText =
+    $("#stats").innerText =
         `Total: ${stats.total} | Correct: ${stats.correct} | ${percent}% | Streak: ${stats.streak} | Max Streak: ${stats.maxStreak}`;
 }
 
@@ -136,22 +150,35 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 const renderer = new THREE.WebGLRenderer({
-  canvas: document.getElementById("gameCanvas"),
+  canvas: $("#gameCanvas"),
   antialias: true
 });
 
-let gameWidth = 1320;
-renderer.setSize(gameWidth, Math.round(gameWidth * 9 / 16));
-renderer.setPixelRatio(window.devicePixelRatio);
+const horizontalPadding = 300;
+const verticalPadding = 50;
+
+const rootHeight = root.clientHeight;
+
+function resizeCanvas() {
+    let gameWidth = window.innerWidth - 2 * horizontalPadding;
+    let gameHeight = rootHeight - verticalPadding;
+
+    renderer.setSize(gameWidth, gameHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    camera.aspect = gameWidth / gameHeight;
+    camera.updateProjectionMatrix();
+}
+
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
 
 const controls = new PointerLockControls(camera, renderer.domElement);
 
-// optional: movement via keyboard
 const moveSpeed = 0.2;
 const keys = {};
 document.addEventListener('keydown', e => {
     if (['Space', 'ShiftLeft', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
-        // Only prevent if pointer is locked OR mouse is over the canvas
         if (document.activeElement === renderer.domElement || controls.isLocked) {
             e.preventDefault();
         }
@@ -189,7 +216,7 @@ scene.add(light);
 const ambient = new THREE.AmbientLight(0x888888);
 scene.add(ambient);
 
-const loadingOverlay = document.getElementById('loadingOverlay');
+const loadingOverlay = $("#loadingOverlay");
 let dots = 0;
 const loadingInterval = setInterval(() => {
     if (loadingOverlay.style.display === 'flex') {
@@ -211,10 +238,10 @@ async function loadMapList() {
     }
 }
 
-const mapSelect = document.getElementById("mapSelect");
-const teammateCountSelect = document.getElementById("teammateCount");
-const vipCountSelect = document.getElementById("vipCount");
-const cheatToggle = document.getElementById("bandsToggle");
+const mapSelect = $("#mapSelect");
+const teammateCountSelect = $("#teammateCount");
+const vipCountSelect = $("#vipCount");
+const cheatToggle = $("#bandsToggle");
 let cheatEnabled = cheatToggle.checked;
 
 cheatToggle.addEventListener("change", () => {
@@ -246,7 +273,8 @@ async function loadMap(name = "florence") {
     // Load spawn points
     let spawns = [];
     try {
-        const response = await fetch(`https://api.assassins.network/maps/spawns/${name}`);
+        // const response = await fetch(`https://api.assassins.network/maps/spawns/${name}`);
+        const response = await fetch(`https://api.assassins.network/maps/spawns/siena`);
         if (!response.ok) throw new Error(`Failed to fetch spawns: ${response.status}`);
         const data = await response.json();
         spawns = data.spawns.map(sp => ({id: sp.id, x: sp.y, y: sp.x}));
@@ -273,7 +301,8 @@ async function loadMap(name = "florence") {
     // Load OBJ file
     await new Promise((resolve, reject) => {
         loader.load(
-            `static/maps/${name}.obj`,
+            `static/maps/siena.obj`,
+            // `static/maps/${name}.obj`,
             (obj) => {
                 obj.traverse((child) => {
     if (child.isMesh) {
@@ -281,16 +310,16 @@ async function loadMap(name = "florence") {
         child.geometry.computeVertexNormals();
 
         // Assign material
-        child.material = new THREE.MeshStandardMaterial({
-            color: 0x222222, // or 0x888888 for gray
-            side: THREE.DoubleSide
-        });
-    const edges = new THREE.EdgesGeometry(child.geometry);
-    const line = new THREE.LineSegments(
-        edges,
-        new THREE.LineBasicMaterial({ color: baseSpawnColor })
-    );
-    child.add(line);
+        // child.material = new THREE.MeshStandardMaterial({
+        //     color: 0x222222, // or 0x888888 for gray
+        //     side: THREE.DoubleSide
+        // });
+    // const edges = new THREE.EdgesGeometry(child.geometry);
+    // const line = new THREE.LineSegments(
+    //     edges,
+    //     new THREE.LineBasicMaterial({ color: baseSpawnColor })
+    // );
+    // child.add(line);
 }
 });
                 obj.scale.set(1., 1., 1.);
@@ -315,7 +344,7 @@ async function loadMap(name = "florence") {
 // --------------------
 // minimap
 // --------------------
-const minimap = document.getElementById("minimap");
+const minimap = $("#minimap");
 const ctx = minimap.getContext("2d");
 const minimapScale = 2;
 
@@ -770,7 +799,7 @@ function nextRound() {
     camera.lookAt(0, 5, 0);
 
     // reset distance
-    document.getElementById("distanceResult").innerText = "";
+    $("#distanceResult").innerText = "";
 
     if (clickMarkerMesh) {
         scene.remove(clickMarkerMesh);
@@ -845,7 +874,7 @@ scenario.selectedSpawn = getClosestSpawn(worldClick.x, worldClick.z, spawnPoints
     stats.distanceTotal++;
     stats.distanceSum += dist;
 
-    document.getElementById("distanceResult").innerText =
+    $("#distanceResult").innerText =
         `Distance: ${dist.toFixed(2)}`;
 
     updateStatsUI();
@@ -880,7 +909,7 @@ saveStats();
 updateStatsUI();
 });
 
-document.getElementById("nextBtn").addEventListener("click", () => {
+$("#nextBtn").addEventListener("click", () => {
     nextRound();
 });
 
