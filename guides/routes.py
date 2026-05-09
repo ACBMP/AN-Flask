@@ -1,6 +1,7 @@
 import markdown
-from flask import Blueprint, render_template, current_app
+from flask import Blueprint, render_template
 from .map_data import *
+import requests
 
 guides_bp = Blueprint("guides", __name__, url_prefix="/guides")
 
@@ -38,8 +39,9 @@ def spawns_page(map_name):
 @guides_bp.route("/routes/<map_name>")
 def routes_page(map_name):
     sx, ox, sy, oy = compute_affine_from_corners(world_corners[map_name][0], world_corners[map_name][1], pixel_corners[map_name][0], pixel_corners[map_name][1])
-    mongo = current_app.extensions["pymongo"]
-    checkpoints = mongo.db.maps.find({"name": map_name})["routes"]
+    r = requests.get(f"https://api.assassins.network/maps/{map_name}")
+    data = r.json()
+    checkpoints = data["routes"]
     map_routes = {
             k: [list(world_to_pixel(i["x"], i["y"], sx, ox, sy, oy)) + [i["isCheckpoint"]] for i in v] for k, v in checkpoints
             }
