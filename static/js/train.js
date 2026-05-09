@@ -258,7 +258,7 @@ function getSettings() {
 
 // const maps = await loadMapList();
 // since not all maps are ready let's just hardcode these for now
-const maps = ["Florence"];
+const maps = ["Siena"];
 maps.forEach(m => {
     const opt = document.createElement("option");
     opt.value = m;
@@ -268,13 +268,12 @@ maps.forEach(m => {
 
 // load OBJ
 const loader = new OBJLoader();
-async function loadMap(name = "florence") {
+async function loadMap(name) {
     loadingOverlay.style.display = "flex";
     // Load spawn points
     let spawns = [];
     try {
-        // const response = await fetch(`https://api.assassins.network/maps/spawns/${name}`);
-        const response = await fetch(`https://api.assassins.network/maps/spawns/siena`);
+        const response = await fetch(`https://api.assassins.network/maps/spawns/${name}`);
         if (!response.ok) throw new Error(`Failed to fetch spawns: ${response.status}`);
         const data = await response.json();
         spawns = data.spawns.map(sp => ({id: sp.id, x: sp.y, y: sp.x}));
