@@ -285,7 +285,7 @@ async function loadMap(name) {
     // load routes
     let routes = [];
     try {
-        const response = await fetch(`https://api.assassins.network/maps/routes/${name}`);
+        const response = await fetch(`https://api.assassins.network/maps/${name}`);
         if (!response.ok) throw new Error(`Failed to fetch checkpoints: ${response.status}`);
         const data = await response.json();
         // the api needs to be adjusted when we have time
