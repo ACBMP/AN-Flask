@@ -43,7 +43,7 @@ def routes_page(map_name):
     data = r.json()
     checkpoints = data["routes"]
     map_routes = {
-            k: [list(world_to_pixel(i["x"], i["y"], sx, ox, sy, oy)) + [i["isCheckpoint"]] for i in v] for k, v in checkpoints
+            j["name"]: [list(world_to_pixel(i["x"], i["y"], sx, ox, sy, oy)) + [i["isCheckpoint"]] for i in j["points"]] for j in checkpoints
             }
 
     checkpoint_radius = 3 * (abs(sx) + abs(sy)) / 2
