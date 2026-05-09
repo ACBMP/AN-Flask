@@ -106,9 +106,6 @@ function indexOfMax(arr) {
                     // Case 3: linear decrease from 1 to w
                     return 1 - ((dist - r3) / (r4 - r3)) * (1 - w);
                 } else if (dist < r1) {
-                    console.log(dist);
-                    console.log(r1);
-                    console.log("too close");
                     return 0;
                 } else {
                     // Outside all ranges
@@ -122,7 +119,6 @@ function getCorrectSpawn(spawnPoints, pursuerPoints, targetPoints) {
 
     for (let [idx, sp] of spawnPoints.entries()) {
         let score = 1;
-        console.log(idx);
 
         pursuerPoints.forEach(p => {
             score *= calculateScore(p.x, p.z, sp.x, sp.y, smallR[0], largeR[0], minR[0], maxR[0], w[0]);
@@ -131,7 +127,6 @@ function getCorrectSpawn(spawnPoints, pursuerPoints, targetPoints) {
             score *= calculateScore(p.x, p.z, sp.x, sp.y, smallR[2], largeR[2], minR[2], maxR[2], w[2]);
         });
         scores.push(score)
-        console.log(score);
     }
     return indexOfMax(scores) + 1;
 }
@@ -289,9 +284,13 @@ async function loadMap(name) {
         if (!response.ok) throw new Error(`Failed to fetch checkpoints: ${response.status}`);
         const data = await response.json();
         // the api needs to be adjusted when we have time
-        routes = Object.values(data.routes)
-            .flat()
-            .map(([y, x]) => ({ x, y }));
+        routes = data.routes.flatMap(route =>
+           route.points.map(p => {
+             const swapped = { x: p.y, y: p.x }
+             return swapped
+           })
+        );
+  
     } catch (err) {
         console.error("Error loading routes:", err);
         return [spawns, []];
