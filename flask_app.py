@@ -1,8 +1,7 @@
-from flask import Flask, render_template, url_for, jsonify, request
+from flask import Flask, render_template, jsonify, request, redirect
 from flask_pymongo import PyMongo
 from werkzeug.middleware.proxy_fix import ProxyFix
-from werkzeug.exceptions import HTTPException
-import json
+import traceback
 from patch.routes import patch_bp
 from guides.routes import guides_bp
 app = Flask(__name__)
@@ -14,7 +13,8 @@ app.register_blueprint(patch_bp)
 app.register_blueprint(guides_bp)
 
 @app.errorhandler(Exception)
-def error_handler():
+def error_handler(e):
+    traceback.print_exc()
     return redirect("https://assassins.network", code=302)
 
 @app.route("/train")
