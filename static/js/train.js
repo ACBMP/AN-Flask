@@ -192,6 +192,11 @@ const controls = new PointerLockControls(camera, renderer.domElement);
 
 const moveSpeed = 0.2;
 const keys = {};
+
+canvas.addEventListener('click', () => {
+    canvas.focus()
+})
+
 canvas.addEventListener('keydown', e => {
 	if (['Space', 'ShiftLeft', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code) && (document.activeElement === renderer.domElement || controls.isLocked)) {
 		e.preventDefault();
