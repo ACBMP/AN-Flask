@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block content %}
+<meta content="Assassins' Network | Donate" property="og:title" />
+<meta content="Donate to the Assassins' Network" property="og:description" />
+<meta content="https://assassins.network/donate" property="og:url" />
+<div class="wrapper">
+<div class="left"><img src="{{ url_for('static', filename='an_icon_n.png') }}" width=100 height=100></div>
+<div class="right">
+    <h1>Donate</h1>
+    <p>Hosting services currently amounts to around 8 EUR per month. We accept donations in the following currencies:
+    <ul>
+  <li>Escort playtime</li>
+  <li>Assassinate playtime</li>
+  <li>Domination playtime</li>
+  <li>Artifact Assault playtime</li>
+  <li>Manhunt playtime</li>
+  <li>Deathmatch playtime</li>
+</ul>
+</p>
+To make a contribution, follow this link:
+    <a href="https://discord.gg/YbhPyqPHNd" target="_blank" class="discord-button">
+  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg" alt="Discord" />
+  AN Hub Server
+</a>
+
+
+<style>
+  .discord-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: #5865F2;
+    color: #fff;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  }
+
+  .discord-button img {
+    width: 20px;
+    height: 20px;
+    filter: invert(1);
+  }
+
+  .discord-button:hover {
+    background: #4752C4;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+  }
+
+  .discord-button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+</style>
+
+ 
+    <br \>
+    <br \>
+    </div>
+
+{% endblock content %}
+

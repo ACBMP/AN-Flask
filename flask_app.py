@@ -172,6 +172,10 @@ def elo():
 def about():
     return render_template('about.html', title = 'About Assassins\' Network')
 
+@app.route('/donate')
+def donate():
+    return render_template('donate.html', title = 'Donate | Assassins\' Network')
+
 @app.route('/matches')
 def matches():
     data = mongo.db.matches.find().sort("_id", -1).limit(20)
