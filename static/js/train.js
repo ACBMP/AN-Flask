@@ -415,9 +415,34 @@ function drawMinimapAxes() {
 function drawMinimap(scenario, hoveredId = null) {
 	ctx.clearRect(0, 0, minimap.width, minimap.height);
 
+    // Draw background image (scaled + rotated)
     if (minimapBg.complete) {
-        ctx.drawImage(minimapBg, 0, 0, minimap.width, minimap.height)
+        ctx.save()
+
+        // Move origin to center so rotation is clean
+        ctx.translate(minimap.width / 2, minimap.height / 2)
+
+        // Rotate 90 degrees clockwise
+        ctx.rotate(Math.PI / 2)
+
+        // Compute uniform scale factor
+        const scale = Math.min(
+            minimap.width  / minimapBg.height,  // note swapped due to rotation
+            minimap.height / minimapBg.width
+        )
+
+        ctx.scale(scale, scale)
+
+        // Draw image centered
+        ctx.drawImage(
+            minimapBg,
+            -minimapBg.width / 2,
+            -minimapBg.height / 2
+        )
+
+        ctx.restore()
     }
+
 
 	// -------------------
 	// AXES
