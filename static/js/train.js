@@ -268,7 +268,7 @@ cheatToggle.addEventListener('change', () => {
 
 let showNumbers = showNumbersToggle.checked;
 
-showNumbers.addEventListener('change', () => {
+showNumbersToggle.addEventListener('change', () => {
 	showNumbers = !showNumbers;
 	drawMinimap(scenario, hoverSpawnId);
 });
