@@ -412,37 +412,79 @@ function drawMinimapAxes() {
 	}
 }
 
+function computeAffineFromCorners(worldTL, worldBR, pixelTL, pixelBR) {
+    const [x_tl, y_tl] = worldTL
+    const [x_br, y_br] = worldBR
+    const [u_tl, v_tl] = pixelTL
+    const [u_br, v_br] = pixelBR
+
+    const sx = (u_br - u_tl) / (x_br - x_tl)
+    const sy = (v_br - v_tl) / (y_br - y_tl)
+
+    const ox = u_tl - sx * x_tl
+    const oy = v_tl - sy * y_tl
+
+    return { sx, ox, sy, oy }
+}
+
+function worldToPixel(x, y, { sx, ox, sy, oy }) {
+    return {
+        u: sx * x + ox,
+        v: sy * y + oy
+    }
+}
+
+function pixelToWorld(u, v, { sx, ox, sy, oy }) {
+    return {
+        x: (u - ox) / sx,
+        y: (v - oy) / sy
+    }
+}
+
+const pixelTL = [8, 7]
+const pixelBR = [610, 386.25]
+
+const worldTL = [-55, 46]
+const worldBR = [58, -25]
+
+const affine = computeAffineFromCorners(worldTL, worldBR, pixelTL, pixelBR)
+
+const tlWorld = pixelToWorld(pixelTL[0], pixelTL[1], affine)
+const brWorld = pixelToWorld(pixelBR[0], pixelBR[1], affine)
+
+const tlMap = worldToMap(tlWorld.x, tlWorld.y)
+const brMap = worldToMap(brWorld.x, brWorld.y)
+
+const mapW = brMap.x - tlMap.x
+const mapH = brMap.y - tlMap.y
+
+const scale = Math.min(
+    mapW / minimapBg.height,  // swapped due to rotation
+    mapH / minimapBg.width
+)
+
+
+
 function drawMinimap(scenario, hoveredId = null) {
 	ctx.clearRect(0, 0, minimap.width, minimap.height);
 
-    // Draw background image (scaled + rotated)
-    if (minimapBg.complete) {
-        ctx.save()
+if (minimapBg.complete) {
+    ctx.save()
 
-        // Move origin to center so rotation is clean
-        ctx.translate(minimap.width / 2, minimap.height / 2)
+    // Move to top-left of where the image should appear
+    ctx.translate(tlMap.x, tlMap.y)
 
-        // Rotate 90 degrees clockwise
-        ctx.rotate(Math.PI / 2)
+    // Rotate 90° clockwise
+    ctx.rotate(Math.PI / 2)
 
-        // Compute uniform scale factor
-        const scale = Math.min(
-            minimap.width  / minimapBg.height,  // note swapped due to rotation
-            minimap.height / minimapBg.width
-        )
+    // Apply uniform scale
+    ctx.scale(scale, scale)
 
-        ctx.scale(scale, scale)
+    // After rotation, the image's top-left corner becomes (0, -width)
+    ctx.drawImage(minimapBg, 0, -minimapBg.width)
 
-        // Draw image centered
-        ctx.drawImage(
-            minimapBg,
-            -minimapBg.width / 2,
-            -minimapBg.height / 2
-        )
-
-        ctx.restore()
-    }
-
+    ctx.restore()
+}
 
 	// -------------------
 	// AXES
