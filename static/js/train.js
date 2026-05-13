@@ -640,15 +640,17 @@ function addNumberedMarker(x, y, z, number_, color = baseSpawnColor, size = 0.5)
 	sphere.position.set(x, y, z);
 	scene.add(sphere);
 
-	const canvas = document.createElement('canvas');
-	canvas.width = 64;
-	canvas.height = 64;
-	const context = canvas.getContext('2d');
-	context.fillStyle = 'white';
-	context.font = 'bold 48px Arial';
-	context.textAlign = 'center';
-	context.textBaseline = 'middle';
-	context.fillText(number_, canvas.width / 2, canvas.height / 2);
+    if (showNumbers) {
+	    const canvas = document.createElement('canvas');
+	    canvas.width = 64;
+	    canvas.height = 64;
+	    const context = canvas.getContext('2d');
+	    context.fillStyle = 'white';
+	    context.font = 'bold 48px Arial';
+	    context.textAlign = 'center';
+	    context.textBaseline = 'middle';
+	    context.fillText(number_, canvas.width / 2, canvas.height / 2);
+    }
 
 	const texture = new THREE.CanvasTexture(canvas);
 	const spriteMat = new THREE.SpriteMaterial({map: texture});
