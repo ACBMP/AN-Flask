@@ -836,6 +836,7 @@ function populateScene(scenario, spawnPoints) {
 	spawnMarkers = [];
 
 	personaMarkers = [];
+    personaMarkers.push(addMarker3D(scenario.player.x, 5, scenario.player.z, 0x00_FF_FF));
 	for (const teammate of scenario.teammates) {
 		personaMarkers.push(addMarker3D(teammate.x, 5, teammate.z, 0x00_00_FF));
 		personaMarkers.push(addMarker3D(teammate.x, 15, teammate.z, 0x00_00_FF, 1, 'arrowDown'));
