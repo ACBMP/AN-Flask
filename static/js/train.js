@@ -459,32 +459,26 @@ const mapW = brMap.x - tlMap.x
 const mapH = brMap.y - tlMap.y
 
 const scale = Math.min(
-    mapW / minimapBg.height,  // swapped due to rotation
+    mapW / minimapBg.height,
     mapH / minimapBg.width
 )
-
-
 
 function drawMinimap(scenario, hoveredId = null) {
 	ctx.clearRect(0, 0, minimap.width, minimap.height);
 
-if (minimapBg.complete) {
-    ctx.save()
+    if (minimapBg.complete) {
+        ctx.save()
+        ctx.translate(tlMap.x, tlMap.y)
+        const scale = Math.min(
+            mapW / minimapBg.height,
+            mapH / minimapBg.width
+        )
+        ctx.scale(scale, scale)
+        ctx.rotate(Math.PI / 2)
+        ctx.drawImage(minimapBg, 0, -minimapBg.width)
+        ctx.restore()
+    }
 
-    // Move to top-left of where the image should appear
-    ctx.translate(tlMap.x, tlMap.y)
-
-    // Rotate 90° clockwise
-    ctx.rotate(Math.PI / 2)
-
-    // Apply uniform scale
-    ctx.scale(scale, scale)
-
-    // After rotation, the image's top-left corner becomes (0, -width)
-    ctx.drawImage(minimapBg, 0, -minimapBg.width)
-
-    ctx.restore()
-}
 
 	// -------------------
 	// AXES
