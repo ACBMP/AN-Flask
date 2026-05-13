@@ -351,6 +351,8 @@ async function loadMap(name) {
 		);
 	});
 
+    const minimapBg = new Image()
+    minimapBg.src = `/static/${name}.jpg`
 	return [spawns, routes];
 }
 
@@ -412,6 +414,10 @@ function drawMinimapAxes() {
 
 function drawMinimap(scenario, hoveredId = null) {
 	ctx.clearRect(0, 0, minimap.width, minimap.height);
+
+    if (minimapBg.complete) {
+        ctx.drawImage(minimapBg, 0, 0, minimap.width, minimap.height)
+    }
 
 	// -------------------
 	// AXES
