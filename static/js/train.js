@@ -650,13 +650,13 @@ function addNumberedMarker(x, y, z, number_, color = baseSpawnColor, size = 0.5)
 	    context.textAlign = 'center';
 	    context.textBaseline = 'middle';
 	    context.fillText(number_, canvas.width / 2, canvas.height / 2);
-    }
 
-	const texture = new THREE.CanvasTexture(canvas);
-	const spriteMat = new THREE.SpriteMaterial({map: texture});
-	const sprite = new THREE.Sprite(spriteMat);
-	sprite.position.set(x, y + size + 0.3, z);
-	scene.add(sprite);
+	    const texture = new THREE.CanvasTexture(canvas);
+	    const spriteMat = new THREE.SpriteMaterial({map: texture});
+	    const sprite = new THREE.Sprite(spriteMat);
+	    sprite.position.set(x, y + size + 0.3, z);
+	    scene.add(sprite);
+    }
 
 	return sphere;
 }
