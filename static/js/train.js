@@ -828,7 +828,7 @@ function nextRound() {
 	hoverMarkerMesh = null;
 
 	const basic_mesh = new THREE.MeshBasicMaterial({color: baseSpawnColor});
-	spawnMarkers[scenario.correctSpawn - 1].material = basic_mesh;
+    if (spawnMarkers.length) spawnMarkers[scenario.correctSpawn - 1].material = basic_mesh;
 	if (guessDistanceMode) {
 		if (clickMarkerMesh) {
 			scene.remove(clickMarkerMesh);
@@ -836,8 +836,6 @@ function nextRound() {
 			scene.remove(guessLine3D);
 			guessLine3D = null;
 		}
-	} else if (scenario.selectedSpawn) {
-		spawnMarkers[scenario.selectedSpawn - 1].material = basic_mesh;
 	}
 
 	for (const m of personaMarkers) {
