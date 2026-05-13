@@ -18,6 +18,7 @@ const distanceResult = $('#distanceResult');
 const nextBtn = $('#nextBtn');
 const showNumbersToggle = $('#showNumbers');
 
+const minimapBg = new Image()
 const state = new Proxy({
 	map: null,
 	bandsEnabled: false,
@@ -351,7 +352,6 @@ async function loadMap(name) {
 		);
 	});
 
-    const minimapBg = new Image()
     minimapBg.src = `/static/${name}.jpg`
 	return [spawns, routes];
 }
