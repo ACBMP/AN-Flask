@@ -1096,7 +1096,7 @@ function animate() {
 	requestAnimationFrame(animate);
 	handleMovement();
 	drawMinimap(scenario, hoverSpawnId);
-	if (scenario.selectedSpawn && spawnMarkers) {
+	if (scenario.selectedSpawn && spawnMarkers.length) {
 		const cp = spawnMarkers[scenario.correctSpawn - 1];
 		cp.material = new THREE.MeshBasicMaterial({color: 0x00_FF_00});
 		if (!guessDistanceMode && scenario.correctSpawn != scenario.selectedSpawn) {
