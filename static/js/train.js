@@ -16,6 +16,7 @@ const cheatToggle = $('#bandsToggle');
 const minimap = $('#minimap');
 const distanceResult = $('#distanceResult');
 const nextBtn = $('#nextBtn');
+const showNumbersToggle = $('#showNumbers');
 
 const state = new Proxy({
 	map: null,
@@ -262,6 +263,13 @@ let cheatEnabled = cheatToggle.checked;
 
 cheatToggle.addEventListener('change', () => {
 	cheatEnabled = !cheatEnabled;
+	drawMinimap(scenario, hoverSpawnId);
+});
+
+let showNumbers = showNumbersToggle.checked;
+
+showNumbers.addEventListener('change', () => {
+	showNumbers = !showNumbers;
 	drawMinimap(scenario, hoverSpawnId);
 });
 
@@ -578,7 +586,7 @@ function drawPointMinimap(scenario, ctx, sp, color = 'white') {
 	ctx.fillStyle = 'black';
 	ctx.textAlign = 'center';
 	ctx.textBaseline = 'middle';
-	ctx.fillText(sp.id, m.x, m.y);
+    if (showNumbers) ctx.fillText(sp.id, m.x, m.y);
 }
 
 function addMarker(x, y, z, color) {
