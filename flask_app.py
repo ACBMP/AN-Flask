@@ -17,7 +17,7 @@ def error_handler(e):
     traceback.print_exc()
     return redirect("https://assassins.network", code=302)
 
-@app.route("/train")
+@app.route("/spawnguesser")
 def train():
     return render_template("train.html")
 
