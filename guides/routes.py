@@ -20,7 +20,18 @@ def overview_page():
 @guides_bp.route("/spawns/<map_name>")
 def spawns_page(map_name):
     sx, ox, sy, oy = compute_affine_from_corners(world_corners[map_name][0], world_corners[map_name][1], pixel_corners[map_name][0], pixel_corners[map_name][1])
-    map_spawns = [world_to_pixel(i[0], i[1], sx, ox, sy, oy) for i in spawns[map_name]]
+    r = requests.get(f"https://api.assassins.network/maps/{map_name}")
+    data = r.json()
+    if "spawns" in data:
+        s = dict(
+                sorted(data["spawns"].items(), key=lambda item: item[1]["index"], reverse=True)
+            )
+        map_spawns = [world_to_pixel(i["x"], i["y"], sx, ox, sy, oy) for i in s.values()]
+    elif map_name in spawns:
+        s = spawns[map_name]
+        map_spawns = [world_to_pixel(i[0], i[1], sx, ox, sy, oy) for i in s]
+    else:
+        return "File not found", 404
 
     # accounting for error
     scale = (abs(sx) + abs(sy)) / 2.0
