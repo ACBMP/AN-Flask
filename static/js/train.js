@@ -339,7 +339,7 @@ async function loadMap(name) {
 						// });
 					}
 				});
-				object.scale.set(1, 1, 1);
+				object.scale.set(1.1, 1.1, 1.1);
 				scene.add(object);
 				loadingOverlay.style.display = 'none';
 				resolve();
@@ -449,33 +449,21 @@ const worldBR = [58, -25]
 
 const affine = computeAffineFromCorners(worldTL, worldBR, pixelTL, pixelBR)
 
-const tlWorld = pixelToWorld(pixelTL[0], pixelTL[1], affine)
-const brWorld = pixelToWorld(pixelBR[0], pixelBR[1], affine)
-
-const tlMap = worldToMap(tlWorld.x, tlWorld.y)
-const brMap = worldToMap(brWorld.x, brWorld.y)
-
-const mapW = brMap.x - tlMap.x
-const mapH = brMap.y - tlMap.y
-
-const scale = Math.min(
-    mapW / minimapBg.height,
-    mapH / minimapBg.width
-)
-
+// spawnPoints swap x/y from the API (see loadMap), but `affine` is calibrated
+// against the unswapped API axes, so mapping image pixels onto the minimap is
+// a transpose (canvasX from v/sy, canvasY from u/sx), not a same-axis scale.
 function drawMinimap(scenario, hoveredId = null) {
 	ctx.clearRect(0, 0, minimap.width, minimap.height);
 
     if (minimapBg.complete) {
         ctx.save()
-        ctx.translate(tlMap.x, tlMap.y)
-        const scale = Math.min(
-            mapW / minimapBg.height,
-            mapH / minimapBg.width
+        ctx.setTransform(
+            0, minimapScale / affine.sx,
+            minimapScale / affine.sy, 0,
+            minimap.width / 2 - (minimapScale * affine.oy) / affine.sy,
+            minimap.height / 2 - (minimapScale * affine.ox) / affine.sx,
         )
-        ctx.scale(scale, scale)
-        ctx.rotate(Math.PI / 2)
-        ctx.drawImage(minimapBg, 0, -minimapBg.width)
+        ctx.drawImage(minimapBg, 0, 0)
         ctx.restore()
     }
 
