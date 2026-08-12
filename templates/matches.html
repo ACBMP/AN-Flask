@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% macro char_icon(player) %}{% if player.character %}<img src="{{ url_for('static', filename='char_svg/' ~ player.character.lower() ~ '.svg') }}" alt="{{ player.character }}" style="height:1em;width:1em;vertical-align:middle;margin-right:0.25em">{% endif %}{% endmacro %}
 {% block content %}
 <meta content="Assassins' Network | Matches" property="og:title" />
 <meta content="Match history." property="og:description" />
@@ -34,7 +35,7 @@
                 <tr style="background: transparent;width: 100%">
                 {% if player.hidden %}
                 {% else %}
-                    <td style="width: 25%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a> {{ player | try_value_paran("mmrchange") }}</td><td style="width: 25%;border: 0px">{{player.score if entry.mode != "Artifact assault" else player.scored}}</td>
+                    <td style="width: 25%;border: 0px">{{ char_icon(player) }}<a href="/profile/{{ player.player }}">{{ player.player }}</a> {{ player | try_value_paran("mmrchange") }}</td><td style="width: 25%;border: 0px">{{player.score if entry.mode != "Artifact assault" else player.scored}}</td>
                     <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
                 {% endif %}
             {% endfor %}
@@ -44,7 +45,7 @@
                 <tr style="background: transparent;width: 100%">
                 {% if player.hidden %}
                 {% else %}
-                    <td style="width: 25%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.score if entry.mode != "Artifact assault" else player.scored}}</td>
+                    <td style="width: 25%;border: 0px">{{ char_icon(player) }}<a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.score if entry.mode != "Artifact assault" else player.scored}}</td>
                     <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
                 {% endif %}
             {% endfor %}
@@ -61,7 +62,7 @@
                 <tr style="background: transparent;width: 100%">
                 {% if player.player | is_hidden %}
                 {% else %}
-                    <td style="width: 25%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a> {{ player | try_value_paran("mmrchange") }}</td><td style="width: 25%;border: 0px">{{player.score}}</td>
+                    <td style="width: 25%;border: 0px">{{ char_icon(player) }}<a href="/profile/{{ player.player }}">{{ player.player }}</a> {{ player | try_value_paran("mmrchange") }}</td><td style="width: 25%;border: 0px">{{player.score}}</td>
                     <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
                 {% endif %}
             {% endfor %}
@@ -71,7 +72,7 @@
                 <tr style="background: transparent;width: 100%; border: 0px">
                 {% if player.hidden %}
                 {% else %}
-                    <td style="width: 25%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.score}}</td>
+                    <td style="width: 25%;border: 0px">{{ char_icon(player) }}<a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.score}}</td>
                     <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
                 {% endif %}
             {% endfor %}
@@ -85,7 +86,7 @@
                         {% if player.hidden %}
                             HIDDEN
                         {% else %}
-                            <a href="/profile/{{ player.player }}">{{ player.player }}</a> {{ player | try_value_paran("mmrchange") }}
+                            {{ char_icon(player) }}<a href="/profile/{{ player.player }}">{{ player.player }}</a> {{ player | try_value_paran("mmrchange") }}
                         {% endif %}
                         </td>
                         </tr>
