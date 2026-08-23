@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request, redirect
 from flask_pymongo import PyMongo
 from werkzeug.middleware.proxy_fix import ProxyFix
+from collections import Counter
 import traceback
 from patch.routes import patch_bp
 from guides.routes import guides_bp
@@ -198,6 +199,76 @@ def players():
     data = mongo.db.players.find({"hidden": False}).sort("name")
     return render_template('players.html',data=data, title = 'Players | Assassins\' Network')
 
+# new bonus stats aren't aggregated onto player doc so just compute on the fly
+# our db is small enough that this isn't a major issue
+def compute_extra_acb_stats(igns, mode, is_ffa, detection_basis="kills"):
+    if is_ffa:
+        search = [{"players": {"$elemMatch": {"player": ign}}} for ign in igns]
+    else:
+        search = [{"team1": {"$elemMatch": {"player": ign}}} for ign in igns]
+        search += [{"team2": {"$elemMatch": {"player": ign}}} for ign in igns]
+    matches = mongo.db.matches.find({"mode": mode, "$or": search})
+
+    games = 0
+    bonus_totals = {}
+    character_counts = Counter()
+    coop_kills = 0
+    kill_vip_total = 0
+    own_kills_total = 0
+    incognito = discreet = silent = vip_total = 0
+
+    for match in matches:
+        teams = [match.get("players", [])] if is_ffa else [match.get("team1", []), match.get("team2", [])]
+        me = None
+        teammates = []
+        for team in teams:
+            if any(p.get("player") in igns for p in team):
+                me = next(p for p in team if p.get("player") in igns)
+                teammates = [p for p in team if p.get("player") not in igns]
+                break
+        if me is None or "bonuses" not in me:
+            continue
+
+        games += 1
+        bonuses = me["bonuses"]
+        for stat, val in bonuses.items():
+            if stat == "Other" or "count" not in val:
+                continue
+            bonus_totals[stat] = bonus_totals.get(stat, 0) + val["count"]
+
+        if me.get("character"):
+            character_counts[me["character"]] += 1
+
+        my_kills = me.get("kills", 0)
+        my_vips = bonuses.get("VIP", {}).get("count", 0)
+        coop_kills += bonuses.get("Co-Op Kill", {}).get("count", 0)
+        kill_vip_total += my_kills + my_vips
+        own_kills_total += my_kills
+        for mate in teammates:
+            mate_bonuses = mate.get("bonuses", {})
+            kill_vip_total += mate.get("kills", 0) + mate_bonuses.get("VIP", {}).get("count", 0)
+
+        incognito += bonuses.get("Incognito", {}).get("count", 0)
+        discreet += bonuses.get("Discreet", {}).get("count", 0)
+        silent += bonuses.get("Silent", {}).get("count", 0)
+        vip_total += my_vips
+
+    avg_bonuses = {stat: round(total / games, 2) for stat, total in sorted(bonus_totals.items())} if games else {}
+    most_common_character = character_counts.most_common(1)[0][0] if character_counts else None
+    coop_percentage = round(coop_kills / kill_vip_total * 100, 2) if kill_vip_total else 0
+    detection_total = vip_total if detection_basis == "vip" else own_kills_total
+    detection_none = max(detection_total - incognito - discreet - silent, 0)
+
+    return {
+        "games": games,
+        "avg_bonuses": avg_bonuses,
+        "character": most_common_character,
+        "coop_percentage": coop_percentage,
+        "detection_share": {"incognito": incognito, "discreet": discreet, "silent": silent, "none": detection_none},
+        "detection_total": detection_total,
+        "detection_basis": detection_basis,
+    }
+
 @app.route('/profile/<name>')
 def display_profile(name):
     data = mongo.db.players.find_one({"name": name, "hidden": False})
@@ -247,7 +318,10 @@ def display_profile(name):
                         break
                 if found:
                     break
-    return render_template('profile.html',data=data, data_matches=data_matches, title = 'Player\'s Profile | Assassins\' Network')
+    mh_extra = compute_extra_acb_stats(igns, "Manhunt", False, detection_basis="kills")
+    e_extra = compute_extra_acb_stats(igns, "Escort", False, detection_basis="vip")
+    asb_extra = compute_extra_acb_stats(igns, "Assassinate brotherhood", True, detection_basis="kills")
+    return render_template('profile.html',data=data, data_matches=data_matches, mh_extra=mh_extra, e_extra=e_extra, asb_extra=asb_extra, title = 'Player\'s Profile | Assassins\' Network')
 
 @app.route('/maps')
 def maps():
