@@ -201,7 +201,7 @@ def players():
 
 # new bonus stats aren't aggregated onto player doc so just compute on the fly
 # our db is small enough that this isn't a major issue
-def compute_extra_acb_stats(igns, mode, is_ffa, detection_basis="kills"):
+def compute_extra_acb_stats(igns, mode, is_ffa, detection_basis="kills", excluded_bonuses=None):
     if is_ffa:
         search = [{"players": {"$elemMatch": {"player": ign}}} for ign in igns]
     else:
@@ -232,9 +232,15 @@ def compute_extra_acb_stats(igns, mode, is_ffa, detection_basis="kills"):
         games += 1
         bonuses = me["bonuses"]
         for stat, val in bonuses.items():
-            if stat == "Other" or "count" not in val:
+            if excluded_bonuses and stat in excluded_bonuses:
                 continue
-            bonus_totals[stat] = bonus_totals.get(stat, 0) + val["count"]
+            if stat == "Other":
+                amount = val.get("score", 0)
+            elif "count" in val:
+                amount = val["count"]
+            else:
+                continue
+            bonus_totals[stat] = bonus_totals.get(stat, 0) + amount
 
         if me.get("character"):
             character_counts[me["character"]] += 1
@@ -318,10 +324,16 @@ def display_profile(name):
                         break
                 if found:
                     break
-    mh_extra = compute_extra_acb_stats(igns, "Manhunt", False, detection_basis="kills")
-    e_extra = compute_extra_acb_stats(igns, "Escort", False, detection_basis="vip")
+    mh_e_excluded_bonuses = {
+        "Chain", "Chest", "Close Call", "Double Escape", "Fast Poison", "Final Chest",
+        "First Blood", "Grounded", "Mid-Air", "Poacher", "Poison", "Rescue", "Revenge",
+        "Savior", "Triple Escape",
+    }
+    mh_extra = compute_extra_acb_stats(igns, "Manhunt", False, detection_basis="kills", excluded_bonuses=mh_e_excluded_bonuses)
+    e_extra = compute_extra_acb_stats(igns, "Escort", False, detection_basis="vip", excluded_bonuses=mh_e_excluded_bonuses)
     asb_extra = compute_extra_acb_stats(igns, "Assassinate brotherhood", True, detection_basis="kills")
-    return render_template('profile.html',data=data, data_matches=data_matches, mh_extra=mh_extra, e_extra=e_extra, asb_extra=asb_extra, title = 'Player\'s Profile | Assassins\' Network')
+    mh_e_stat_keys = sorted(set(mh_extra["avg_bonuses"]) | set(e_extra["avg_bonuses"]))
+    return render_template('profile.html',data=data, data_matches=data_matches, mh_extra=mh_extra, e_extra=e_extra, asb_extra=asb_extra, mh_e_stat_keys=mh_e_stat_keys, title = 'Player\'s Profile | Assassins\' Network')
 
 @app.route('/maps')
 def maps():

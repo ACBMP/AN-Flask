@@ -190,41 +190,43 @@
         <br \>
         <h4 align="center">Detailed Stats (Beta)</h4>
         <p align="center" style="font-size: 0.85em">Based on matches with detailed bonus tracking &mdash; {{ mh_extra.games }} Manhunt / {{ e_extra.games }} Escort game(s).</p>
+        <div align="center">
+        <table class="profile-table" style="width:90%">
+            <tr>
+                <th> </th>
+                <th>Manhunt</th>
+                <th>Escort</th>
+            </tr>
+            <tr><td><b>Most common character</b></td>
+                <td>{% if mh_extra.character %}<img src="{{ url_for('static', filename='char_svg/' ~ mh_extra.character.lower() ~ '.svg') }}" alt="{{ mh_extra.character }}" style="height:1.2em;vertical-align:middle"> {{ mh_extra.character }}{% else %}-{% endif %}</td>
+                <td>{% if e_extra.character %}<img src="{{ url_for('static', filename='char_svg/' ~ e_extra.character.lower() ~ '.svg') }}" alt="{{ e_extra.character }}" style="height:1.2em;vertical-align:middle"> {{ e_extra.character }}{% else %}-{% endif %}</td>
+            </tr>
+            <tr><td><b>Co-op kill %</b></td>
+                <td>{{ mh_extra.coop_percentage }}%</td>
+                <td>{{ e_extra.coop_percentage }}%</td>
+            </tr>
+            {% for stat in mh_e_stat_keys %}
+            <tr><td>Average {{ stat }}{% if stat == "Other" %} Score{% endif %}</td>
+                <td>{{ mh_extra.avg_bonuses.get(stat, '-') }}</td>
+                <td>{{ e_extra.avg_bonuses.get(stat, '-') }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        </div>
+        <br \>
         <div class="container">
-            <div style="width: 45%; display:inline-block; vertical-align: top;">
-                {% if mh_extra.games > 0 %}
-                <p align="center" style="font-weight: bold">Manhunt</p>
-                <table class="profile-table">
-                    <tr><td><b>Most common character</b></td>
-                        <td>{% if mh_extra.character %}<img src="{{ url_for('static', filename='char_svg/' ~ mh_extra.character.lower() ~ '.svg') }}" alt="{{ mh_extra.character }}" style="height:1.2em;vertical-align:middle"> {{ mh_extra.character }}{% else %}-{% endif %}</td></tr>
-                    <tr><td><b>Co-op kill %</b></td><td>{{ mh_extra.coop_percentage }}%</td></tr>
-                    {% for stat, avg in mh_extra.avg_bonuses.items() %}
-                    <tr><td>Average {{ stat }}</td><td>{{ avg }}</td></tr>
-                    {% endfor %}
-                </table>
+            {% if mh_extra.detection_total > 0 %}
+            <div class="pie-chart">
+                <canvas id="mhdetchart"></canvas>
                 <br \>
-                {% if mh_extra.detection_total > 0 %}
-                <div class="pie-chart"><canvas id="mhdetchart"></canvas></div>
-                {% endif %}
-                {% endif %}
             </div>
-            <div style="width: 45%; display:inline-block; vertical-align: top;">
-                {% if e_extra.games > 0 %}
-                <p align="center" style="font-weight: bold">Escort</p>
-                <table class="profile-table">
-                    <tr><td><b>Most common character</b></td>
-                        <td>{% if e_extra.character %}<img src="{{ url_for('static', filename='char_svg/' ~ e_extra.character.lower() ~ '.svg') }}" alt="{{ e_extra.character }}" style="height:1.2em;vertical-align:middle"> {{ e_extra.character }}{% else %}-{% endif %}</td></tr>
-                    <tr><td><b>Co-op kill %</b></td><td>{{ e_extra.coop_percentage }}%</td></tr>
-                    {% for stat, avg in e_extra.avg_bonuses.items() %}
-                    <tr><td>Average {{ stat }}</td><td>{{ avg }}</td></tr>
-                    {% endfor %}
-                </table>
+            {% endif %}
+            {% if e_extra.detection_total > 0 %}
+            <div class="pie-chart">
+                <canvas id="edetchart"></canvas>
                 <br \>
-                {% if e_extra.detection_total > 0 %}
-                <div class="pie-chart"><canvas id="edetchart"></canvas></div>
-                {% endif %}
-                {% endif %}
             </div>
+            {% endif %}
         </div>
         {% endif %}
     </div>
@@ -452,7 +454,7 @@
                     <td>{% if asb_extra.character %}<img src="{{ url_for('static', filename='char_svg/' ~ asb_extra.character.lower() ~ '.svg') }}" alt="{{ asb_extra.character }}" style="height:1.2em;vertical-align:middle"> {{ asb_extra.character }}{% else %}-{% endif %}</td></tr>
                 <tr><td><b>Co-op kill %</b></td><td>{{ asb_extra.coop_percentage }}%</td></tr>
                 {% for stat, avg in asb_extra.avg_bonuses.items() %}
-                <tr><td>Average {{ stat }}</td><td>{{ avg }}</td></tr>
+                <tr><td>Average {{ stat }}{% if stat == "Other" %} Score{% endif %}</td><td>{{ avg }}</td></tr>
                 {% endfor %}
             </table>
             <br \>
@@ -641,7 +643,7 @@
     var mhdetectionchart = new Chart(mhdetchart, {
         type: 'doughnut',
         data:{
-            labels:['INCOGNITO', 'DISCREET', 'SILENT', 'NONE OF THE ABOVE'],
+            labels:['INCOGNITO', 'DISCREET', 'SILENT', 'CHASE'],
             datasets:
             [{data:[{{mh_extra.detection_share.incognito}},{{mh_extra.detection_share.discreet}},{{mh_extra.detection_share.silent}},{{mh_extra.detection_share.none}}],backgroundColor:['#0099ff','#33cc33','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Manhunt Detection Share',fontSize: 25},}});
     {% endif %}
@@ -650,7 +652,7 @@
     var edetectionchart = new Chart(edetchart, {
         type: 'doughnut',
         data:{
-            labels:['INCOGNITO', 'DISCREET', 'SILENT', 'NONE OF THE ABOVE'],
+            labels:['INCOGNITO', 'DISCREET', 'SILENT', 'CHASE'],
             datasets:
             [{data:[{{e_extra.detection_share.incognito}},{{e_extra.detection_share.discreet}},{{e_extra.detection_share.silent}},{{e_extra.detection_share.none}}],backgroundColor:['#0099ff','#33cc33','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Escort Detection Share',fontSize: 25},}});
     {% endif %}
@@ -659,7 +661,7 @@
     var asbdetectionchart = new Chart(asbdetchart, {
         type: 'doughnut',
         data:{
-            labels:['INCOGNITO', 'DISCREET', 'SILENT', 'NONE OF THE ABOVE'],
+            labels:['INCOGNITO', 'DISCREET', 'SILENT', 'CHASE'],
             datasets:
             [{data:[{{asb_extra.detection_share.incognito}},{{asb_extra.detection_share.discreet}},{{asb_extra.detection_share.silent}},{{asb_extra.detection_share.none}}],backgroundColor:['#0099ff','#33cc33','#ff5050','#cccccc']}],},options:{title:{display:true,text:'Assassinate Detection Share',fontSize: 25},}});
     {% endif %}
