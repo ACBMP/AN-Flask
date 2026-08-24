@@ -221,11 +221,13 @@ def compute_extra_acb_stats(igns, mode, is_ffa, detection_basis="kills", exclude
         teams = [match.get("players", [])] if is_ffa else [match.get("team1", []), match.get("team2", [])]
         me = None
         teammates = []
+        opponents = []
         for team in teams:
             if any(p.get("player") in igns for p in team):
                 me = next(p for p in team if p.get("player") in igns)
                 teammates = [p for p in team if p.get("player") not in igns]
-                break
+            else:
+                opponents = team 
         if me is None or "bonuses" not in me:
             continue
 
@@ -250,9 +252,26 @@ def compute_extra_acb_stats(igns, mode, is_ffa, detection_basis="kills", exclude
         coop_kills += bonuses.get("Co-Op Kill", {}).get("count", 0)
         kill_vip_total += my_kills + my_vips
         own_kills_total += my_kills
+        team_vip_total = my_vips
+        mate_kills = 0
         for mate in teammates:
             mate_bonuses = mate.get("bonuses", {})
-            kill_vip_total += mate.get("kills", 0) + mate_bonuses.get("VIP", {}).get("count", 0)
+            mate_kills = mate.get("kills", 0)
+            kill_vip_total += mate_kills + mate_bonuses.get("VIP", {}).get("count", 0)
+            team_vip_total += mate_bonuses.get("VIP", {}).get("count", 0)
+        
+        bonus_totals["Teammate Kills"] = bonus_totals.get("Teammate Kills", 0) + mate_kills
+        bonus_totals["Team VIP"] = bonus_totals.get("Team VIP", 0) + team_vip_total
+        opponent_vip_total = 0
+        opponent_kills_total = 0
+        opponent_deaths_total = 0
+        for opp in opponents:
+            opponent_vip_total += opp.get("bonuses", {}).get("VIP", {}).get("count", 0)
+            opponent_kills_total += opp.get("kills", 0)
+            opponent_deaths_total += opp.get("deaths", 0)
+        bonus_totals["Opponent Kills"] = bonus_totals.get("Opponent Kills", 0) + opponent_kills_total
+        bonus_totals["Opponent Deaths"] = bonus_totals.get("Opponent Deaths", 0) + opponent_deaths_total
+        bonus_totals["Opponent VIP"] = bonus_totals.get("Opponent VIP", 0) + opponent_vip_total
 
         incognito += bonuses.get("Incognito", {}).get("count", 0)
         discreet += bonuses.get("Discreet", {}).get("count", 0)
