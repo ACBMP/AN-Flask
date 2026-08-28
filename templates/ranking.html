@@ -1,10 +1,16 @@
 {% extends "layout.html" %}
+{% import "_macros.html" as m %}
 {% block content %}
 <meta content="Assassins' Network | {{ mode }} Leaderboard" property="og:title" />
 <meta content="{{ mode }} leaderboard." property="og:description" />
-    <h1 align="center">{{mode}} Leaderboard</h1>
-    <br \>
-    <div align="center">
+<div class="page-header">
+  <div>
+    <h1>{{mode}} Leaderboard</h1>
+    <p class="page-subtitle">Ranked standings for {{mode}}.</p>
+  </div>
+  {% include "_mode_select.html" %}
+</div>
+<div class="card table-wrap">
     <table style="white-space:nowrap;">
         <tr>
             <th>Rank</th>
@@ -39,24 +45,24 @@
         {%endif%}
         </tr>
     {% for entry in data %}
-    <tr>
+    <tr class="player-row" data-href="/profile/{{ entry.name }}">
         {%if mode == "Escort"%}
             {% if entry.erank == 0 %}
                 <td>TBD</td>
             {% else %}
                 {%if entry.erankchange < 0%}
-                    <td>{{ entry.erank }} <span style="color:red;">&#9660;{{ -1 * entry.erankchange }}</span></td>
+                    <td class="{{ 'rank-1' if entry.erank==1 else ('rank-2' if entry.erank==2 else ('rank-3' if entry.erank==3 else '')) }}">{{ entry.erank }} <span class="text-loss">&#9660;{{ -1 * entry.erankchange }}</span></td>
                 {%elif entry.erankchange > 0%}
-                    <td>{{ entry.erank }} <span style="color:green;">&#9650;{{ entry.erankchange }}</span></td>
+                    <td class="{{ 'rank-1' if entry.erank==1 else ('rank-2' if entry.erank==2 else ('rank-3' if entry.erank==3 else '')) }}">{{ entry.erank }} <span class="text-win">&#9650;{{ entry.erankchange }}</span></td>
                 {%else%}
-                    <td>{{ entry.erank }}</td>
+                    <td class="{{ 'rank-1' if entry.erank==1 else ('rank-2' if entry.erank==2 else ('rank-3' if entry.erank==3 else '')) }}">{{ entry.erank }}</td>
                 {%endif%}
             {%endif%}
             <td><img src="/static/badges/{{ entry.emmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
             <td>{{ entry.emmr | round() | int() }}</td>
             <td>{{ entry.egames.total }}</td>
-            <td>{{ entry.egames.won | winrate(entry.egames.lost) }}</td>
+            <td>{{ m.winbar(entry.egames.won, entry.egames.lost, entry.egames.total - entry.egames.won - entry.egames.lost) }}</td>
 	        <td>{{ entry.estats.totalscore|avgscore(entry.egames.total) }}</td>
 	        <td>{{ entry.estats.kills|kdratio(entry.estats.deaths) }}</td>
         {%elif mode == "AA Running"%}
@@ -64,18 +70,18 @@
                 <td>TBD</td>
             {% else %}
                 {%if entry.aarrankchange < 0%}
-                    <td>{{ entry.aarrank }} <span style="color:red;">&#9660;{{ -1 * entry.aarrankchange }}</span></td>
+                    <td class="{{ 'rank-1' if entry.aarrank==1 else ('rank-2' if entry.aarrank==2 else ('rank-3' if entry.aarrank==3 else '')) }}">{{ entry.aarrank }} <span class="text-loss">&#9660;{{ -1 * entry.aarrankchange }}</span></td>
                 {%elif entry.aarrankchange > 0%}
-                    <td>{{ entry.aarrank }} <span style="color:green;">&#9650;{{ entry.aarrankchange }}</span></td>
+                    <td class="{{ 'rank-1' if entry.aarrank==1 else ('rank-2' if entry.aarrank==2 else ('rank-3' if entry.aarrank==3 else '')) }}">{{ entry.aarrank }} <span class="text-win">&#9650;{{ entry.aarrankchange }}</span></td>
                 {%else%}
-                    <td>{{ entry.aarrank }}</td>
+                    <td class="{{ 'rank-1' if entry.aarrank==1 else ('rank-2' if entry.aarrank==2 else ('rank-3' if entry.aarrank==3 else '')) }}">{{ entry.aarrank }}</td>
                 {%endif%}
             {%endif%}
             <td><img src="/static/badges/{{ entry.aarmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
             <td>{{ entry.aarmmr | round() | int() }}</td>
             <td>{{ entry.aargames.total }}</td>
-            <td>{{ entry.aargames.won | winrate(entry.aargames.lost) }}</td>
+            <td>{{ m.winbar(entry.aargames.won, entry.aargames.lost, entry.aargames.total - entry.aargames.won - entry.aargames.lost) }}</td>
 	        <td>{{ entry.aarstats.scored|avgscore(entry.aargames.total) }}</td>
 	        <td>{{ entry.aarstats.deaths|kdratio(entry.aarstats.scored) }}</td>
         {%elif mode == "AA Defending"%}
@@ -83,18 +89,18 @@
                 <td>TBD</td>
             {% else %}
                 {%if entry.aadrankchange < 0%}
-                    <td>{{ entry.aadrank }} <span style="color:red;">&#9660;{{ -1 * entry.aadrankchange }}</span></td>
+                    <td class="{{ 'rank-1' if entry.aadrank==1 else ('rank-2' if entry.aadrank==2 else ('rank-3' if entry.aadrank==3 else '')) }}">{{ entry.aadrank }} <span class="text-loss">&#9660;{{ -1 * entry.aadrankchange }}</span></td>
                 {%elif entry.aadrankchange > 0%}
-                    <td>{{ entry.aadrank }} <span style="color:green;">&#9650;{{ entry.aadrankchange }}</span></td>
+                    <td class="{{ 'rank-1' if entry.aadrank==1 else ('rank-2' if entry.aadrank==2 else ('rank-3' if entry.aadrank==3 else '')) }}">{{ entry.aadrank }} <span class="text-win">&#9650;{{ entry.aadrankchange }}</span></td>
                 {%else%}
-                    <td>{{ entry.aadrank }}</td>
+                    <td class="{{ 'rank-1' if entry.aadrank==1 else ('rank-2' if entry.aadrank==2 else ('rank-3' if entry.aadrank==3 else '')) }}">{{ entry.aadrank }}</td>
                 {%endif%}
             {%endif%}
             <td><img src="/static/badges/{{ entry.aadmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
             <td>{{ entry.aadmmr | round() | int() }}</td>
             <td>{{ entry.aadgames.total }}</td>
-            <td>{{ entry.aadgames.won | winrate(entry.aadgames.lost) }}</td>
+            <td>{{ m.winbar(entry.aadgames.won, entry.aadgames.lost, entry.aadgames.total - entry.aadgames.won - entry.aadgames.lost) }}</td>
 	        <td>{{ entry.aadstats.kills|avgscore(entry.aadgames.total) }}</td>
 	        <td>{{ entry.aadstats.conceded|avgdeaths(entry.aadgames.total) }}</td>
         {%elif mode == "Domination"%}
@@ -102,36 +108,36 @@
                 <td>TBD</td>
             {% else %}
                 {%if entry.dorankchange < 0%}
-                    <td>{{ entry.dorank }} <span style="color:red;">&#9660;{{ -1 * entry.dorankchange }}</span></td>
+                    <td class="{{ 'rank-1' if entry.dorank==1 else ('rank-2' if entry.dorank==2 else ('rank-3' if entry.dorank==3 else '')) }}">{{ entry.dorank }} <span class="text-loss">&#9660;{{ -1 * entry.dorankchange }}</span></td>
                 {%elif entry.dorankchange > 0%}
-                    <td>{{ entry.dorank }} <span style="color:green;">&#9650;{{ entry.dorankchange }}</span></td>
+                    <td class="{{ 'rank-1' if entry.dorank==1 else ('rank-2' if entry.dorank==2 else ('rank-3' if entry.dorank==3 else '')) }}">{{ entry.dorank }} <span class="text-win">&#9650;{{ entry.dorankchange }}</span></td>
                 {%else%}
-                    <td>{{ entry.dorank }}</td>
+                    <td class="{{ 'rank-1' if entry.dorank==1 else ('rank-2' if entry.dorank==2 else ('rank-3' if entry.dorank==3 else '')) }}">{{ entry.dorank }}</td>
                 {%endif%}
             {%endif%}
             <td><img src="/static/badges/{{ entry.dommr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
             <td>{{ entry.dommr | round() | int() }}</td>
             <td>{{ entry.dogames.total }}</td>
-            <td>{{ entry.dogames.won | winrate(entry.dogames.lost) }}</td>
+            <td>{{ m.winbar(entry.dogames.won, entry.dogames.lost, entry.dogames.total - entry.dogames.won - entry.dogames.lost) }}</td>
 	        <td>{{ entry.dostats.kills|kdratio(entry.dostats.deaths) }}</td>
         {%elif mode == "Manhunt"%}
             {% if entry.mhrank == 0 %}
                 <td>TBD</td>
             {% else %}
                 {%if entry.mhrankchange < 0%}
-                    <td>{{ entry.mhrank }} <span style="color:red;">&#9660;{{ -1 * entry.mhrankchange }}</span></td>
+                    <td class="{{ 'rank-1' if entry.mhrank==1 else ('rank-2' if entry.mhrank==2 else ('rank-3' if entry.mhrank==3 else '')) }}">{{ entry.mhrank }} <span class="text-loss">&#9660;{{ -1 * entry.mhrankchange }}</span></td>
                 {%elif entry.mhrankchange > 0%}
-                    <td>{{ entry.mhrank }} <span style="color:green;">&#9650;{{ entry.mhrankchange }}</span></td>
+                    <td class="{{ 'rank-1' if entry.mhrank==1 else ('rank-2' if entry.mhrank==2 else ('rank-3' if entry.mhrank==3 else '')) }}">{{ entry.mhrank }} <span class="text-win">&#9650;{{ entry.mhrankchange }}</span></td>
                 {%else%}
-                    <td>{{ entry.mhrank }}</td>
+                    <td class="{{ 'rank-1' if entry.mhrank==1 else ('rank-2' if entry.mhrank==2 else ('rank-3' if entry.mhrank==3 else '')) }}">{{ entry.mhrank }}</td>
                 {%endif%}
             {%endif%}
             <td><img src="/static/badges/{{ entry.mhmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
             <td>{{ entry.mhmmr | round() | int() }}</td>
             <td>{{ entry.mhgames.total }}</td>
-            <td>{{ entry.mhgames.won | winrate(entry.mhgames.lost) }}</td>
+            <td>{{ m.winbar(entry.mhgames.won, entry.mhgames.lost, entry.mhgames.total - entry.mhgames.won - entry.mhgames.lost) }}</td>
 	        <td>{{ entry.mhstats.totalscore|avgscore(entry.mhgames.total) }}</td>
 	        <td>{{ entry.mhstats.kills|kdratio(entry.mhstats.deaths) }}</td>
         {%elif mode == "Deathmatch"%}
@@ -139,18 +145,18 @@
                 <td>TBD</td>
             {% else %}
                 {%if entry.dmrankchange < 0%}
-                    <td>{{ entry.dmrank }} <span style="color:red;">&#9660;{{ -1 * entry.dmrankchange }}</span></td>
+                    <td class="{{ 'rank-1' if entry.dmrank==1 else ('rank-2' if entry.dmrank==2 else ('rank-3' if entry.dmrank==3 else '')) }}">{{ entry.dmrank }} <span class="text-loss">&#9660;{{ -1 * entry.dmrankchange }}</span></td>
                 {%elif entry.dmrankchange > 0%}
-                    <td>{{ entry.dmrank }} <span style="color:green;">&#9650;{{ entry.dmrankchange }}</span></td>
+                    <td class="{{ 'rank-1' if entry.dmrank==1 else ('rank-2' if entry.dmrank==2 else ('rank-3' if entry.dmrank==3 else '')) }}">{{ entry.dmrank }} <span class="text-win">&#9650;{{ entry.dmrankchange }}</span></td>
                 {%else%}
-                    <td>{{ entry.dmrank }}</td>
+                    <td class="{{ 'rank-1' if entry.dmrank==1 else ('rank-2' if entry.dmrank==2 else ('rank-3' if entry.dmrank==3 else '')) }}">{{ entry.dmrank }}</td>
                 {%endif%}
             {%endif%}
             <td><img src="/static/badges/{{ entry.dmmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
             <td>{{ entry.dmmmr | round() | int() }}</td>
             <td>{{ entry.dmgames.total }}</td>
-            <td>{{ entry.dmgames.won | winrate(entry.dmgames.lost) }}</td>
+            <td>{{ m.winbar(entry.dmgames.won, entry.dmgames.lost, entry.dmgames.total - entry.dmgames.won - entry.dmgames.lost) }}</td>
             <td>{{ entry.dmgames.podium| winrate(entry.dmgames.total-entry.dmgames.podium) }}</td>
             <td>{{ entry.dmgames.finishes| kdratio(entry.dmgames.total) }}</td>
 	        <td>{{ entry.dmstats.totalscore|avgscore(entry.dmgames.total) }}</td>
@@ -160,29 +166,29 @@
                 <td>TBD</td>
             {% else %}
                 {%if entry.asbrankchange < 0%}
-                    <td>{{ entry.asbrank }} <span style="color:red;">&#9660;{{ -1 * entry.asbrankchange }}</span></td>
+                    <td class="{{ 'rank-1' if entry.asbrank==1 else ('rank-2' if entry.asbrank==2 else ('rank-3' if entry.asbrank==3 else '')) }}">{{ entry.asbrank }} <span class="text-loss">&#9660;{{ -1 * entry.asbrankchange }}</span></td>
                 {%elif entry.asbrankchange > 0%}
-                    <td>{{ entry.asbrank }} <span style="color:green;">&#9650;{{ entry.asbrankchange }}</span></td>
+                    <td class="{{ 'rank-1' if entry.asbrank==1 else ('rank-2' if entry.asbrank==2 else ('rank-3' if entry.asbrank==3 else '')) }}">{{ entry.asbrank }} <span class="text-win">&#9650;{{ entry.asbrankchange }}</span></td>
                 {%else%}
-                    <td>{{ entry.asbrank }}</td>
+                    <td class="{{ 'rank-1' if entry.asbrank==1 else ('rank-2' if entry.asbrank==2 else ('rank-3' if entry.asbrank==3 else '')) }}">{{ entry.asbrank }}</td>
                 {%endif%}
             {%endif%}
             <td><img src="/static/badges/{{ entry.asbmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
             <td>{{ entry.asbmmr | round() | int() }}</td>
             <td>{{ entry.asbgames.total }}</td>
-            <td>{{ entry.asbgames.won | winrate(entry.asbgames.lost) }}</td>
+            <td>{{ m.winbar(entry.asbgames.won, entry.asbgames.lost, entry.asbgames.total - entry.asbgames.won - entry.asbgames.lost) }}</td>
             <td>{{ entry.asbgames.podium| winrate(entry.asbgames.total-entry.asbgames.podium) }}</td>
             <td>{{ entry.asbgames.finishes| kdratio(entry.asbgames.total) }}</td>
 	        <td>{{ entry.asbstats.totalscore|avgscore(entry.asbgames.total) }}</td>
 	        <td>{{ entry.asbstats.kills|kdratio(entry.asbstats.deaths) }}</td>
         {%else%}
-            <td>{{ entry.totalrank }}</td>
+            <td class="{{ 'rank-1' if entry.totalrank==1 else ('rank-2' if entry.totalrank==2 else ('rank-3' if entry.totalrank==3 else '')) }}">{{ entry.totalrank }}</td>
             <td><a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
             <td>{{ entry.totalmmr | round() | int() }}</td>
             <td>{{ entry.totalgames }}</td>
-            <td>{{ entry.totalwins | winrate(entry.totallosses) }}</td>
+            <td>{{ m.winbar(entry.totalwins, entry.totallosses, entry.totalgames - entry.totalwins - entry.totallosses) }}</td>
             {%if entry.aadgames.total < 10%}
                 <td>TBD</td>
             {%else%}
@@ -222,5 +228,21 @@
     </tr>
     {% endfor %}
     </table>
-    </div>
-    {% endblock content %}
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/mode-select.js') }}"></script>
+<script>
+  ANModeSelect.init(document.getElementById('modeSelect'), {
+    currentMode: {{ mode|tojson }},
+    onChange: function (mode) { window.location.href = ANModeSelect.MODE_ROUTES[mode]; }
+  });
+document.querySelectorAll('.player-row').forEach(function (row) {
+    row.addEventListener('click', function (e) {
+        if (e.target.closest('a')) return;
+        window.location.href = row.dataset.href;
+    });
+});
+</script>
+{% endblock %}

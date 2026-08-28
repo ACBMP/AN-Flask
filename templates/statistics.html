@@ -3,9 +3,13 @@
 <meta content="Assassins' Network | Maps" property="og:title" />
 <meta content="{{mode}} statistics for Assassin's Creed multiplayer." property="og:description" />
 <meta content="https://assassins.network/maps" property="og:url" />
-    <h1 align="center">{{mode}} Statistics</h1>
-    <br \>
-    <div align="center">
+<div class="page-header">
+  <div>
+    <h1>{{mode}} Statistics</h1>
+    <p class="page-subtitle">Rating and score distributions.</p>
+  </div>
+</div>
+    <div class="card" align="center">
         {% if mode == "Escort" %}
             {% include 'Escort_Deaths_Kills.html' %}
             {% include 'Escort_score.html' %}

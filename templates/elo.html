@@ -1,9 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>About Elo</h1>
     <meta content="Assassins' Network | About Elo" property="og:title" />
     <meta content="About the rating algorithm for the Assassin's Creed multiplayer leaderboards." property="og:description" />
     <meta content="https://assassins.network/elo" property="og:url" />
+    <div class="page-header"><div><h1>About Elo</h1></div></div>
+    <div class="card markdown-body">
     <p>Elo refers to a rating system that takes into account players' ratings when put up against each other. As such, it grants more points for lower rated players beating higher rated players, and higher players lose more for losing against lower rated players. While it can't definitively figure out how good players are, our tests have shown that, over long periods of time, our modification of the algorithm is reasonably accurate at predicting match outcomes in Assassin's Creed multiplayer and performs better than comparable rating systems.
     </p>
     <h2>Our Implementation</h2>
@@ -35,5 +36,5 @@ As of season 2, we have added 10 so called "placement games", which replace the 
 <br>
 <br>
 As of season 4, we have added an automatic decay script. This script runs daily and lowers players' ratings by 10 if they have missed more than 3 sessions of play, have a rating above 1000, haven't played in over 7 days, and haven't decayed already within the last 7 days. To compensate for the decay's deflationary effect, the decayed rating is spread to the players who have not missed more than 3 sessions of play or have played within the last 7 days, assuming they have finished their placement games.
-
+    </div>
 {% endblock content %}

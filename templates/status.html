@@ -3,9 +3,13 @@
 <meta content="Assassins' Network | Status" property="og:title" />
 <meta content="Assassin's Creed multiplayer server status page." property="og:description" />
 <meta content="https://assassins.network/status" property="og:url" />
-    <h1 align="center">ACB Status</h1>
-    <br \>
-    <div align="center">
+<div class="page-header">
+  <div>
+    <h1>ACB Status</h1>
+    <p class="page-subtitle">Live server &amp; service health.</p>
+  </div>
+</div>
+    <div class="card table-wrap">
     <table>
         <tr>
             <th>Server</th>
@@ -15,9 +19,9 @@
     <tr>
         <td>{{ entry.name }}</td>
         {%if entry.status %}
-            <td><span style="color:green;">&#10003;</span></td>
+            <td><span class="pill pill-win">Online</span></td>
         {%else%}
-            <td><span style="color:red;">&#10060;</span></td>
+            <td><span class="pill pill-loss">Offline</span></td>
         {%endif%}
     </tr>
     {% endfor %}

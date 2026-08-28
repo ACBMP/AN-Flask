@@ -5,8 +5,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link rel="icon" href="{{ url_for('static', filename='an_icon.png') }}">
-<!-- Bootstrap CSS -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
     {% if title %}
         <title>{{title}}</title>
@@ -15,77 +15,94 @@
     {% endif %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
 <meta content="https://assassins.network/static/an_logo_white.png" property="og:image" />
-<meta content="#FF00FF" data-react-helmet="true" name="theme-color" />
+<meta content="#00F5FF" data-react-helmet="true" name="theme-color" />
 <script src="https://cdn.jsdelivr.net/npm/core-js-bundle@3/minified.js"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <header class="site-header">
-        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <nav class="navbar">
           <div class="container">
-            <a class="navbar-brand mr-4" href="/"><img src="{{ url_for('static', filename='an_icon_n.png') }}" height="24" width="24">  ASSASSINS' NETWORK</a>
+            <a class="navbar-brand" href="/"><img src="{{ url_for('static', filename='an_icon_n.png') }}" height="24" width="24" alt="">ASSASSINS' NETWORK</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarToggle">
-              <div class="navbar-nav mr-auto">
-                <a class="btn" href="/" role="button"  aria-haspopup="true" aria-expanded="false">Home</a>
-                <a class="btn" href="/about" role="button"  aria-haspopup="true" aria-expanded="false">About</a>
-                <a class="btn" href="/escort" role="button"  aria-haspopup="true" aria-expanded="false">Escort</a>
-                <a class="btn" href="/domination" role="button"  aria-haspopup="true" aria-expanded="false">Domination</a>
-                <div class="dropdown">
-                  <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Other Modes
-                  </button>
-                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="/defending">AA Defending</a>
-                <a class="dropdown-item" href="/running">AA Running</a>
-                <a class="dropdown-item" href="/assassinate">Assassinate</a>
-                <a class="dropdown-item" href="/deathmatch">Deathmatch</a>
-                <a class="dropdown-item" href="/manhunt">Manhunt</a>
-                <a class="dropdown-item" href="/virtualtraining">Virtual Training</a>
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item"><a class="nav-link" href="/" role="button">Home</a></li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navLeaderboards" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Leaderboards</a>
+                  <div class="dropdown-menu" aria-labelledby="navLeaderboards">
+                    <a class="dropdown-item" href="/escort">Escort</a>
+                    <a class="dropdown-item" href="/domination">Domination</a>
+                    <a class="dropdown-item" href="/running">AA Running</a>
+                    <a class="dropdown-item" href="/defending">AA Defending</a>
+                    <a class="dropdown-item" href="/manhunt">Manhunt</a>
+                    <a class="dropdown-item" href="/deathmatch">Deathmatch</a>
+                    <a class="dropdown-item" href="/assassinate">Assassinate</a>
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item" href="/achievements">Achievements</a>
+                    <a class="dropdown-item" href="/virtualtraining">Virtual Training</a>
                   </div>
-                </div> 
-                <div class="dropdown">
-                  <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Overall
-                  </button>
-                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="/elo">About Elo</a>
-                <a class="dropdown-item" href="/achievements">Achievements</a>
-                <a class="dropdown-item" href="/guides">Guides</a>
-                <a class="dropdown-item" href="/matches">Matches</a>
-                <a class="dropdown-item" href="/players">Players</a>
-                <a class="dropdown-item" href="/maps">Map Statistics</a>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="/players" role="button">Players</a></li>
+                <li class="nav-item"><a class="nav-link" href="/matches" role="button">Matches</a></li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navGuides" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Guides</a>
+                  <div class="dropdown-menu" aria-labelledby="navGuides">
+                    <a class="dropdown-item" href="/guides">Guides Overview</a>
+                    <a class="dropdown-item" href="/maps">Map Statistics</a>
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item" href="/patch/quick-start">Quick Start</a>
+                    <a class="dropdown-item" href="/patch/patch-notes">Patch Notes</a>
+                    <a class="dropdown-item" href="/patch">Patch Summary</a>
+                    <a class="dropdown-item" href="/patch/faq">Patch FAQ</a>
                   </div>
-                </div> 
-                <a class="btn" href="/status" role="button"  aria-haspopup="true" aria-expanded="false">Status</a>  
-                <div class="dropdown">
-                  <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Links
-                  </button>
-                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navMore" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">More</a>
+                  <div class="dropdown-menu" aria-labelledby="navMore">
+                    <a class="dropdown-item" href="/elo">About Elo</a>
+                    <a class="dropdown-item" href="/about">About</a>
+                    <a class="dropdown-item" href="/donate">Donate</a>
+                  </div>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navLinks" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Links</a>
+                  <div class="dropdown-menu" aria-labelledby="navLinks">
                     <a class="dropdown-item" href="https://discord.gg/Th5rm6qz5u" target="_blank">Discord</a>
-        		    <a class="dropdown-item" href="https://github.com/ACBMP" target="_blank">GitHub</a>
+                    <a class="dropdown-item" href="https://github.com/ACBMP" target="_blank">GitHub</a>
                     <a class="dropdown-item" href="https://rulebook.assassins.network" target="_blank">Rulebook</a>
                     <a class="dropdown-item" href="https://twitter.com/AssassinsNetwrk" target="_blank">Twitter</a>
-                    <a class="dropdown-item" href="/donate" target="_blank">Donate</a>
                   </div>
-                </div>
-              </div>
+                </li>
+              </ul>
             </div>
           </div>
         </nav>
       </header>
 <main role="main" class="container">
     <div>
-      {% block content %}{{ content|safe }}{% endblock %}
-      <br \>
-      <br \>
+      {% block content %}<div class="card markdown-body">{{ content|safe }}</div>{% endblock %}
     </div>
 </main>
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div>
+          <div class="footer-brand">Assassins' Network</div>
+          <div class="footer-tagline">Community-run Assassin's Creed multiplayer league</div>
+        </div>
+        <div class="footer-links">
+          <a href="/about">About</a>
+          <a href="/donate">Donate</a>
+          <a href="https://discord.gg/Th5rm6qz5u" target="_blank">Discord</a>
+          <a href="https://github.com/ACBMP" target="_blank">GitHub</a>
+          <a href="https://rulebook.assassins.network" target="_blank">Rulebook</a>
+          <a href="https://twitter.com/AssassinsNetwrk" target="_blank">Twitter</a>
+        </div>
+      </div>
+    </footer>
+    <script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>

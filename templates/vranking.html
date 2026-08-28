@@ -3,10 +3,15 @@
 <meta content="Assassins' Network | Virtual Training" property="og:title" />
 <meta content="Virtual Training leaderboards." property="og:description" />
 <meta content="https://assassins.network/virtualtraining" property="og:url" />
+<div class="page-header">
+  <div>
+    <h1>Virtual Training</h1>
+    <p class="page-subtitle">Spawn-guessing time trial leaderboards.</p>
+  </div>
+</div>
     {%for table in data%}
-        <h1 align="center">{{table.name}} Leaderboard</h1>
-        <br \>
-        <div align="center">
+        <h2>{{table.name}} Leaderboard</h2>
+        <div class="card table-wrap">
         <table>
             <tr>
                 <th>Rank</th>
@@ -16,7 +21,7 @@
             </tr>
         {% for entry in table.stats %}
         <tr>
-            <td>{{ entry.rank }}</td>
+            <td class="{{ 'rank-1' if entry.rank|int==1 else ('rank-2' if entry.rank|int==2 else ('rank-3' if entry.rank|int==3 else '')) }}">{{ entry.rank }}</td>
             <td>{{ entry.name|name_in_db()|safe }}</td>
             <td>{{ entry.time }}</td>
             <td>{{ entry.platform }}</td>
@@ -24,6 +29,5 @@
         {% endfor %}
         </table>
         </div>
-        <br />
     {% endfor %}
     {% endblock content %}

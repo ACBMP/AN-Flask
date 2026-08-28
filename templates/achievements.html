@@ -2,8 +2,13 @@
 {% block content %}
 <meta content="Assassins' Network | Achievements Leaderboard" property="og:title" />
 <meta content="Achievements leaderboard." property="og:description" />
-        <h1 align="center">Achievements Leaderboard</h1>
-        <div align="center">
+<div class="page-header">
+  <div>
+    <h1>Achievements Leaderboard</h1>
+    <p class="page-subtitle">Ranked by tournament and seasonal accolades.</p>
+  </div>
+</div>
+        <div class="card table-wrap">
         <table style="white-space:nowrap;">
             <tr>
                 <th>Rank</th>
@@ -14,7 +19,7 @@
             </tr>
             {% for entry in data %}
             <tr>
-                <td>{{ entry.rank }}</td>
+                <td class="{{ 'rank-1' if entry.rank==1 else ('rank-2' if entry.rank==2 else ('rank-3' if entry.rank==3 else '')) }}">{{ entry.rank }}</td>
                 <td><a href="/profile/{{ entry.name }}">{{ entry.name }}</a></td>
                 <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
                 <td>{{ entry.badges | full_badge_names() | safe }}</td>
@@ -22,7 +27,8 @@
             </tr>
             {% endfor %}
         </table>
-        <br>
+        </div>
+        <div class="card table-wrap">
             <table style="white-space:nowrap;">
                 <tr>
                     <th>Achievement</th>
@@ -63,3 +69,4 @@
             </table>
         </div>
 {% endblock content %}
+

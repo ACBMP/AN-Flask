@@ -3,26 +3,105 @@
 <meta content="Assassins' Network | Players" property="og:title" />
 <meta content="Assassins' Network player list." property="og:description" />
 <meta content="https://assassins.network/players" property="og:url" />
-    <h1 align="center">Player Database</h1>
-    <br \>
-    <div align="center">
-    <table class="profile-list-table">
-        <tr>
-            <th>Player</th>
-            <th>Nation</th>
-            <th>IGNs</th>
-            <th>Platform</th>
-            <th>Achievements</th>
-          </tr>
-    {% for entry in data %}
-    <tr>
-        <td><a href="/profile/{{entry.name}}">{{entry.name}}</a></td>
-        <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
-        <td>{{entry.ign|join(", ") }}</td>
-        <td>{{entry.platforms|join(", ") }}</td>
-        <td>{{ entry.badges|transform_badges(mode)|safe}}</td>
-    </tr>
-    {% endfor %}
-    </table>
-    </div>
-    {% endblock content %}
+<div class="page-header">
+  <div>
+    <h1>Players Directory</h1>
+  </div>
+  <div class="navbar-search" style="width:280px">
+    <span>&#128269;</span>
+    <input type="text" id="playerSearch" placeholder="Search by name or IGN&hellip;" oninput="applyPlayers()">
+  </div>
+</div>
+<div class="players-toolbar">
+  <span class="players-count" id="playersCount"></span>
+  <select id="playerSort" class="mode-select-input" onchange="applyPlayers()">
+    <option value="name-asc">Name (A-Z)</option>
+    <option value="name-desc">Name (Z-A)</option>
+    <option value="badges-desc">Most badges</option>
+    <option value="badges-asc">Fewest badges</option>
+  </select>
+</div>
+<div id="playerGrid" class="player-grid">
+{% for entry in data %}
+    <a class="card player-card" href="/profile/{{entry.name}}"
+       data-search="{{ (entry.name ~ ' ' ~ entry.ign|join(' '))|lower }}"
+       data-name="{{ entry.name|lower }}"
+       data-badges="{{ entry.badges|length }}">
+        <div class="player-card-top">
+            {% set rank_pic = entry|top_rank_pic("big") %}
+            <div class="player-avatar">
+                {% if rank_pic %}<img src="/static/badges/{{ rank_pic }}" alt="Rank">{% else %}{{ entry.name[0]|upper }}{% endif %}
+            </div>
+            <div>
+                <div class="player-name">{{entry.name}}</div>
+                <div class="player-meta"><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png" alt="{{entry.nation}}"> {{entry.platforms|join(", ")}}</div>
+            </div>
+        </div>
+        <div class="player-card-row"><span class="stat-label">IGNs</span><span>{{entry.ign|join(", ") }}</span></div>
+        {% if entry.badges|length %}
+        <div class="player-card-row player-badges">{{ entry.badges|transform_badges(mode)|safe}}</div>
+        {% endif %}
+    </a>
+{% endfor %}
+</div>
+<p id="noPlayers" class="page-subtitle" style="display:none;text-align:center">No players match your search.</p>
+<div class="pager" id="playerPager">
+  <a class="btn" href="#" id="playerPrev">&laquo; Previous</a>
+  <span id="playerPageLabel"></span>
+  <a class="btn" href="#" id="playerNext">Next &raquo;</a>
+</div>
+<script>
+var PLAYERS_PER_PAGE = 25;
+var playerPage = 0;
+var allCards = Array.prototype.slice.call(document.querySelectorAll('#playerGrid .player-card'));
+
+function applyPlayers(resetPage) {
+    if (resetPage !== false) playerPage = 0;
+    var q = document.getElementById('playerSearch').value.trim().toLowerCase();
+    var sort = document.getElementById('playerSort').value;
+
+    var matches = allCards.filter(function (card) {
+        return card.getAttribute('data-search').indexOf(q) !== -1;
+    });
+
+    matches.sort(function (a, b) {
+        if (sort === 'name-asc') return a.dataset.name.localeCompare(b.dataset.name);
+        if (sort === 'name-desc') return b.dataset.name.localeCompare(a.dataset.name);
+        var diff = Number(b.dataset.badges) - Number(a.dataset.badges);
+        return sort === 'badges-desc' ? diff : -diff;
+    });
+
+    allCards.forEach(function (card) { card.style.display = 'none'; });
+
+    var totalPages = Math.max(1, Math.ceil(matches.length / PLAYERS_PER_PAGE));
+    playerPage = Math.min(playerPage, totalPages - 1);
+    var start = playerPage * PLAYERS_PER_PAGE;
+    var pageItems = matches.slice(start, start + PLAYERS_PER_PAGE);
+
+    var grid = document.getElementById('playerGrid');
+    pageItems.forEach(function (card) {
+        card.style.display = '';
+        grid.appendChild(card);
+    });
+
+    document.getElementById('noPlayers').style.display = matches.length ? 'none' : 'block';
+    document.getElementById('playersCount').textContent = matches.length + ' player' + (matches.length === 1 ? '' : 's');
+    document.getElementById('playerPager').style.display = matches.length > PLAYERS_PER_PAGE ? 'flex' : 'none';
+    document.getElementById('playerPageLabel').textContent = 'Page ' + (playerPage + 1) + ' of ' + totalPages;
+    document.getElementById('playerPrev').classList.toggle('disabled', playerPage === 0);
+    document.getElementById('playerNext').classList.toggle('disabled', playerPage >= totalPages - 1);
+}
+
+document.getElementById('playerPrev').addEventListener('click', function (e) {
+    e.preventDefault();
+    if (playerPage > 0) { playerPage--; applyPlayers(false); }
+});
+document.getElementById('playerNext').addEventListener('click', function (e) {
+    e.preventDefault();
+    playerPage++;
+    applyPlayers(false);
+});
+
+applyPlayers();
+</script>
+{% endblock content %}

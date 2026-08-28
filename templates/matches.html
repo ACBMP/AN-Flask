@@ -4,17 +4,18 @@
 <meta content="Assassins' Network | Matches" property="og:title" />
 <meta content="Match history." property="og:description" />
 <meta content="https://assassins.network/matches" property="og:url" />
-    <h1 align="center">Match History</h1>
-    <br \>
-    <div style="width: 50%;display: inline-block">
-    <div style="float:right"><a href="https://assassins.network/matches/{{ [page_no-1,0]|max() }}"><< Previous</a>&emsp;</div>
-    </div>
-    <div style="width: 49%;display: inline-block"> 
-    <div style="float:left">&emsp;<a href="https://assassins.network/matches/{{ page_no+1 }}">Next >></a></div>
-    </div>
-    <br \><br \>
-    <div align="center">
-    <table style="width:90%">
+<div class="page-header">
+  <div>
+    <h1>Match History</h1>
+    <p class="page-subtitle">Recent games across every mode.</p>
+  </div>
+  <div class="match-pager">
+    <a class="btn" href="/matches/{{ [page_no-1,0]|max() }}">&laquo; Previous</a>
+    <a class="btn" href="/matches/{{ page_no+1 }}">Next &raquo;</a>
+  </div>
+</div>
+    <div class="card table-wrap">
+    <table style="width:100%">
         <tr>
             <th>Mode</th>
             <th>Team 1<table style="width:100%"><tr style="background: transparent;width: 100%">
@@ -28,14 +29,14 @@
             <th>Host</th>
         </tr>
     {% for entry in data %}
-    <tr>
+    <tr class="match-row" data-href="/match/{{ entry._id }}">
         {% if entry.mode not in ["Deathmatch", "Assassinate brotherhood"] %}
             <td>{{entry.mode}}</td>
             <td><table style="width:100%">{% for player in entry.team1 %}
                 <tr style="background: transparent;width: 100%">
                 {% if player.hidden %}
                 {% else %}
-                    <td style="width: 1.6em;border: 0px">{{ char_icon(player) }}</td><td style="width: 23%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a> {{ player | try_value_paran("mmrchange") }}</td><td style="width: 25%;border: 0px">{{player.score if entry.mode != "Artifact assault" else player.scored}}</td>
+                    <td style="width: 1.6em;border: 0px">{{ char_icon(player) }}</td><td style="width: 23%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.score if entry.mode != "Artifact assault" else player.scored}}</td>
                     <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
                 {% endif %}
             {% endfor %}
@@ -52,9 +53,9 @@
             </table>
             </td>
             {% if entry.outcome == 0%}
-                <td>Tie</td>
+                <td><span class="pill pill-tie">Tie</span></td>
             {% else%}
-                <td>Team {{entry.outcome}}</td>
+                <td><span class="pill pill-win">Team {{entry.outcome}}</span></td>
             {%endif%}
         {% else %}
             <td>{{entry.mode}}</td>
@@ -62,7 +63,7 @@
                 <tr style="background: transparent;width: 100%">
                 {% if player.player | is_hidden %}
                 {% else %}
-                    <td style="width: 1.6em;border: 0px">{{ char_icon(player) }}</td><td style="width: 23%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a> {{ player | try_value_paran("mmrchange") }}</td><td style="width: 25%;border: 0px">{{player.score}}</td>
+                    <td style="width: 1.6em;border: 0px">{{ char_icon(player) }}</td><td style="width: 23%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.score}}</td>
                     <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
                 {% endif %}
             {% endfor %}
@@ -89,7 +90,7 @@
                         {% else %}
                         <td style="width: 1.6em; border: 0px">{{ char_icon(player) }}</td>
                         <td style="width: auto; border: 0px">
-                            <a href="/profile/{{ player.player }}">{{ player.player }}</a> {{ player | try_value_paran("mmrchange") }}
+                            <a href="/profile/{{ player.player }}">{{ player.player }}</a>
                         </td>
                         {% endif %}
                         </tr>
@@ -100,17 +101,25 @@
             </td>
         {% endif %}
         <td>{{ entry | try_value("map") }}</td>
+        {% if entry | try_value("host") == "Unknown" %}
+        <td>Unknown</td>
+        {% else %}
         <td><a href="/profile/{{ entry | try_value('host') }}">{{ entry | try_value("host") }}</a></td>
+        {% endif %}
         </tr>
     {% endfor %}
     </table>
     </div>
-    <br \><br \>
-    <div style="width: 50%;display: inline-block">
-    <div style="float:right"><a href="https://assassins.network/matches/{{ [page_no,0]|min(0) }}"><< Previous</a>&emsp;</div>
-    </div>
-    <div style="width: 49%;display: inline-block"> 
-    <div style="float:left">&emsp;<a href="https://assassins.network/matches/{{ page_no+1 }}">Next >></a></div>
-    </div>
-    <br \><br \>
+<div class="match-pager">
+    <a class="btn" href="/matches/{{ [page_no-1,0]|max() }}">&laquo; Previous</a>
+    <a class="btn" href="/matches/{{ page_no+1 }}">Next &raquo;</a>
+</div>
+<script>
+document.querySelectorAll('.match-row').forEach(function (row) {
+    row.addEventListener('click', function (e) {
+        if (e.target.closest('a')) return;
+        window.location.href = row.dataset.href;
+    });
+});
+</script>
 {% endblock content %}

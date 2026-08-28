@@ -1,0 +1,132 @@
+{% extends "layout.html" %}
+{% macro char_icon(player) %}{% if player.character %}<img src="{{ url_for('static', filename='char_svg/' ~ player.character.lower() ~ '.svg') }}" alt="{{ player.character }}" style="height:1em;width:1em;vertical-align:middle">{% endif %}{% endmacro %}
+{% macro team_total(team, mode) %}{% set ns = namespace(total=0) %}{% for p in team %}{% set ns.total = ns.total + (p.score if mode != "Artifact assault" else p.scored) %}{% endfor %}{{ ns.total }}{% endmacro %}
+{% macro bonus_row(p, colspan) %}
+{% if p.bonuses is defined %}
+{% set nonzero = [] %}
+{% for stat, val in p.bonuses.items() %}
+{% if val.score and val.score > 0 %}{% set _ = nonzero.append((stat, val)) %}{% endif %}
+{% endfor %}
+{% if nonzero %}
+<tr class="bonus-detail-row" style="display:none">
+  <td colspan="{{ colspan }}">
+    <div class="bonus-chip-row">
+      {% for stat, val in nonzero %}
+      <span class="bonus-chip">{{ stat }}{% if val.count is defined and val.count and val.count > 1 %} &times;{{ val.count }}{% endif %} <b>{{ val.score }}</b></span>
+      {% endfor %}
+    </div>
+  </td>
+</tr>
+{% endif %}
+{% endif %}
+{% endmacro %}
+{% macro roster_table(team, mode, title, is_winner) %}
+<div class="card table-wrap">
+  <div class="card-header"><h3>{{ title }}</h3>{% if is_winner %}<span class="pill pill-win">Winner</span>{% endif %}</div>
+  <table>
+    <tr><th>Player</th><th>Score</th><th>Kills</th><th>Deaths</th><th>K/D</th><th>Rating</th></tr>
+    {% for p in team %}
+    {% if not p.hidden %}
+    {% set clickable = p.bonuses is defined and (p.bonuses.values()|selectattr('score', 'gt', 0)|list|length > 0) %}
+    <tr{% if clickable %} class="bonus-toggle-row"{% endif %}>
+        <td>{{ char_icon(p) }} <a href="/profile/{{ p.player }}">{{ p.player }}</a>{% if clickable %} <span class="bonus-indicator" title="View bonuses earned">&#9662;</span>{% endif %}</td>
+        <td>{{ p.score if mode != "Artifact assault" else p.scored }}</td>
+        <td>{{ p.kills }}</td>
+        <td>{{ p.deaths }}</td>
+        <td>{{ p.kills|kdratio(p.deaths) }}</td>
+        <td>{{ p|try_rating_change }}</td>
+    </tr>
+    {{ bonus_row(p, 6) }}
+    {% endif %}
+    {% endfor %}
+  </table>
+</div>
+{% endmacro %}
+{% block content %}
+{% set is_ffa = entry.mode in ["Deathmatch", "Assassinate brotherhood"] %}
+<meta content="Assassins' Network | Match Details" property="og:title" />
+<meta content="{{ entry.mode }} match details." property="og:description" />
+<div class="page-header">
+  <div>
+    <h1>Match Details</h1>
+    <p class="page-subtitle">{{ entry.mode }}{% if entry|try_value("map") != "Unknown" %} &middot; {{ entry|try_value("map") }}{% endif %}{% if entry|try_value("date") != "Unknown" %} &middot; {{ entry|try_value("date") }}{% endif %}</p>
+  </div>
+  <a class="btn" href="/matches">&laquo; Back to Match History</a>
+</div>
+
+{% if is_ffa %}
+{% set roster = entry.players|sort(attribute="score", reverse=True) %}
+<div class="card match-detail-header" style="margin-bottom:1.25rem">
+  <div class="match-detail-side">
+    <div class="team-label">Winner</div>
+    <div class="match-detail-score win">{{ roster[0].player }}</div>
+  </div>
+  <div class="match-detail-center">
+    <span class="pill pill-win">Final</span>
+  </div>
+  <div class="match-detail-side">
+    <div class="team-label">Top Score</div>
+    <div class="match-detail-score">{{ roster[0].score }}</div>
+  </div>
+</div>
+<div class="card table-wrap">
+  <table>
+    <tr><th>#</th><th>Player</th><th>Score</th><th>Kills</th><th>Deaths</th><th>K/D</th><th>Rating</th></tr>
+    {% for p in roster %}
+    {% if not (p.player|is_hidden) %}
+    {% set clickable = p.bonuses is defined and (p.bonuses.values()|selectattr('score', 'gt', 0)|list|length > 0) %}
+    <tr{% if clickable %} class="bonus-toggle-row"{% endif %}>
+        <td class="{{ 'rank-1' if loop.index==1 else ('rank-2' if loop.index==2 else ('rank-3' if loop.index==3 else '')) }}">{{ loop.index }}</td>
+        <td>{{ char_icon(p) }} <a href="/profile/{{ p.player }}">{{ p.player }}</a>{% if clickable %} <span class="bonus-indicator" title="View bonuses earned">&#9662;</span>{% endif %}</td>
+        <td>{{ p.score }}</td>
+        <td>{{ p.kills }}</td>
+        <td>{{ p.deaths }}</td>
+        <td>{{ p.kills|kdratio(p.deaths) }}</td>
+        <td>{{ p|try_rating_change }}</td>
+    </tr>
+    {{ bonus_row(p, 7) }}
+    {% endif %}
+    {% endfor %}
+  </table>
+</div>
+{% else %}
+<div class="card match-detail-header" style="margin-bottom:1.25rem">
+  <div class="match-detail-side">
+    <div class="team-label">Team 1</div>
+    <div class="match-detail-score {{ 'win' if entry.outcome==1 else ('loss' if entry.outcome==2 else '') }}">{{ team_total(entry.team1, entry.mode) }}</div>
+  </div>
+  <div class="match-detail-center">
+    {% if entry.outcome == 0 %}
+    <span class="pill pill-tie">Tie</span>
+    {% else %}
+    <span class="pill pill-win">Team {{ entry.outcome }} Wins</span>
+    {% endif %}
+    {% if entry|try_value("host") != "Unknown" %}
+    <span class="page-subtitle" style="margin:0">Hosted by <a href="/profile/{{ entry.host }}">{{ entry.host }}</a></span>
+    {% endif %}
+  </div>
+  <div class="match-detail-side">
+    <div class="team-label">Team 2</div>
+    <div class="match-detail-score {{ 'win' if entry.outcome==2 else ('loss' if entry.outcome==1 else '') }}">{{ team_total(entry.team2, entry.mode) }}</div>
+  </div>
+</div>
+<div class="match-detail-grid">
+  {{ roster_table(entry.team1, entry.mode, "Team 1", entry.outcome==1) }}
+  {{ roster_table(entry.team2, entry.mode, "Team 2", entry.outcome==2) }}
+</div>
+{% endif %}
+{% endblock content %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('.bonus-toggle-row').forEach(function (row) {
+    row.addEventListener('click', function (e) {
+        if (e.target.closest('a')) return;
+        var detail = row.nextElementSibling;
+        if (detail && detail.classList.contains('bonus-detail-row')) {
+            detail.style.display = detail.style.display === 'none' ? 'table-row' : 'none';
+        }
+    });
+});
+</script>
+{% endblock %}

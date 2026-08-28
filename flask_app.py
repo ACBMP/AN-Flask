@@ -1,8 +1,11 @@
 from flask import Flask, render_template, jsonify, request, redirect
 from flask_pymongo import PyMongo
 from werkzeug.middleware.proxy_fix import ProxyFix
+from bson import ObjectId
+from bson.errors import InvalidId
 from collections import Counter
 import traceback
+import re
 from patch.routes import patch_bp
 from guides.routes import guides_bp
 app = Flask(__name__)
@@ -13,6 +16,8 @@ app.wsgi_app = ProxyFix(app.wsgi_app)
 app.register_blueprint(patch_bp)
 app.register_blueprint(guides_bp)
 
+MODES = ["mh", "e", "aar", "aad", "do", "dm", "asb"]
+
 @app.errorhandler(Exception)
 def error_handler(e):
     traceback.print_exc()
@@ -22,12 +27,24 @@ def error_handler(e):
 def train():
     return render_template("train.html")
 
+def latest_patch_notes(limit=5):
+    try:
+        with open("patch/content/patch-notes.md", "r") as f:
+            content = f.read()
+    except FileNotFoundError:
+        return None
+    match = re.search(r"^### ([^\n]+)\n(.*?)(?=\n### |\Z)", content, re.S | re.M)
+    if not match:
+        return None
+    bullets = re.findall(r"^\*\s+(.+)$", match.group(2), re.M)
+    return {"version": match.group(1).strip(), "notes": bullets[:limit]}
+
 # The main landing page
 @app.route('/')
 @app.route('/home')
 def home():
     data = mongo.db.home.find().sort("_id",-1).limit(7)
-    return render_template('home.html', data=data)
+    return render_template('home.html', data=data, latest_patch=latest_patch_notes())
 
 def concat_results(*results):
    ids = set()
@@ -109,15 +126,14 @@ def assa_acb():
 
 @app.route('/allmodes')
 def allmodes():
-    modes = ["mh", "e", "aar", "aad", "do", "dm", "asb"]
-    players = mongo.db.players.find({"$or": [{f"{m}games.total": {"$gte": 10}} for m in modes], "hidden": False})
+    players = mongo.db.players.find({"$or": [{f"{m}games.total": {"$gte": 10}} for m in MODES], "hidden": False})
     players = list(players)
     for p in players:
         p["totalmmr"] = 0
         p["totalgames"] = 0
         p["totalwins"] = 0
         p["totallosses"] = 0
-        for m in modes:
+        for m in MODES:
             games = p[m + "games"]["total"]
             if games > 9:
                 p["totalmmr"] += p[m + "mmr"]
@@ -133,8 +149,7 @@ def allmodes():
 
 @app.route('/average')
 def average():
-    modes = ["mh", "e", "aar", "aad", "do", "dm", "asb"]
-    players = mongo.db.players.find({"$or": [{f"{m}games.total": {"$gte": 10}} for m in modes], "hidden": False})
+    players = mongo.db.players.find({"$or": [{f"{m}games.total": {"$gte": 10}} for m in MODES], "hidden": False})
     players = list(players)
     for p in players:
         played_modes = 0
@@ -142,7 +157,7 @@ def average():
         p["totalgames"] = 0
         p["totalwins"] = 0
         p["totallosses"] = 0
-        for m in modes:
+        for m in MODES:
             games = p[m + "games"]["total"]
             if games > 9:
                 played_modes += 1
@@ -194,6 +209,16 @@ def paged_matches(page):
     data = mongo.db.matches.find().sort("_id", -1).skip(page*20).limit(20)
     return render_template('matches.html',data=data, page_no=page, title = 'Match History | Assassins\' Network')
 
+@app.route('/match/<match_id>')
+def match_detail(match_id):
+    try:
+        entry = mongo.db.matches.find_one({"_id": ObjectId(match_id)})
+    except InvalidId:
+        entry = None
+    if not entry:
+        return redirect("/matches", code=302)
+    return render_template('match_detail.html', entry=entry, title='Match Details | Assassins\' Network')
+
 @app.route('/players')
 def players():
     data = mongo.db.players.find({"hidden": False}).sort("name")
@@ -212,6 +237,7 @@ def compute_extra_acb_stats(igns, mode, is_ffa, detection_basis="kills", exclude
     games = 0
     bonus_totals = {}
     character_counts = Counter()
+    character_rating_totals = {}
     coop_kills = 0
     kill_vip_total = 0
     own_kills_total = 0
@@ -227,7 +253,7 @@ def compute_extra_acb_stats(igns, mode, is_ffa, detection_basis="kills", exclude
                 me = next(p for p in team if p.get("player") in igns)
                 teammates = [p for p in team if p.get("player") not in igns]
             else:
-                opponents = team 
+                opponents = team
         if me is None or "bonuses" not in me:
             continue
 
@@ -245,7 +271,9 @@ def compute_extra_acb_stats(igns, mode, is_ffa, detection_basis="kills", exclude
             bonus_totals[stat] = bonus_totals.get(stat, 0) + amount
 
         if me.get("character"):
-            character_counts[me["character"]] += 1
+            character = me["character"]
+            character_counts[character] += 1
+            character_rating_totals[character] = character_rating_totals.get(character, 0) + me.get("mmrchange", 0)
 
         my_kills = me.get("kills", 0)
         my_vips = bonuses.get("VIP", {}).get("count", 0)
@@ -259,7 +287,7 @@ def compute_extra_acb_stats(igns, mode, is_ffa, detection_basis="kills", exclude
             mate_kills = mate.get("kills", 0)
             kill_vip_total += mate_kills + mate_bonuses.get("VIP", {}).get("count", 0)
             team_vip_total += mate_bonuses.get("VIP", {}).get("count", 0)
-        
+
         bonus_totals["Teammate Kills"] = bonus_totals.get("Teammate Kills", 0) + mate_kills
         bonus_totals["Team VIP"] = bonus_totals.get("Team VIP", 0) + team_vip_total
         opponent_vip_total = 0
@@ -280,6 +308,14 @@ def compute_extra_acb_stats(igns, mode, is_ffa, detection_basis="kills", exclude
 
     avg_bonuses = {stat: round(total / games, 2) for stat, total in sorted(bonus_totals.items())} if games else {}
     most_common_character = character_counts.most_common(1)[0][0] if character_counts else None
+    MIN_CHARACTER_GAMES = 5
+    character_avg_ratings = {
+        char: total / character_counts[char]
+        for char, total in character_rating_totals.items()
+        if character_counts[char] >= MIN_CHARACTER_GAMES
+    }
+    best_character = max(character_avg_ratings.items(), key=lambda kv: kv[1]) if character_avg_ratings else None
+    worst_character = min(character_avg_ratings.items(), key=lambda kv: kv[1]) if character_avg_ratings else None
     coop_percentage = round(coop_kills / kill_vip_total * 100, 2) if kill_vip_total else 0
     detection_total = vip_total if detection_basis == "vip" else own_kills_total
     detection_none = max(detection_total - incognito - discreet - silent, 0)
@@ -288,11 +324,66 @@ def compute_extra_acb_stats(igns, mode, is_ffa, detection_basis="kills", exclude
         "games": games,
         "avg_bonuses": avg_bonuses,
         "character": most_common_character,
+        "character_share": dict(character_counts.most_common()),
+        "best_character": best_character,
+        "worst_character": worst_character,
         "coop_percentage": coop_percentage,
         "detection_share": {"incognito": incognito, "discreet": discreet, "silent": silent, "none": detection_none},
         "detection_total": detection_total,
         "detection_basis": detection_basis,
     }
+
+# groups of related bonus stats shown together in the profile's "Detailed Stats" card, in
+# the order they should be laid out (two per row: 1&2, 3&4, 5&6, then Lobby & Characters).
+# each stat is only shown if it's actually present in the computed avg_bonuses for that mode
+BONUS_STAT_GROUPS = [
+    ("Kills", ["Kill", "VIP", "Incognito", "Silent", "Discreet"]),
+    ("Types", ["Acrobatic", "Hidden", "Focus", "Grab", "Slow Poison"]),
+    ("Defense", ["Stun", "Escape", "Lure"]),
+    ("Teamplay", ["Co-Op Kill", "Co-Op Stun", "Knockout", "Multi-Kill", "Diversion", "Intercepted"]),
+    ("Variety", ["Variety", "Greater Variety", "Extreme Variety"]),
+    ("Other", ["Checkpoint", "Chest", "Other"]),
+]
+
+
+def _char_cell(character, note):
+    if not character:
+        return "-"
+    icon = '<img src="/static/char_svg/{0}.svg" alt="{1}" style="height:1.1em;vertical-align:middle;margin-right:0.35em">'.format(character.lower(), character)
+    return "{0}{1} ({2})".format(icon, character, note)
+
+
+def bonus_stat_groups(extra):
+    avg = extra["avg_bonuses"]
+    groups = []
+    for name, keys in BONUS_STAT_GROUPS:
+        row = [(key, avg[key]) for key in keys if key in avg]
+        if name == "Kills" and extra["games"]:
+            row.append(("Chase", round(extra["detection_share"]["none"] / extra["games"], 2)))
+        if name == "Teamplay":
+            row.append(("Co-op Kill %", "{0}%".format(extra["coop_percentage"])))
+        if row:
+            groups.append((name, row))
+
+    lobby_keys = sorted(k for k in avg if k.startswith("Opponent ")) + [k for k in ("Team VIP", "Teammate Kills") if k in avg]
+    lobby_row = [(key, avg[key]) for key in lobby_keys]
+    if lobby_row:
+        groups.append(("Lobby", lobby_row))
+
+    char_row = []
+    if extra["character"]:
+        count = extra["character_share"].get(extra["character"], 0)
+        char_row.append(("Most Played", _char_cell(extra["character"], count)))
+    if extra["best_character"]:
+        name, total = extra["best_character"]
+        char_row.append(("Best Performing", _char_cell(name, "{0:+.2f}".format(total))))
+    if extra["worst_character"]:
+        name, total = extra["worst_character"]
+        char_row.append(("Worst Performing", _char_cell(name, "{0:+.2f}".format(total))))
+    if char_row:
+        groups.append(("Characters", char_row))
+
+    return groups
 
 @app.route('/profile/<name>')
 def display_profile(name):
@@ -306,7 +397,7 @@ def display_profile(name):
     search = [{"team1":{"$elemMatch":{"player":ign}}} for ign in igns]
     search += [{"team2":{"$elemMatch":{"player":ign}}} for ign in igns]
     search += [{"players":{"$elemMatch":{"player":ign}}} for ign in igns]
-    data_matches = mongo.db.matches.find({"$or": search}).sort("_id", -1).limit(10)
+    data_matches = mongo.db.matches.find({"$or": search}).sort("_id", -1).limit(100)
     data_matches = list(data_matches)
     # save mmr change if present in data
     # loop through all the matches then teams and players until we find the player
@@ -327,6 +418,15 @@ def display_profile(name):
                             data_matches[i]["mmrchange"] = str(round(p["mmrchange"], 2))
                     except:
                         data_matches[i]["mmrchange"] = "Unknown"
+                    try:
+                        if p["mmrchange"] > 0:
+                            data_matches[i]["player_result"] = "win"
+                        elif p["mmrchange"] < 0:
+                            data_matches[i]["player_result"] = "loss"
+                        else:
+                            data_matches[i]["player_result"] = "tie"
+                    except:
+                        data_matches[i]["player_result"] = "unknown"
         else:
             found = False
             for j in [1, 2]:
@@ -343,6 +443,13 @@ def display_profile(name):
                         break
                 if found:
                     break
+            outcome = data_matches[i].get("outcome")
+            if outcome == 0:
+                data_matches[i]["player_result"] = "tie"
+            elif outcome == j:
+                data_matches[i]["player_result"] = "win"
+            else:
+                data_matches[i]["player_result"] = "loss"
     mh_e_excluded_bonuses = {
         "Chain", "Chest", "Close Call", "Double Escape", "Fast Poison", "Final Chest",
         "First Blood", "Grounded", "Mid-Air", "Poacher", "Poison", "Rescue", "Revenge",
@@ -351,6 +458,8 @@ def display_profile(name):
     mh_extra = compute_extra_acb_stats(igns, "Manhunt", False, detection_basis="kills", excluded_bonuses=mh_e_excluded_bonuses)
     e_extra = compute_extra_acb_stats(igns, "Escort", False, detection_basis="vip", excluded_bonuses=mh_e_excluded_bonuses)
     asb_extra = compute_extra_acb_stats(igns, "Assassinate brotherhood", True, detection_basis="kills")
+    for extra in (mh_extra, e_extra, asb_extra):
+        extra["groups"] = bonus_stat_groups(extra)
     mh_e_stat_keys = sorted(set(mh_extra["avg_bonuses"]) | set(e_extra["avg_bonuses"]))
     return render_template('profile.html',data=data, data_matches=data_matches, mh_extra=mh_extra, e_extra=e_extra, asb_extra=asb_extra, mh_e_stat_keys=mh_e_stat_keys, title = 'Player\'s Profile | Assassins\' Network')
 
@@ -505,9 +614,20 @@ def try_value(entry, value):
 @app.template_filter('try_value_paran')
 def try_value_paran(entry, value):
     try:
-        return "(" + entry[value] + ")"
+        v = entry[value]
+        if isinstance(v, (int, float)):
+            v = "{0:+.2f}".format(v)
+        return "(" + v + ")"
     except:
         return ""
+
+
+@app.template_filter('try_rating_change')
+def try_rating_change(entry, value="mmrchange"):
+    try:
+        return "{0:+.2f}".format(entry[value])
+    except:
+        return "-"
 
 
 @app.template_filter('rank_title')
@@ -551,6 +671,16 @@ def rank_pic_big(elo):
     if elo < 1400:
         return "badge_6_big.png"
     return "badge_5_big.png"
+
+MMR_FIELDS = [m + "mmr" for m in MODES]
+
+@app.template_filter('top_rank_pic')
+def top_rank_pic(player, size="small"):
+    values = [player[f] for f in MMR_FIELDS if player.get(f) is not None]
+    if not values:
+        return None
+    elo = max(values)
+    return rank_pic_big(elo) if size == "big" else rank_pic_small(elo)
 
 # from Scripts/util.py
 @app.template_filter("name_in_db")

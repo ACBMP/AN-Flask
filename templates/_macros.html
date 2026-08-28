@@ -1,0 +1,16 @@
+{% macro winbar(won, lost, ties) %}
+{% set total = won + lost + ties %}
+<div class="winrate-bar">
+  <div class="winrate-bar-track">
+    {% if total %}
+    <div class="winrate-bar-win" style="width:{{ (won*100/total)|round(2) }}%"></div>
+    <div class="winrate-bar-tie" style="width:{{ (ties*100/total)|round(2) }}%"></div>
+    <div class="winrate-bar-loss" style="width:{{ (lost*100/total)|round(2) }}%"></div>
+    {% endif %}
+  </div>
+  <div class="winrate-bar-meta">
+    <span><span class="text-win">{{ won }}W</span> <span class="text-tie">{{ ties }}T</span> <span class="text-loss">{{ lost }}L</span></span>
+    <span class="winrate-bar-pct">{{ (won*100/total)|round(2) if total else '0.00' }}%</span>
+  </div>
+</div>
+{% endmacro %}

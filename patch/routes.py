@@ -10,7 +10,7 @@ def render_md(filename):
             md_content = f.read()
         configs = {"toc": {"permalink": True}}
         html_content = markdown.markdown(md_content, extensions=["toc", "attr_list", "tables"], extension_configs=configs)
-        return render_template("patch.html", content=html_content, title=f"ACB 2.0 {filename.title()} | Assassins\' Network")
+        return render_template("layout.html", content=html_content, title=f"ACB 2.0 {filename.title()} | Assassins\' Network")
     except FileNotFoundError:
         return "File not found", 404
 
@@ -21,6 +21,6 @@ def patch_overview():
             md_content = f.read()
         configs = {"toc": {"permalink": True}}
         html_content = markdown.markdown(md_content, extensions=["toc", "attr_list", "tables"], extension_configs=configs)
-        return render_template("patch.html", content=html_content, title=f"ACB 2.0 Summary | Assassins\' Network")
+        return render_template("layout.html", content=html_content, title=f"ACB 2.0 Summary | Assassins\' Network")
     except FileNotFoundError:
         return "File not found", 404
