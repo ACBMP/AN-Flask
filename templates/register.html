@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+{% block content %}
+<meta content="Assassins' Network | Register" property="og:title" />
+<meta content="Create your Assassins' Network account." property="og:description" />
+<meta content="https://assassins.network/register" property="og:url" />
+<div class="card auth-card">
+  <div class="card-header"><h2>Create Your Account</h2></div>
+  <p class="auth-lead">Your Discord is verified. Enter your invite code and profile details to finish signing up.</p>
+  <form action="/register" method="post">
+    <div class="form-field">
+      <label for="invite_code">Invite Code</label>
+      <input class="form-input" type="text" id="invite_code" name="invite_code" placeholder="XXXX-XXXX" autocomplete="off" required>
+      <span class="field-hint">Codes are handed out in the Discord server.</span>
+    </div>
+
+    <div class="form-field">
+      <label for="name">Account Name</label>
+      <input class="form-input" type="text" id="name" name="name" value="{{ form.name|default('') }}" maxlength="24" required>
+      <span class="field-hint">2-24 characters: letters, numbers, spaces, and . _ - only. This is shown on the leaderboards.</span>
+    </div>
+
+    <div class="form-field">
+      <label>In-Game Names (IGNs)</label>
+      <div class="ign-inputs">
+        {% for i in range(5) %}
+        <input class="form-input" type="text" name="ign" maxlength="32" placeholder="IGN {{ i + 1 }}{% if i == 0 %} (required){% endif %}" value="{{ form.ign[i] if form.ign and form.ign|length > i else '' }}">
+        {% endfor %}
+      </div>
+      <span class="field-hint">Your name(s) as they appear in matches. At least one, up to five.</span>
+    </div>
+
+    <div class="form-field">
+      <label for="nation">Country / Region you represent</label>
+      <select class="form-select" id="nation" name="nation">
+        {% for code, label in nations.items() %}
+        <option value="{{ code }}" {% if code == default_nation %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label>Consoles</label>
+      <div class="checkbox-row">
+        {% for p in platform_choices %}
+        <label><input type="checkbox" name="platforms" value="{{ p }}" {% if p in selected_platforms %}checked{% endif %}> {{ p }}</label>
+        {% endfor %}
+      </div>
+      <span class="field-hint">Select every platform you play on.</span>
+    </div>
+
+    <div class="form-field">
+      <label for="link">Profile Link <span style="text-transform:none">(optional)</span></label>
+      <input class="form-input" type="url" id="link" name="link" value="{{ form.link|default('') }}" maxlength="200" placeholder="https://...">
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Create Account</button>
+      <a class="btn" href="/">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

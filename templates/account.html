@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block content %}
+<meta content="Assassins' Network | My Account" property="og:title" />
+<meta content="Manage your Assassins' Network profile." property="og:description" />
+<meta content="https://assassins.network/account" property="og:url" />
+<div class="card auth-card">
+  <div class="card-header"><h2>My Account</h2>
+    <a class="pill pill-tie" href="/profile/{{ player.name }}">View Public Profile</a>
+  </div>
+
+  <form action="/account" method="post">
+    <div class="form-field">
+      <label>In-Game Names (IGNs)</label>
+      <div class="ign-inputs">
+        {% for i in range(5) %}
+        <input class="form-input" type="text" name="ign" maxlength="32" placeholder="IGN {{ i + 1 }}{% if i == 0 %} (required){% endif %}" value="{{ player.ign[i] if player.ign and player.ign|length > i else '' }}">
+        {% endfor %}
+      </div>
+      <span class="field-hint">Your name(s) as they appear in matches. At least one, up to five.</span>
+    </div>
+
+    <div class="form-field">
+      <label for="nation">Country / Region you represent</label>
+      <select class="form-select" id="nation" name="nation">
+        {% for code, label in nations.items() %}
+        <option value="{{ code }}" {% if code == current_nation %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label>Consoles</label>
+      <div class="checkbox-row">
+        {% for p in platform_choices %}
+        <label><input type="checkbox" name="platforms" value="{{ p }}" {% if p in player.platforms %}checked{% endif %}> {{ p }}</label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="link">Profile Link <span style="text-transform:none">(optional)</span></label>
+      <input class="form-input" type="url" id="link" name="link" value="{{ player.link|default('') }}" maxlength="200" placeholder="https://...">
+    </div>
+
+    <div class="form-field">
+      <label>Profile Picture</label>
+      <div class="pfp-placeholder">Custom profile pictures are coming soon.</div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+  </form>
+</div>
+
+<div class="card auth-card" style="margin-top:1.25rem">
+  <div class="card-header"><h3>Account Details</h3></div>
+  <dl class="account-meta">
+    <dt>Account Name</dt>
+    <dd>{{ player.name }} <span class="field-hint" style="margin:0">(contact staff to change)</span></dd>
+    <dt>Discord ID</dt>
+    <dd>{{ player.discord_id or "Not linked" }}</dd>
+  </dl>
+  <div class="form-actions">
+    <form action="/logout" method="post"><button type="submit" class="btn">Log out</button></form>
+  </div>
+</div>
+{% endblock %}

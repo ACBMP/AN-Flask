@@ -6,15 +6,32 @@ from bson.errors import InvalidId
 from collections import Counter
 import traceback
 import re
+import os
 from patch.routes import patch_bp
 from guides.routes import guides_bp
+from accounts.routes import accounts_bp
 app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb://localhost:27017/public"
 mongo = PyMongo(app)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
+# Server-side sessions (Discord login, flash messages) need a signing key. The
+# dev default is intentionally insecure; set SECRET_KEY in production.
+app.secret_key = os.getenv("SECRET_KEY", "dev-insecure-change-me")
+app.config["SECRET_KEY"] = app.secret_key
+
+# Discord OAuth application credentials. The client secret must only ever live
+# here (server-side), never in a template. Mirrors AN-API's config.
+app.config["DISCORD_CLIENT_ID"] = os.getenv("DISCORD_CLIENT_ID", "")
+app.config["DISCORD_CLIENT_SECRET"] = os.getenv("DISCORD_CLIENT_SECRET", "")
+app.config["DISCORD_REDIRECT_URI"] = os.getenv(
+    "DISCORD_REDIRECT_URI",
+    "https://assassins.network/auth/discord/callback",
+)
+
 app.register_blueprint(patch_bp)
 app.register_blueprint(guides_bp)
+app.register_blueprint(accounts_bp)
 
 MODES = ["mh", "e", "aar", "aad", "do", "dm", "asb"]
 
