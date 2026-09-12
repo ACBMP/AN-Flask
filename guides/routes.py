@@ -24,7 +24,7 @@ def spawns_page(map_name):
     data = r.json()
     if "spawns" in data:
         s = dict(
-                sorted(data["spawns"].items(), key=lambda item: item[1]["index"], reverse=True)
+                sorted(data["spawns"].items(), key=lambda item: item[1]["index"])
             )
         map_spawns = [world_to_pixel(i["x"], i["y"], sx, ox, sy, oy) for i in s.values()]
     elif map_name in spawns:
