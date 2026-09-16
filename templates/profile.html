@@ -17,25 +17,49 @@
   </table>
 </div>
 {% endmacro %}
-{% macro detail_beta(extra, chart_id, anchor_id, char_chart_id) %}
+{% macro detail_beta(extra, chart_id, anchor_id, char_chart_id, mode_key) %}
 {% if extra.games > 0 %}
 <div class="card" id="{{ anchor_id }}" style="margin-top:1rem">
   <div class="card-header"><h3>Detailed Stats (Beta)</h3></div>
-  <p class="page-subtitle" style="margin:0 0 0.75rem">Averages based on {{ extra.games }} game(s) with detailed bonus tracking.</p>
-  <div class="stat-group-grid">
-    {% for name, rows in extra.groups %}
-    <div class="stat-group">
-      <div class="stat-group-title">{{ name }}</div>
-      <table class="stat-group-table">
-        <tr>{% for label, value in rows %}<th>{{ label }}</th>{% endfor %}</tr>
-        <tr>{% for label, value in rows %}<td>{% if name == "Characters" %}{{ value|safe }}{% else %}{{ value }}{% endif %}</td>{% endfor %}</tr>
-      </table>
+  <ul class="nav-tabs">
+    <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#{{ anchor_id }}-bonuses">Bonuses</a></li>
+    {% if extra.heatmaps %}
+    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#{{ anchor_id }}-heatmaps">Heatmaps</a></li>
+    {% endif %}
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane active show" id="{{ anchor_id }}-bonuses">
+      <p class="page-subtitle" style="margin:0 0 0.75rem">Averages based on {{ extra.games }} game(s) with detailed bonus tracking.</p>
+      <div class="stat-group-grid">
+        {% for name, rows in extra.groups %}
+        <div class="stat-group">
+          <div class="stat-group-title">{{ name }}</div>
+          <table class="stat-group-table">
+            <tr>{% for label, value in rows %}<th>{{ label }}</th>{% endfor %}</tr>
+            <tr>{% for label, value in rows %}<td>{% if name == "Characters" %}{{ value|safe }}{% else %}{{ value }}{% endif %}</td>{% endfor %}</tr>
+          </table>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="match-detail-grid" style="margin-top:1rem">
+        {% if extra.detection_total > 0 %}<div><canvas id="{{ chart_id }}"></canvas></div>{% endif %}
+        {% if extra.character_share %}<div><canvas id="{{ char_chart_id }}"></canvas></div>{% endif %}
+      </div>
     </div>
-    {% endfor %}
-  </div>
-  <div class="match-detail-grid" style="margin-top:1rem">
-    {% if extra.detection_total > 0 %}<div><canvas id="{{ chart_id }}"></canvas></div>{% endif %}
-    {% if extra.character_share %}<div><canvas id="{{ char_chart_id }}"></canvas></div>{% endif %}
+    {% if extra.heatmaps %}
+    <div class="tab-pane" id="{{ anchor_id }}-heatmaps">
+      <p class="page-subtitle" style="margin:0 0 0.75rem">Where this player spends their time, averaged across every tracked game on each map.</p>
+      <div class="heatmap-picker" id="{{ mode_key }}heatmapPicker">
+        {% for map_key, m in extra.heatmaps.items() %}
+        <button type="button" class="heatmap-picker-btn{% if loop.first %} active{% endif %}" data-map="{{ map_key }}">{{ m.label }}</button>
+        {% endfor %}
+      </div>
+      <div class="image-overlay-wrapper">
+        <img id="{{ mode_key }}heatmapImg">
+        <canvas id="{{ mode_key }}heatmapCanvas"></canvas>
+      </div>
+    </div>
+    {% endif %}
   </div>
 </div>
 {% endif %}
@@ -120,7 +144,7 @@
 
 <div class="mode-panel" data-mode="Escort">
   <div class="match-detail-grid">
-    {{ overview_card("Escort", data.emmr|rank_title(), data.emmr, data.ehistory.mmrs|max(), data.egames.total, data.egames.won, data.egames.lost, data.estats.kills|kdratio(data.estats.deaths), [
+    {{ overview_card("Escort", data.emmr|rank_title(), data.emmr, data.ehistory.mmrs|max(), data.egames.total, data.egames.won, data.egames.lost, data.estats.kills|kdratio(data.estats.deaths, "K/D"), [
         ("Average score", data.estats.totalscore|avgscore(data.egames.total)),
         ("Highest score", data.estats.highscore),
         ("Average kills", data.estats.kills|avgkills(data.egames.total)),
@@ -131,12 +155,12 @@
       <canvas id="ehist" height="150"></canvas>
     </div>
   </div>
-  {{ detail_beta(e_extra, "edetchart", "bonuses-escort", "echarchart") }}
+  {{ detail_beta(e_extra, "edetchart", "bonuses-escort", "echarchart", "e") }}
 </div>
 
 <div class="mode-panel" data-mode="Manhunt">
   <div class="match-detail-grid">
-    {{ overview_card("Manhunt", data.mhmmr|rank_title(), data.mhmmr, data.mhhistory.mmrs|max(), data.mhgames.total, data.mhgames.won, data.mhgames.lost, data.mhstats.kills|kdratio(data.mhstats.deaths), [
+    {{ overview_card("Manhunt", data.mhmmr|rank_title(), data.mhmmr, data.mhhistory.mmrs|max(), data.mhgames.total, data.mhgames.won, data.mhgames.lost, data.mhstats.kills|kdratio(data.mhstats.deaths, "K/D"), [
         ("Average score", data.mhstats.totalscore|avgscore(data.mhgames.total)),
         ("Highest score", data.mhstats.highscore),
         ("Average kills", data.mhstats.kills|avgkills(data.mhgames.total)),
@@ -147,12 +171,12 @@
       <canvas id="mhhist" height="150"></canvas>
     </div>
   </div>
-  {{ detail_beta(mh_extra, "mhdetchart", "bonuses-manhunt", "mhcharchart") }}
+  {{ detail_beta(mh_extra, "mhdetchart", "bonuses-manhunt", "mhcharchart", "mh") }}
 </div>
 
 <div class="mode-panel" data-mode="Assassinate">
   <div class="match-detail-grid">
-    {{ overview_card("Assassinate", data.asbmmr|rank_title(), data.asbmmr, data.asbhistory.mmrs|max(), data.asbgames.total, data.asbgames.won, data.asbgames.lost, data.asbstats.kills|kdratio(data.asbstats.deaths), [
+    {{ overview_card("Assassinate", data.asbmmr|rank_title(), data.asbmmr, data.asbhistory.mmrs|max(), data.asbgames.total, data.asbgames.won, data.asbgames.lost, data.asbstats.kills|kdratio(data.asbstats.deaths, "K/D"), [
         ("Podium finishes", data.asbgames.podium),
         ("Podium rate", data.asbgames.podium|winrate(data.asbgames.total - data.asbgames.podium)),
         ("Average finish", data.asbgames.finishes|kdratio(data.asbgames.total)),
@@ -165,12 +189,12 @@
       <canvas id="asbhist" height="150"></canvas>
     </div>
   </div>
-  {{ detail_beta(asb_extra, "asbdetchart", "bonuses-assassinate", "asbcharchart") }}
+  {{ detail_beta(asb_extra, "asbdetchart", "bonuses-assassinate", "asbcharchart", "asb") }}
 </div>
 
 <div class="mode-panel" data-mode="AA Running">
   <div class="match-detail-grid">
-    {{ overview_card("Artifact Assault (Running)", data.aarmmr|rank_title(), data.aarmmr, data.aarhistory.mmrs|max(), data.aargames.total, data.aargames.won, data.aargames.lost, data.aarstats.kills|avgdeaths(data.aargames.total), [
+    {{ overview_card("Artifact Assault (Running)", data.aarmmr|rank_title(), data.aarmmr, data.aarhistory.mmrs|max(), data.aargames.total, data.aargames.won, data.aargames.lost, data.aarstats.kills|avgdeaths(data.aargames.total, "Rat Index"), [
         ("Average artifacts scored", data.aarstats.scored|avgkills(data.aargames.total)),
         ("Deaths per artifact", data.aarstats.deaths|avgdeaths(data.aarstats.scored)),
         ("Average score", data.aarstats.totalscore|avgscore(data.aargames.total)),
@@ -184,7 +208,7 @@
 
 <div class="mode-panel" data-mode="AA Defending">
   <div class="match-detail-grid">
-    {{ overview_card("Artifact Assault (Defending)", data.aadmmr|rank_title(), data.aadmmr, data.aadhistory.mmrs|max(), data.aadgames.total, data.aadgames.won, data.aadgames.lost, data.aadstats.kills|kdratio(data.aadstats.conceded), [
+    {{ overview_card("Artifact Assault (Defending)", data.aadmmr|rank_title(), data.aadmmr, data.aadhistory.mmrs|max(), data.aadgames.total, data.aadgames.won, data.aadgames.lost, data.aadstats.kills|kdratio(data.aadstats.conceded, "Kills/Conceded"), [
         ("Average kills", data.aadstats.kills|avgkills(data.aadgames.total)),
         ("Average artifacts conceded", data.aadstats.conceded|avgdeaths(data.aadgames.total)),
         ("Average score", data.aadstats.totalscore|avgscore(data.aadgames.total)),
@@ -198,7 +222,7 @@
 
 <div class="mode-panel" data-mode="Domination">
   <div class="match-detail-grid">
-    {{ overview_card("Domination", data.dommr|rank_title(), data.dommr, data.dohistory.mmrs|max(), data.dogames.total, data.dogames.won, data.dogames.lost, data.dostats.kills|kdratio(data.dostats.deaths), [
+    {{ overview_card("Domination", data.dommr|rank_title(), data.dommr, data.dohistory.mmrs|max(), data.dogames.total, data.dogames.won, data.dogames.lost, data.dostats.kills|kdratio(data.dostats.deaths, "K/D"), [
         ("Average score", data.dostats.totalscore|avgscore(data.dogames.total)),
         ("Highest score", data.dostats.highscore),
         ("Average kills", data.dostats.kills|avgkills(data.dogames.total)),
@@ -213,7 +237,7 @@
 
 <div class="mode-panel" data-mode="Deathmatch">
   <div class="match-detail-grid">
-    {{ overview_card("Deathmatch", data.dmmmr|rank_title(), data.dmmmr, data.dmhistory.mmrs|max(), data.dmgames.total, data.dmgames.won, data.dmgames.lost, data.dmstats.kills|kdratio(data.dmstats.deaths), [
+    {{ overview_card("Deathmatch", data.dmmmr|rank_title(), data.dmmmr, data.dmhistory.mmrs|max(), data.dmgames.total, data.dmgames.won, data.dmgames.lost, data.dmstats.kills|kdratio(data.dmstats.deaths, "K/D"), [
         ("Podium finishes", data.dmgames.podium),
         ("Podium rate", data.dmgames.podium|winrate(data.dmgames.total - data.dmgames.podium)),
         ("Average finish", data.dmgames.finishes|kdratio(data.dmgames.total)),
@@ -303,6 +327,7 @@
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/mode-select.js') }}"></script>
+<script src="{{ url_for('static', filename='js/heatmap.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
 <script>
 {% if data %}
@@ -356,6 +381,10 @@ function showModePanel(mode) {
 }
 
 ANModeSelect.init(document.getElementById('modeSelect'), { onReady: showModePanel, onChange: showModePanel });
+
+{% if mh_extra.heatmaps %}ANHeatmap.init('mh', {{ mh_extra.heatmaps | tojson }});{% endif %}
+{% if e_extra.heatmaps %}ANHeatmap.init('e', {{ e_extra.heatmaps | tojson }});{% endif %}
+{% if asb_extra.heatmaps %}ANHeatmap.init('asb', {{ asb_extra.heatmaps | tojson }});{% endif %}
 
 document.querySelectorAll('.match-row').forEach(function (row) {
     row.addEventListener('click', function (e) {
