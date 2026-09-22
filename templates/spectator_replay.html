@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% from "_spectator_macros.html" import spectator_scoreboard, spectator_map_card, spectator_activity_card, spectator_roster_card, spectator_timer_card %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <a class="spectator-backlink" href="{{ url_for('matches') }}">&laquo; Match Details</a>
+    <h1>Spectator</h1>
+    <p class="page-subtitle">Recorded position feed &middot; {{ map }} &middot; {{ mode }}</p>
+  </div>
+  <div class="spectator-header-badges">
+    <span class="pill">&#9679; Recorded</span>
+    <span class="spectator-chip">Duration: {{ duration_label }}</span>
+  </div>
+</div>
+
+{{ spectator_scoreboard(false) }}
+
+<div class="card spectator-transport">
+  <button type="button" class="spectator-play-btn" id="spectator-play-btn" aria-label="Play"></button>
+  <span class="spectator-transport-time" id="spectator-elapsed">00:00</span>
+  <div class="spectator-scrubber-track" id="spectator-scrubber-track">
+    <div class="spectator-scrubber-fill" id="spectator-scrubber-fill"></div>
+    <div class="spectator-scrubber-handle" id="spectator-scrubber-handle"></div>
+  </div>
+  <span class="spectator-transport-time spectator-transport-duration" id="spectator-duration">{{ duration_label }}</span>
+  <div class="spectator-speeds">
+    <button type="button" class="spectator-speed-chip" data-speed="0.25">0.25&times;</button>
+    <button type="button" class="spectator-speed-chip" data-speed="0.5">0.5&times;</button>
+    <button type="button" class="spectator-speed-chip active" data-speed="1">1&times;</button>
+    <button type="button" class="spectator-speed-chip" data-speed="2">2&times;</button>
+    <button type="button" class="spectator-speed-chip" data-speed="4">4&times;</button>
+  </div>
+</div>
+
+<div class="spectator-grid">
+  <div>
+    {{ spectator_map_card(map) }}
+    {{ spectator_activity_card() }}
+  </div>
+  <div>
+    {{ spectator_roster_card() }}
+    {{ spectator_timer_card() }}
+  </div>
+</div>
+
+<div id="spectator-root"
+     data-mode="replay"
+     data-recording-id="{{ recording_id }}"
+     data-map-key="{{ map_key }}"
+     data-frames-url="{{ url_for('spectator.replay_frames', recording_id=recording_id) }}"
+     data-duration="{{ duration_s }}"></div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/spectator.js') }}"></script>
+{% endblock %}

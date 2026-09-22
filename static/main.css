@@ -27,6 +27,11 @@
   --loss: #ef4444;
   --tie: #94a3b8;
 
+  /* Team *identity* colors (live/replay spectator), distinct from --win/--loss
+     outcome colors — a live team-2 player isn't necessarily "losing". */
+  --team1: var(--primary);
+  --team2: #f59e0b;
+
   --gold: #ffd700;
   --silver: #c0c0c0;
   --bronze: #cd7f32;
@@ -835,6 +840,125 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
   padding: 0.9rem; border: 1px dashed var(--border); border-radius: var(--radius);
   color: var(--text-dim); font-size: 0.85rem;
 }
+
+/* ---- spectator (live + replay) -------------------------------------------- */
+
+.text-primary { color: var(--primary); }
+.text-team1 { color: var(--team1); }
+.text-team2 { color: var(--team2); }
+
+.spectator-header-badges { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.spectator-chip {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-family: var(--font-mono); font-size: 0.85rem; color: var(--text);
+  border: 1px solid var(--border); border-radius: var(--radius); padding: 0.4rem 0.75rem;
+}
+.spectator-backlink {
+  display: inline-block; font-family: var(--font-mono); font-size: 0.75rem;
+  color: var(--text-dim); text-decoration: none; margin-bottom: 0.5rem;
+}
+.spectator-backlink:hover { color: var(--text-muted); }
+
+.spectator-grid { display: grid; grid-template-columns: 62fr 38fr; gap: 1.5rem; align-items: start; }
+@media (max-width: 768px) { .spectator-grid { grid-template-columns: 1fr; } }
+
+.spectator-minimap {
+  position: relative; width: 100%; height: 430px; overflow: hidden;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background-color: var(--surface);
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 40px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 40px);
+}
+.spectator-dot {
+  position: absolute; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: var(--surface-high); border: 2px solid var(--team1);
+  color: var(--team1); font-family: var(--font-mono); font-weight: 700; font-size: 0.7rem;
+  box-sizing: border-box;
+}
+.spectator-dot-team1 { border-color: var(--team1); color: var(--team1); }
+.spectator-dot-team2 { border-color: var(--team2); color: var(--team2); }
+.spectator-dot-icon { background-size: cover; background-position: center; background-repeat: no-repeat; }
+.spectator-dot.ability-active { outline: 2px dashed currentColor; outline-offset: 3px; }
+.spectator-dot.eliminated { opacity: 0.45; }
+.spectator-dot-badge {
+  position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--loss); color: #fff; font-family: var(--font-mono); font-weight: 700;
+  font-size: 0.68rem; line-height: 16px; text-align: center;
+}
+.spectator-map-select-field { display: flex; align-items: center; gap: 0.5rem; }
+.spectator-map-select-field label { font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; }
+.spectator-map-select-field .form-select { width: auto; padding: 0.35rem 0.55rem; font-size: 0.82rem; }
+
+.spectator-legend { display: flex; flex-wrap: wrap; gap: 1.1rem; margin-top: 0.85rem; }
+.spectator-legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: var(--text-muted); }
+.spectator-legend-dot {
+  width: 16px; height: 16px; border-radius: 50%; background: var(--surface-high);
+  border: 2px solid var(--team1); display: inline-block;
+}
+.spectator-legend-ability { outline: 2px dashed var(--team1); outline-offset: 2px; border-color: var(--team1); }
+.spectator-legend-down {
+  background: var(--loss); color: #fff; font-family: var(--font-mono); font-size: 0.68rem;
+  line-height: 16px; text-align: center; border: none;
+}
+
+.spectator-activity { display: flex; flex-direction: column; gap: 0.6rem; max-height: 430px; overflow-y: auto; }
+.spectator-activity-row { display: flex; align-items: baseline; gap: 0.6rem; font-size: 0.85rem; }
+.spectator-activity-time { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim); flex: none; width: 2.6rem; }
+
+.spectator-roster-player { display: flex; align-items: center; gap: 0.55rem; }
+.spectator-roster-avatar {
+  width: 28px; height: 28px; border-radius: 50%; background: var(--surface-high);
+  border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-weight: 700; font-size: 0.72rem; flex: none;
+}
+.spectator-roster-avatar-icon { background-size: cover; background-position: center; background-repeat: no-repeat; }
+.spectator-roster-name { font-family: var(--font-mono); font-weight: 700; color: #fff; font-size: 0.8rem; }
+.spectator-roster-class { font-family: var(--font-mono); color: var(--text-dim); font-size: 0.7rem; margin-top: 0.1rem; }
+.spectator-team-pill-team1 { color: var(--team1); border-color: rgba(0,245,255,0.4); background: rgba(0,245,255,0.08); }
+.spectator-team-pill-team2 { color: var(--team2); border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.08); }
+
+.spectator-timer { text-align: center; padding: 0.4rem 0 0.1rem; }
+.spectator-timer-value { font-family: var(--font-mono); font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1; }
+.spectator-timer-caption { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.5rem; }
+
+.spectator-transport { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.spectator-play-btn {
+  width: 36px; height: 36px; border-radius: 50%; border: none; flex: none; cursor: pointer;
+  background: var(--primary); color: var(--on-primary); position: relative;
+}
+.spectator-play-btn::before {
+  content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-40%, -50%);
+  border-style: solid; border-width: 6px 0 6px 10px; border-color: transparent transparent transparent var(--on-primary);
+}
+.spectator-play-btn.playing::before {
+  content: ""; width: 3px; height: 12px; border-width: 0; background: var(--on-primary);
+  box-shadow: 5px 0 0 var(--on-primary); transform: translate(-50%, -50%);
+}
+.spectator-transport-time { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted); flex: none; }
+.spectator-transport-duration { color: var(--text-dim); }
+.spectator-scrubber-track {
+  flex: 1; position: relative; height: 6px; border-radius: 999px; background: var(--surface-highest);
+  cursor: pointer; min-width: 120px;
+}
+.spectator-scrubber-fill { position: absolute; left: 0; top: 0; height: 6px; border-radius: 999px; background: var(--primary); width: 0%; }
+.spectator-scrubber-handle {
+  position: absolute; top: 50%; width: 14px; height: 14px; margin-left: -7px; margin-top: -7px;
+  border-radius: 50%; background: var(--primary); border: 2px solid var(--bg); left: 0%;
+}
+.spectator-speeds { display: flex; align-items: center; gap: 0.25rem; flex: none; }
+.spectator-speed-chip {
+  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; color: var(--text-muted);
+  background: transparent; border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 0.25rem 0.5rem; cursor: pointer;
+}
+.spectator-speed-chip.active { color: var(--on-primary); background: var(--primary); border-color: var(--primary); }
+
+.spectator-banner { display: flex; align-items: flex-start; gap: 0.9rem; }
+.spectator-banner-icon, .spectator-cta-icon { font-size: 1.3rem; flex: none; }
+.spectator-banner-title { font-family: var(--font-mono); font-weight: 700; color: #fff; font-size: 0.9rem; margin-bottom: 0.25rem; }
+.spectator-banner-text { color: var(--text-muted); font-size: 0.85rem; }
+.spectator-cta { text-align: center; }
 
 .dropdown-logout-form { margin: 0; }
 .dropdown-logout-form .dropdown-item {

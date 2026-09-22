@@ -1,0 +1,74 @@
+{# Shared shell for the spectator live/replay pages. These render empty
+   containers with fixed ids; static/js/spectator.js owns all per-frame
+   rendering (live poll and replay both flow through the same JS renderer),
+   so there is no duplicate rendering logic to keep in sync between Jinja
+   and JS. #}
+
+{% macro spectator_scoreboard(live) %}
+<div class="card match-detail-header" style="margin-bottom:1.25rem">
+  <div class="match-detail-side">
+    <div class="team-label">Team 1</div>
+    <div class="match-detail-score" id="spectator-team1-score">&mdash;</div>
+  </div>
+  <div class="match-detail-center">
+    <span class="pill" id="spectator-lead-pill">&mdash;</span>
+    <span class="page-subtitle" style="margin:0" id="spectator-lead-caption">{{ 'Live · not final' if live else 'Final' }}</span>
+  </div>
+  <div class="match-detail-side">
+    <div class="team-label">Team 2</div>
+    <div class="match-detail-score" id="spectator-team2-score">&mdash;</div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro spectator_map_card(map_name) %}
+<div class="card" style="margin-bottom:1.25rem">
+  <div class="card-header">
+    <h3>Map &mdash; {{ map_name }}</h3>
+    {# Shown only when the recording carries no calibrated map_key (map info
+       missing/unrecognized from the ingest payload) -- spectator.js populates
+       the options and toggles this row's visibility. #}
+    <div class="spectator-map-select-field" id="spectator-map-select-field" hidden>
+      <label for="spectator-map-select">Background</label>
+      <select id="spectator-map-select" class="form-select">
+        <option value="" selected>Grid only</option>
+      </select>
+    </div>
+  </div>
+  <div class="spectator-minimap" id="spectator-minimap"></div>
+  <div class="spectator-legend">
+    <div class="spectator-legend-item"><span class="spectator-legend-dot"></span> Dot size = height (Z)</div>
+    <div class="spectator-legend-item"><span class="spectator-legend-dot spectator-legend-ability"></span> Dashed ring = ability active</div>
+    <div class="spectator-legend-item"><span class="spectator-legend-dot spectator-legend-down">&times;</span> Recently eliminated</div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro spectator_activity_card() %}
+<div class="card">
+  <div class="card-header"><h3>Activity</h3></div>
+  <div class="spectator-activity" id="spectator-activity"></div>
+</div>
+{% endmacro %}
+
+{% macro spectator_roster_card() %}
+<div class="card table-wrap" style="margin-bottom:1.25rem">
+  <div class="card-header"><h3>Roster</h3></div>
+  <table>
+    <thead>
+      <tr><th>Player</th><th>Team</th><th>Score</th><th>K</th><th>D</th><th>Status</th></tr>
+    </thead>
+    <tbody id="spectator-roster-body"></tbody>
+  </table>
+</div>
+{% endmacro %}
+
+{% macro spectator_timer_card() %}
+<div class="card">
+  <div class="card-header"><h3>Match Timer</h3></div>
+  <div class="spectator-timer">
+    <div class="spectator-timer-value" id="spectator-timer-value">--:--</div>
+    <div class="spectator-timer-caption" id="spectator-timer-caption">Time Remaining</div>
+  </div>
+</div>
+{% endmacro %}

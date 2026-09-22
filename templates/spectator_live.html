@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% from "_spectator_macros.html" import spectator_scoreboard, spectator_map_card, spectator_activity_card, spectator_roster_card, spectator_timer_card %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Spectator</h1>
+    <p class="page-subtitle">Live position feed from the match server &middot; {{ map }} &middot; {{ mode }}</p>
+  </div>
+  <div class="spectator-header-badges">
+    <span class="pill">Spectator access &middot; not a participant</span>
+    <span class="pill pill-win">&#9679; Live</span>
+    <span class="spectator-chip">match_id: {{ match_id }}</span>
+    <a class="btn" href="{{ url_for('matches') }}">Browse Matches</a>
+  </div>
+</div>
+
+{{ spectator_scoreboard(true) }}
+
+<div class="spectator-grid">
+  <div>
+    {{ spectator_map_card(map) }}
+    {{ spectator_activity_card() }}
+  </div>
+  <div>
+    {{ spectator_roster_card() }}
+    {{ spectator_timer_card() }}
+  </div>
+</div>
+
+<div id="spectator-root"
+     data-mode="live"
+     data-match-id="{{ match_id }}"
+     data-map-key="{{ map_key }}"
+     data-poll-url="{{ url_for('spectator.live_poll') }}"
+     data-poll-interval-ms="500"></div>
+<script type="application/json" id="spectator-seed">{{ seed|tojson }}</script>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/spectator.js') }}"></script>
+{% endblock %}

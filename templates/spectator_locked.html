@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Spectator</h1>
+  </div>
+  <span class="pill">Active player &middot; {{ map }} match</span>
+</div>
+
+<div class="card spectator-banner" style="margin-bottom:1.25rem">
+  <div class="spectator-banner-icon">&#128737;</div>
+  <div>
+    <div class="spectator-banner-title">Live spectating is unavailable</div>
+    <div class="spectator-banner-text">You're an active player in the current match ({{ map }} &middot; {{ mode }}), so the live feed stays hidden until you finish playing &mdash; that way nobody watching can pass along a live edge.</div>
+  </div>
+</div>
+
+<div class="card auth-card spectator-cta">
+  <div class="spectator-cta-icon">&#128197;</div>
+  <div class="card-header"><h3>Find a replay on the Matches page</h3></div>
+  <p>Every match is tracked once it finishes. Open it from Matches and use the Watch Replay link on its match page.</p>
+  <a class="btn btn-primary" href="{{ url_for('matches') }}">Browse Matches</a>
+</div>
+{% endblock %}

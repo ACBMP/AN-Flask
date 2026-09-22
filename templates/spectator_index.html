@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Spectator</h1>
+    <p class="page-subtitle">Watch a live match, or catch up on a recent recording.</p>
+  </div>
+</div>
+
+{% if live_matches %}
+<div class="card table-wrap" style="margin-bottom:1.25rem">
+  <div class="card-header"><h3>Live now</h3></div>
+  <table>
+    <thead><tr><th>Match</th><th>Map</th><th>Mode</th><th></th></tr></thead>
+    <tbody>
+    {% for r in live_matches %}
+      <tr>
+        <td>{{ r.match_id }}</td>
+        <td>{{ r.map or "Unknown" }}</td>
+        <td>{{ r.mode or "Unknown" }}</td>
+        <td><a class="btn btn-primary" href="{{ url_for('spectator.live_page', match_id=r.match_id) }}">Watch</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="card auth-card spectator-cta" style="margin-bottom:1.25rem">
+  <div class="card-header"><h3>No live match right now</h3></div>
+  <p>Check back when a match is being streamed, or browse a recent recording below.</p>
+</div>
+{% endif %}
+
+{% if recent_recordings %}
+<div class="card table-wrap">
+  <div class="card-header"><h3>Recent recordings</h3></div>
+  <table>
+    <thead><tr><th>Match</th><th>Map</th><th>Mode</th><th>Ended</th><th></th></tr></thead>
+    <tbody>
+    {% for r in recent_recordings %}
+      <tr>
+        <td>{{ r.match_id }}</td>
+        <td>{{ r.map or "Unknown" }}</td>
+        <td>{{ r.mode or "Unknown" }}</td>
+        <td>{{ r.ended_at.strftime('%b %d, %H:%M') if r.ended_at else "" }}</td>
+        <td><a class="btn" href="{{ url_for('spectator.replay_page', recording_id=r._id) }}">Watch replay</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

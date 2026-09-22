@@ -10,6 +10,7 @@ import os
 from patch.routes import patch_bp
 from guides.routes import guides_bp
 from accounts.routes import accounts_bp
+from spectator.routes import spectator_bp
 app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb://localhost:27017/public"
 mongo = PyMongo(app)
@@ -32,6 +33,7 @@ app.config["DISCORD_REDIRECT_URI"] = os.getenv(
 app.register_blueprint(patch_bp)
 app.register_blueprint(guides_bp)
 app.register_blueprint(accounts_bp)
+app.register_blueprint(spectator_bp)
 
 MODES = ["mh", "e", "aar", "aad", "do", "dm", "asb"]
 
