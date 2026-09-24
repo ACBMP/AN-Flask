@@ -6,19 +6,16 @@ only reads them, plus performs one narrow fallback write: closing out a
 recording that's gone stale while a browser tab is still watching it (in case
 the streaming machine crashed and never sent `match_ended`).
 
-Uses its own `pymongo.MongoClient`, same escape hatch `accounts/routes.py`
-uses, since a blueprint module can't import `flask_app.py`'s `mongo` without
-a circular import.
+Shares the application's pooled Mongo connection via `extensions.mongo`, so
+every access happens inside a request context.
 """
 
 from datetime import datetime, timedelta
 
 from bson import ObjectId
 from bson.errors import InvalidId
-from pymongo import MongoClient
 
-_client = MongoClient("mongodb://localhost:27017")
-db = _client.public
+from extensions import mongo
 
 STALE_AFTER_SECONDS = 30
 
@@ -31,39 +28,39 @@ def _as_object_id(value):
 
 
 def get_live_recording(match_id):
-    return db.spectator_recordings.find_one({"match_id": match_id, "ended_at": None})
+    return mongo.db.spectator_recordings.find_one({"match_id": match_id, "ended_at": None})
 
 
 def get_recording(recording_id):
     oid = _as_object_id(recording_id)
     if oid is None:
         return None
-    return db.spectator_recordings.find_one({"_id": oid})
+    return mongo.db.spectator_recordings.find_one({"_id": oid})
 
 
 def list_live_recordings():
     return list(
-        db.spectator_recordings.find({"ended_at": None}).sort("started_at", -1)
+        mongo.db.spectator_recordings.find({"ended_at": None}).sort("started_at", -1)
     )
 
 
 def list_recent_recordings(limit=20):
     return list(
-        db.spectator_recordings.find({"ended_at": {"$ne": None}})
+        mongo.db.spectator_recordings.find({"ended_at": {"$ne": None}})
         .sort("ended_at", -1)
         .limit(limit)
     )
 
 
 def latest_frame(recording_id):
-    return db.spectator_frames.find_one(
+    return mongo.db.spectator_frames.find_one(
         {"recording_id": recording_id}, sort=[("seq", -1)]
     )
 
 
 def frames_since(recording_id, since_seq):
     return list(
-        db.spectator_frames.find(
+        mongo.db.spectator_frames.find(
             {"recording_id": recording_id, "seq": {"$gt": since_seq}}
         ).sort("seq", 1)
     )
@@ -79,7 +76,7 @@ def frames_for_replay(recording_id, rate_hz):
         # seq starts at 1, not 0 -- offset so frame 1 (and thus short
         # recordings shorter than one stride) is never filtered out entirely.
         query["$expr"] = {"$eq": [{"$mod": [{"$subtract": ["$seq", 1]}, stride]}, 0]}
-    return list(db.spectator_frames.find(query).sort("seq", 1))
+    return list(mongo.db.spectator_frames.find(query).sort("seq", 1))
 
 
 def is_stale(recording):
@@ -98,7 +95,7 @@ def finalize_if_stale(recording):
         return recording
     if not is_stale(recording):
         return recording
-    db.spectator_recordings.update_one(
+    mongo.db.spectator_recordings.update_one(
         {"_id": recording["_id"]}, {"$set": {"ended_at": datetime.utcnow()}}
     )
     return get_recording(recording["_id"])

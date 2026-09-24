@@ -14,7 +14,8 @@ from flask import (
     url_for,
 )
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
-from pymongo import MongoClient
+
+from extensions import mongo
 
 from .countries import DEFAULT_NATION, NATIONS
 from .validation import (
@@ -33,9 +34,6 @@ from .validation import (
 )
 
 accounts_bp = Blueprint("accounts", __name__)
-
-_client = MongoClient("mongodb://localhost:27017")
-db = _client.public
 
 DISCORD_AUTHORIZE_URL = "https://discord.com/oauth2/authorize"
 DISCORD_TOKEN_URL = "https://discord.com/api/oauth2/token"
@@ -56,7 +54,7 @@ def current_player():
     if "player" not in session:
         return None
 
-    player = db.players.find_one({"name": session["player"]})
+    player = mongo.db.players.find_one({"name": session["player"]})
 
     if not player or player.get("revoked"):
         session.pop("player", None)
@@ -174,7 +172,7 @@ def discord_callback():
         flash("Discord returned no user id. Please try again.", "error")
         return redirect(url_for("accounts.login"))
 
-    player = db.players.find_one({"discord_id": discord_id})
+    player = mongo.db.players.find_one({"discord_id": discord_id})
 
     if player:
         if player.get("revoked"):
@@ -256,13 +254,13 @@ def register():
         return rerender()
 
     code = normalize_code(request.form.get("invite_code"))
-    _, error = check_invite(db, code)
+    _, error = check_invite(mongo.db, code)
     if error:
         flash(error, "error")
         return rerender()
 
     # guard against dupe accounts
-    existing = db.players.find_one({"discord_id": pending["id"]})
+    existing = mongo.db.players.find_one({"discord_id": pending["id"]})
     if existing:
         if existing.get("revoked"):
             flash("This account has been revoked.", "error")
@@ -272,11 +270,11 @@ def register():
         flash("An account is already linked to your Discord.", "success")
         return redirect(url_for("accounts.account"))
 
-    if name_taken(db, name):
+    if name_taken(mongo.db, name):
         flash("That name is already taken.", "error")
         return rerender()
 
-    if not consume_invite(db, code, {"name": name, "discord_id": pending["id"]}):
+    if not consume_invite(mongo.db, code, {"name": name, "discord_id": pending["id"]}):
         flash("This invite code has already been used.", "error")
         return rerender()
 
@@ -290,9 +288,9 @@ def register():
     )
 
     try:
-        db.players.insert_one(player)
+        mongo.db.players.insert_one(player)
     except Exception:
-        refund_invite(db, code)
+        refund_invite(mongo.db, code)
         flash("Could not create the account, please try again.", "error")
         return rerender()
 
@@ -322,7 +320,7 @@ def account():
         if error:
             flash(error, "error")
         else:
-            db.players.update_one(
+            mongo.db.players.update_one(
                 {"name": player["name"]},
                 {
                     "$set": {

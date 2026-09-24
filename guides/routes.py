@@ -1,27 +1,22 @@
-import markdown
-from flask import Blueprint, render_template
+from flask import Blueprint, abort, render_template
+
+import an_api
+from markdown_page import MATH_EXTENSIONS, render_markdown
+from modes import title
+
 from .map_data import *
-import requests
 
 guides_bp = Blueprint("guides", __name__, url_prefix="/guides")
 
 @guides_bp.route("/")
 def overview_page():
-    try:
-        with open(f"guides/content/overview.md", "r") as f:
-            md_content = f.read()
-        configs = {"toc": {"permalink": True}}
-        html_content = markdown.markdown(md_content, extensions=["toc", "attr_list", "tables"], extension_configs=configs)
-        return render_template("layout.html", content=html_content, title=f"Guides Overview | Assassins\' Network")
-    except FileNotFoundError:
-        return "File not found", 404
+    return render_markdown("guides/content/overview.md", title("Guides Overview"))
 
 
 @guides_bp.route("/spawns/<map_name>")
 def spawns_page(map_name):
     sx, ox, sy, oy = compute_affine_from_corners(world_corners[map_name][0], world_corners[map_name][1], pixel_corners[map_name][0], pixel_corners[map_name][1])
-    r = requests.get(f"https://api.assassins.network/maps/{map_name}")
-    data = r.json()
+    data = an_api.get(f"/maps/{map_name}") or {}
     if "spawns" in data:
         s = dict(
                 sorted(data["spawns"].items(), key=lambda item: item[1]["index"])
@@ -50,8 +45,9 @@ def spawns_page(map_name):
 @guides_bp.route("/routes/<map_name>")
 def routes_page(map_name):
     sx, ox, sy, oy = compute_affine_from_corners(world_corners[map_name][0], world_corners[map_name][1], pixel_corners[map_name][0], pixel_corners[map_name][1])
-    r = requests.get(f"https://api.assassins.network/maps/{map_name}")
-    data = r.json()
+    data = an_api.get(f"/maps/{map_name}")
+    if not data or "routes" not in data:
+        abort(404)
     checkpoints = data["routes"]
     map_routes = {
             j["name"]: [list(world_to_pixel(i["x"], i["y"], sx, ox, sy, oy)) + [i["isCheckpoint"]] for i in j["points"]] for j in checkpoints
@@ -67,22 +63,14 @@ def routes_page(map_name):
 
 @guides_bp.route("/<filename>")
 def render_md(filename):
-    try:
-        with open(f"guides/content/{filename}.md", "r") as f:
-            md_content = f.read()
-        configs = {"toc": {"permalink": True}}
-        html_content = markdown.markdown(md_content, extensions=["toc", "attr_list", "tables", "pymdownx.arithmatex"], extension_configs=configs)
-        return render_template("layout.html", content=html_content, title=f"{filename.title()} Guide | Assassins\' Network")
-    except FileNotFoundError:
-        return "File not found", 404
+    return render_markdown(
+        f"guides/content/{filename}.md",
+        title(f"{filename.title()} Guide"),
+        extensions=MATH_EXTENSIONS,
+    )
 
 @guides_bp.route("/modes")
 def modes_page():
-    try:
-        with open(f"guides/content/modes.md", "r") as f:
-            md_content = f.read()
-        configs = {"toc": {"permalink": True}}
-        html_content = markdown.markdown(md_content, extensions=["toc", "attr_list", "tables"], extension_configs=configs)
-        return render_template("modes.html", content=html_content, title=f"Modes Overview | Assassins\' Network")
-    except FileNotFoundError:
-        return "File not found", 404
+    return render_markdown(
+        "guides/content/modes.md", title("Modes Overview"), template="modes.html"
+    )
