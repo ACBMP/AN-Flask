@@ -6,7 +6,7 @@
 ##### Spawns
 * [Spawn Logic](/guides/spawns)
 
-###### Maps
+###### Maps {: #maps }
 * [Castel Gandolfo](/guides/spawns/castel gandolfo)
 * [Florence](/guides/spawns/florence)
 * [Forli](/guides/spawns/forli)

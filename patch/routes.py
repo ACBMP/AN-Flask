@@ -2,6 +2,7 @@
 
 from flask import Blueprint
 
+from i18n import translate as _
 from markdown_page import render_markdown
 from modes import title
 
@@ -16,5 +17,5 @@ def patch_overview():
 @patch_bp.route("/<filename>")
 def render_md(filename):
     return render_markdown(
-        f"patch/content/{filename}.md", title(f"ACB 2.0 {filename.title()}")
+        f"patch/content/{filename}.md", title(_("ACB 2.0 %(name)s", name=_(filename.title())))
     )

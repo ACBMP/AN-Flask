@@ -6,7 +6,7 @@
 ##### Apariciones
 * [Lógica de las apariciones](/guides/spawns)
 
-###### Mapas
+###### Mapas {: #maps }
 * [Castel Gandolfo](/guides/spawns/castel gandolfo)
 * [Florencia](/guides/spawns/florence)
 * [Forlì](/guides/spawns/forli)

@@ -2,6 +2,7 @@ from flask import Blueprint, abort, render_template
 
 import an_api
 from markdown_page import MATH_EXTENSIONS, render_markdown
+from i18n import translate as _
 from modes import map_image, title
 
 from .map_data import compute_affine_from_corners, pixel_corners, world_corners, world_to_pixel
@@ -39,7 +40,8 @@ def spawns_page(map_name):
     largeR = [60 * scale, 15 * scale, 60 * scale]
     maxR = [90 * scale, 100 * scale, 90 * scale]
     w = [0.2, 0.2, 0.5]
-    return render_template("spawns.html", name=map_name.title(), title=title(f"{map_name.title()} Spawns"), points=map_spawns, smallR=smallR, largeR=largeR, minR=minR, maxR=maxR, w=w, image_file=map_image(map_name))
+    display = _(map_name.title())
+    return render_template("spawns.html", name=display, title=title(_("%(name)s Spawns", name=display)), points=map_spawns, smallR=smallR, largeR=largeR, minR=minR, maxR=maxR, w=w, image_file=map_image(map_name))
 
 
 @guides_bp.route("/routes/<map_name>")
@@ -53,19 +55,22 @@ def routes_page(map_name):
             }
 
     checkpoint_radius = 3 * (abs(sx) + abs(sy)) / 2
-    return render_template("routes.html", name=map_name.title(), title=title(f"{map_name.title()} Routes"), routes=map_routes, image_file=map_image(map_name), checkpoint_radius=checkpoint_radius)
+    display = _(map_name.title())
+    return render_template("routes.html", name=display, title=title(_("%(name)s Routes", name=display)), routes=map_routes, image_file=map_image(map_name), checkpoint_radius=checkpoint_radius)
 
 
 @guides_bp.route("/<filename>")
 def render_md(filename):
     return render_markdown(
         f"guides/content/{filename}.md",
-        title(f"{filename.title()} Guide"),
+        title(_("%(name)s Guide", name=_(filename.title()))),
         extensions=MATH_EXTENSIONS,
     )
 
 @guides_bp.route("/modes")
 def modes_page():
-    return render_markdown(
-        "guides/content/modes.md", title("Modes Overview"), template="modes.html"
-    )
+    # Rendered through the standard layout: this asked for a "modes.html" that
+    # has never existed in the repo, so the page has only ever redirected away.
+    # The mode comparison chart the content ends by promising still needs
+    # building; it belongs in a template of its own once there's data for it.
+    return render_markdown("guides/content/modes.md", title("Modes Overview"))

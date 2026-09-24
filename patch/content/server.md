@@ -23,7 +23,7 @@ You can add a new account via the server GUI or [download the latest database fr
 
 [This Discord server](https://discord.gg/Fxyrt55h).
 
-### Server Hosting
+### Server Hosting {: #server-hosting }
 
 Server hosting on a home PC is a fairly complicated ordeal. The easiest safe way to host the server to play with others requires the following steps:
 

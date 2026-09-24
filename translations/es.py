@@ -153,6 +153,29 @@ CATALOG = {
     "Select game": "Selecciona el juego",
     "Select mode": "Selecciona el modo",
 
+    # -- titles built from url slugs ----------------------------------------
+    "%(name)s Guide": "Guía de %(name)s",
+    "%(name)s Spawns": "Apariciones de %(name)s",
+    "%(name)s Routes": "Rutas de %(name)s",
+    "ACB 2.0 %(name)s": "ACB 2.0: %(name)s",
+    "Modes Overview": "Resumen de los modos",
+    "ACB 2.0 Summary": "Resumen de ACB 2.0",
+    "Gameplay": "Jugabilidad",
+    "Callouts": "Nombres de zonas",
+    "Escort-Sets": "Equipamientos de Escolta",
+    "Manhunt-Sets": "Equipamientos de Cacería",
+    "Assassinate-Sets": "Equipamientos de Asesinato",
+    "Assassinate-Tips": "Consejos de Asesinato",
+    "Patch-Notes": "Notas del parche",
+    "Faq": "Preguntas frecuentes",
+    "Wireguard": "WireGuard",
+
+    # -- map names (only the ones that differ; the rest fall back) ----------
+    "Florence": "Florencia",
+    "Venice": "Venecia",
+    "Rome": "Roma",
+    "Forli": "Forlì",
+
     # -- rank titles ---------------------------------------------------------
     "Disciple": "Discípulo",
     "Cleric": "Clérigo",

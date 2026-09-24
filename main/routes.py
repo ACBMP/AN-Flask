@@ -7,6 +7,7 @@ from flask import Blueprint, redirect, render_template, request
 
 import i18n
 from extensions import mongo
+from markdown_page import translated_path
 from modes import title
 
 main_bp = Blueprint("main", __name__)
@@ -20,7 +21,7 @@ def latest_patch_notes(limit=5):
     """First (most recent) ``### version`` section of the patch notes, as a
     version plus up to ``limit`` bullet points. ``None`` if unavailable."""
     try:
-        with open(PATCH_NOTES_FILE, "r") as f:
+        with open(translated_path(PATCH_NOTES_FILE), "r") as f:
             content = f.read()
     except FileNotFoundError:
         return None
