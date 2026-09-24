@@ -297,7 +297,7 @@ def register():
     session.pop("pending_discord", None)
     session["player"] = name
     flash("Your account has been created!", "success")
-    return redirect(url_for("display_profile", name=name))
+    return redirect(url_for("players.display_profile", name=name))
 
 
 @accounts_bp.route("/account", methods=["GET", "POST"])
@@ -355,4 +355,4 @@ def logout():
     session.pop("player", None)
     session.pop("pending_discord", None)
     flash("You have been logged out.", "success")
-    return redirect(url_for("home"))
+    return redirect(url_for("main.home"))

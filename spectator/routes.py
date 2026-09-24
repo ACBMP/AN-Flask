@@ -112,7 +112,7 @@ def replay_page(recording_id):
     recording = store.get_recording(recording_id)
     if recording is None:
         flash("That replay could not be found.", "error")
-        return redirect(url_for("matches"))
+        return redirect(url_for("matches.matches"))
 
     if recording.get("ended_at") and recording.get("started_at"):
         duration_s = (recording["ended_at"] - recording["started_at"]).total_seconds()
