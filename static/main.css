@@ -328,6 +328,8 @@ a.article-title:hover { color: var(--primary); text-decoration: none; }
   white-space: nowrap;
 }
 .dropdown-item:hover { background: var(--surface-high); color: var(--primary); text-decoration: none; }
+/* the language currently in use, in the language picker */
+.dropdown-item.active { color: var(--primary); font-weight: 600; }
 
 .navbar-search {
   display: flex;

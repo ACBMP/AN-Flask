@@ -17,6 +17,7 @@ from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
 import avatars
 from extensions import mongo
+from i18n import translate as _
 
 from .countries import DEFAULT_NATION, NATIONS
 from .validation import (
@@ -68,7 +69,7 @@ def login_required(view):
     @wraps(view)
     def wrapper(*args, **kwargs):
         if not current_player():
-            flash("Please sign in to continue.", "error")
+            flash(_("Please sign in to continue."), "error")
             return redirect(url_for("accounts.login"))
         return view(*args, **kwargs)
 
@@ -92,7 +93,7 @@ def login():
 def discord_start():
     client_id = current_app.config.get("DISCORD_CLIENT_ID")
     if not client_id or not current_app.config.get("DISCORD_CLIENT_SECRET"):
-        flash("Discord sign-in is not configured on this server.", "error")
+        flash(_("Discord sign-in is not configured on this server."), "error")
         return redirect(url_for("accounts.login"))
 
     state = _state_serializer().dumps({"nonce": secrets.token_hex(8)})
@@ -115,16 +116,16 @@ def discord_callback():
     expected = session.pop("oauth_state", None)
 
     if not code or not state or state != expected:
-        flash("Sign-in could not be verified. Please try again.", "error")
+        flash(_("Sign-in could not be verified. Please try again."), "error")
         return redirect(url_for("accounts.login"))
 
     try:
         _state_serializer().loads(state, max_age=STATE_MAX_AGE)
     except SignatureExpired:
-        flash("Sign-in timed out. Please try again.", "error")
+        flash(_("Sign-in timed out. Please try again."), "error")
         return redirect(url_for("accounts.login"))
     except BadSignature:
-        flash("Sign-in could not be verified. Please try again.", "error")
+        flash(_("Sign-in could not be verified. Please try again."), "error")
         return redirect(url_for("accounts.login"))
 
     try:
@@ -141,16 +142,16 @@ def discord_callback():
             timeout=10,
         )
     except requests.RequestException:
-        flash("Could not reach Discord. Please try again.", "error")
+        flash(_("Could not reach Discord. Please try again."), "error")
         return redirect(url_for("accounts.login"))
 
     if not token_res.ok:
-        flash("Discord rejected the sign-in. Please try again.", "error")
+        flash(_("Discord rejected the sign-in. Please try again."), "error")
         return redirect(url_for("accounts.login"))
 
     access_token = token_res.json().get("access_token")
     if not access_token:
-        flash("Discord returned no access token. Please try again.", "error")
+        flash(_("Discord returned no access token. Please try again."), "error")
         return redirect(url_for("accounts.login"))
 
     try:
@@ -160,24 +161,24 @@ def discord_callback():
             timeout=10,
         )
     except requests.RequestException:
-        flash("Could not reach Discord. Please try again.", "error")
+        flash(_("Could not reach Discord. Please try again."), "error")
         return redirect(url_for("accounts.login"))
 
     if not me_res.ok:
-        flash("Could not read your Discord profile. Please try again.", "error")
+        flash(_("Could not read your Discord profile. Please try again."), "error")
         return redirect(url_for("accounts.login"))
 
     profile = me_res.json()
     discord_id = profile.get("id")
     if not discord_id:
-        flash("Discord returned no user id. Please try again.", "error")
+        flash(_("Discord returned no user id. Please try again."), "error")
         return redirect(url_for("accounts.login"))
 
     player = mongo.db.players.find_one({"discord_id": discord_id})
 
     if player:
         if player.get("revoked"):
-            flash("This account has been revoked.", "error")
+            flash(_("This account has been revoked."), "error")
             return redirect(url_for("accounts.login"))
 
         session.pop("pending_discord", None)
@@ -196,7 +197,7 @@ def discord_callback():
 def register():
     pending = session.get("pending_discord")
     if not pending:
-        flash("Please sign in with Discord to register.", "error")
+        flash(_("Please sign in with Discord to register."), "error")
         return redirect(url_for("accounts.login"))
 
     if request.method == "GET":
@@ -231,52 +232,52 @@ def register():
 
     name, error = validate_name(form["name"])
     if error:
-        flash(error, "error")
+        flash(_(error), "error")
         return rerender()
 
     igns, error = normalize_igns(igns_raw)
     if error:
-        flash(error, "error")
+        flash(_(error), "error")
         return rerender()
 
     nation, error = validate_nation(form["nation"])
     if error:
-        flash(error, "error")
+        flash(_(error), "error")
         return rerender()
 
     platforms, error = normalize_platforms(selected_platforms)
     if error:
-        flash(error, "error")
+        flash(_(error), "error")
         return rerender()
 
     link, error = validate_link(form["link"])
     if error:
-        flash(error, "error")
+        flash(_(error), "error")
         return rerender()
 
     code = normalize_code(request.form.get("invite_code"))
     _, error = check_invite(mongo.db, code)
     if error:
-        flash(error, "error")
+        flash(_(error), "error")
         return rerender()
 
     # guard against dupe accounts
     existing = mongo.db.players.find_one({"discord_id": pending["id"]})
     if existing:
         if existing.get("revoked"):
-            flash("This account has been revoked.", "error")
+            flash(_("This account has been revoked."), "error")
             return redirect(url_for("accounts.login"))
         session.pop("pending_discord", None)
         session["player"] = existing["name"]
-        flash("An account is already linked to your Discord.", "success")
+        flash(_("An account is already linked to your Discord."), "success")
         return redirect(url_for("accounts.account"))
 
     if name_taken(mongo.db, name):
-        flash("That name is already taken.", "error")
+        flash(_("That name is already taken."), "error")
         return rerender()
 
     if not consume_invite(mongo.db, code, {"name": name, "discord_id": pending["id"]}):
-        flash("This invite code has already been used.", "error")
+        flash(_("This invite code has already been used."), "error")
         return rerender()
 
     player = new_player_doc(
@@ -292,12 +293,12 @@ def register():
         mongo.db.players.insert_one(player)
     except Exception:
         refund_invite(mongo.db, code)
-        flash("Could not create the account, please try again.", "error")
+        flash(_("Could not create the account, please try again."), "error")
         return rerender()
 
     session.pop("pending_discord", None)
     session["player"] = name
-    flash("Your account has been created!", "success")
+    flash(_("Your account has been created!"), "success")
     return redirect(url_for("players.display_profile", name=name))
 
 
@@ -305,7 +306,7 @@ def register():
 @login_required
 def delete_picture():
     avatars.delete(current_player()["name"])
-    flash("Your profile picture has been removed.", "success")
+    flash(_("Your profile picture has been removed."), "success")
     return redirect(url_for("accounts.account"))
 
 
@@ -327,7 +328,7 @@ def account():
             link, error = validate_link(request.form.get("link", ""))
 
         if error:
-            flash(error, "error")
+            flash(_(error), "error")
         else:
             mongo.db.players.update_one(
                 {"name": player["name"]},
@@ -340,7 +341,7 @@ def account():
                     }
                 },
             )
-            flash("Your profile has been updated.", "success")
+            flash(_("Your profile has been updated."), "success")
 
         # The picture is handled on its own so a rejected image doesn't throw
         # away the text changes, or the other way round.
@@ -348,9 +349,9 @@ def account():
         if upload and upload.filename:
             picture_error = avatars.store(player["name"], upload)
             if picture_error:
-                flash(picture_error, "error")
+                flash(_(picture_error), "error")
             else:
-                flash("Your profile picture has been updated.", "success")
+                flash(_("Your profile picture has been updated."), "success")
 
         player = current_player()
 
@@ -374,5 +375,5 @@ def account():
 def logout():
     session.pop("player", None)
     session.pop("pending_discord", None)
-    flash("You have been logged out.", "success")
+    flash(_("You have been logged out."), "success")
     return redirect(url_for("main.home"))

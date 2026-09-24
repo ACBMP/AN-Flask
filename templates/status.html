@@ -5,23 +5,23 @@
 <meta content="https://assassins.network/status" property="og:url" />
 <div class="page-header">
   <div>
-    <h1>ACB Status</h1>
-    <p class="page-subtitle">Live server &amp; service health.</p>
+    <h1>{{ _("ACB Status") }}</h1>
+    <p class="page-subtitle">{{ _("Live server &amp; service health.") }}</p>
   </div>
 </div>
     <div class="card table-wrap">
     <table>
         <tr>
-            <th>Server</th>
-            <th>Status</th>
+            <th>{{ _("Server") }}</th>
+            <th>{{ _("Status") }}</th>
         </tr>
     {% for entry in data %}
     <tr>
         <td>{{ entry.name }}</td>
         {%if entry.status %}
-            <td><span class="pill pill-win">Online</span></td>
+            <td><span class="pill pill-win">{{ _("Online") }}</span></td>
         {%else%}
-            <td><span class="pill pill-loss">Offline</span></td>
+            <td><span class="pill pill-loss">{{ _("Offline") }}</span></td>
         {%endif%}
     </tr>
     {% endfor %}

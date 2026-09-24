@@ -1,9 +1,11 @@
 """Landing page and the static informational pages."""
 
 import re
+from urllib.parse import urlparse
 
-from flask import Blueprint, render_template
+from flask import Blueprint, redirect, render_template, request
 
+import i18n
 from extensions import mongo
 from modes import title
 
@@ -59,3 +61,29 @@ def train():
 @main_bp.route("/418")
 def teapot():
     return render_template("418.html")
+
+
+def _safe_next(target, fallback="/"):
+    """Only follow a redirect target that stays on this site."""
+    if not target:
+        return fallback
+    parsed = urlparse(target)
+    if parsed.scheme or parsed.netloc or not target.startswith("/"):
+        return fallback
+    return target
+
+
+@main_bp.route("/language/<code>", methods=["POST"])
+def set_language(code):
+    """Remember a language choice and return to the page it was made on."""
+    if not i18n.is_supported(code):
+        code = i18n.DEFAULT_LANGUAGE
+    response = redirect(_safe_next(request.form.get("next")))
+    response.set_cookie(
+        i18n.COOKIE_NAME,
+        code,
+        max_age=i18n.COOKIE_MAX_AGE,
+        samesite="Lax",
+        httponly=False,
+    )
+    return response

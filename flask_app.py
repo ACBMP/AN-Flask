@@ -10,6 +10,7 @@ from flask import Flask, redirect
 from werkzeug.exceptions import HTTPException
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+import i18n
 from config import Config
 from extensions import mongo
 from filters import register_filters
@@ -48,6 +49,7 @@ def create_app(config_object=Config):
 
     mongo.init_app(app)
     register_filters(app)
+    i18n.register(app)
     for bp in BLUEPRINTS:
         app.register_blueprint(bp)
 

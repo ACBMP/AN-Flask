@@ -22,14 +22,14 @@
 {% endmacro %}
 {% macro roster_table(team, mode, title, is_winner) %}
 <div class="card table-wrap">
-  <div class="card-header"><h3>{{ title }}</h3>{% if is_winner %}<span class="pill pill-win">Winner</span>{% endif %}</div>
+  <div class="card-header"><h3>{{ _(title) }}</h3>{% if is_winner %}<span class="pill pill-win">{{ _("Winner") }}</span>{% endif %}</div>
   <table>
-    <tr><th>Player</th><th>Score</th><th>Kills</th><th>Deaths</th><th>K/D</th><th>Rating</th></tr>
+    <tr><th>{{ _("Player") }}</th><th>{{ _("Score") }}</th><th>{{ _("Kills") }}</th><th>{{ _("Deaths") }}</th><th>{{ _("K/D") }}</th><th>{{ _("Rating") }}</th></tr>
     {% for p in team %}
     {% if not p.hidden %}
     {% set clickable = p.bonuses is defined and (p.bonuses.values()|selectattr('score', 'gt', 0)|list|length > 0) %}
     <tr{% if clickable %} class="bonus-toggle-row"{% endif %}>
-        <td>{{ char_icon(p) }} <a href="/profile/{{ p.player }}">{{ p.player }}</a>{% if clickable %} <span class="bonus-indicator" title="View bonuses earned">&#9662;</span>{% endif %}</td>
+        <td>{{ char_icon(p) }} <a href="/profile/{{ p.player }}">{{ p.player }}</a>{% if clickable %} <span class="bonus-indicator" title="{{ _("View bonuses earned") }}">&#9662;</span>{% endif %}</td>
         <td>{{ p.score if mode != "Artifact assault" else p.scored }}</td>
         <td>{{ p.kills }}</td>
         <td>{{ p.deaths }}</td>
@@ -48,8 +48,8 @@
 <meta content="{{ entry.mode }} match details." property="og:description" />
 <div class="page-header">
   <div>
-    <h1>Match Details</h1>
-    <p class="page-subtitle">{{ entry.mode }}{% if entry|try_value("map") != "Unknown" %} &middot; {{ entry|try_value("map") }}{% endif %}{% if entry|try_value("date") != "Unknown" %} &middot; {{ entry|try_value("date") }}{% endif %}</p>
+    <h1>{{ _("Match Details") }}</h1>
+    <p class="page-subtitle">{{ _(entry.mode) }}{% if entry|try_value("map") != "Unknown" %} &middot; {{ entry|try_value("map") }}{% endif %}{% if entry|try_value("date") != "Unknown" %} &middot; {{ entry|try_value("date") }}{% endif %}</p>
   </div>
   <a class="btn" href="/matches">&laquo; Back to Match History</a>
 </div>
@@ -58,14 +58,14 @@
 {% set roster = entry.players|sort(attribute="score", reverse=True) %}
 <div class="card match-detail-header" style="margin-bottom:1.25rem">
   <div class="match-detail-side">
-    <div class="team-label">Winner</div>
+    <div class="team-label">{{ _("Winner") }}</div>
     <div class="match-detail-score win">{{ roster[0].player }}</div>
   </div>
   <div class="match-detail-center">
-    <span class="pill pill-win">Final</span>
+    <span class="pill pill-win">{{ _("Final") }}</span>
   </div>
   <div class="match-detail-side">
-    <div class="team-label">Top Score</div>
+    <div class="team-label">{{ _("Top Score") }}</div>
     <div class="match-detail-score">{{ roster[0].score }}</div>
   </div>
 </div>
@@ -77,7 +77,7 @@
     {% set clickable = p.bonuses is defined and (p.bonuses.values()|selectattr('score', 'gt', 0)|list|length > 0) %}
     <tr{% if clickable %} class="bonus-toggle-row"{% endif %}>
         <td class="{{ 'rank-1' if loop.index==1 else ('rank-2' if loop.index==2 else ('rank-3' if loop.index==3 else '')) }}">{{ loop.index }}</td>
-        <td>{{ char_icon(p) }} <a href="/profile/{{ p.player }}">{{ p.player }}</a>{% if clickable %} <span class="bonus-indicator" title="View bonuses earned">&#9662;</span>{% endif %}</td>
+        <td>{{ char_icon(p) }} <a href="/profile/{{ p.player }}">{{ p.player }}</a>{% if clickable %} <span class="bonus-indicator" title="{{ _("View bonuses earned") }}">&#9662;</span>{% endif %}</td>
         <td>{{ p.score }}</td>
         <td>{{ p.kills }}</td>
         <td>{{ p.deaths }}</td>
@@ -97,12 +97,12 @@
   </div>
   <div class="match-detail-center">
     {% if entry.outcome == 0 %}
-    <span class="pill pill-tie">Tie</span>
+    <span class="pill pill-tie">{{ _("Tie") }}</span>
     {% else %}
-    <span class="pill pill-win">Team {{ entry.outcome }} Wins</span>
+    <span class="pill pill-win">{{ _("Team %(n)s Wins", n=entry.outcome) }}</span>
     {% endif %}
     {% if entry|try_value("host") != "Unknown" %}
-    <span class="page-subtitle" style="margin:0">Hosted by <a href="/profile/{{ entry.host }}">{{ entry.host }}</a></span>
+    <span class="page-subtitle" style="margin:0">{{ _("Hosted by") }} <a href="/profile/{{ entry.host }}">{{ entry.host }}</a></span>
     {% endif %}
   </div>
   <div class="match-detail-side">

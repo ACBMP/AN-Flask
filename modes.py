@@ -42,8 +42,13 @@ SITE = "Assassins' Network"
 
 
 def title(page):
-    """Build a page title in the site's ``<page> | Assassins' Network`` style."""
-    return f"{page} | {SITE}"
+    """Build a page title in the site's ``<page> | Assassins' Network`` style.
+
+    The page part is translated; the site name is not, being a proper noun.
+    """
+    from i18n import translate
+
+    return f"{translate(page)} | {SITE}"
 
 
 # Map mode keys (as stored on map documents) matched against the ``mode`` field

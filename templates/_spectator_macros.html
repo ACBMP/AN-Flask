@@ -29,9 +29,9 @@
        missing/unrecognized from the ingest payload) -- spectator.js populates
        the options and toggles this row's visibility. #}
     <div class="spectator-map-select-field" id="spectator-map-select-field" hidden>
-      <label for="spectator-map-select">Background</label>
+      <label for="spectator-map-select">{{ _("Background") }}</label>
       <select id="spectator-map-select" class="form-select">
-        <option value="" selected>Grid only</option>
+        <option value="" selected>{{ _("Grid only") }}</option>
       </select>
     </div>
   </div>
@@ -39,24 +39,24 @@
   <div class="spectator-legend">
     <div class="spectator-legend-item"><span class="spectator-legend-dot"></span> Dot size = height (Z)</div>
     <div class="spectator-legend-item"><span class="spectator-legend-dot spectator-legend-ability"></span> Dashed ring = ability active</div>
-    <div class="spectator-legend-item"><span class="spectator-legend-dot spectator-legend-down">&times;</span> Recently eliminated</div>
+    <div class="spectator-legend-item"><span class="spectator-legend-dot spectator-legend-down">&times;</span> {{ _("Recently eliminated") }}</div>
   </div>
 </div>
 {% endmacro %}
 
 {% macro spectator_activity_card() %}
 <div class="card">
-  <div class="card-header"><h3>Activity</h3></div>
+  <div class="card-header"><h3>{{ _("Activity") }}</h3></div>
   <div class="spectator-activity" id="spectator-activity"></div>
 </div>
 {% endmacro %}
 
 {% macro spectator_roster_card() %}
 <div class="card table-wrap" style="margin-bottom:1.25rem">
-  <div class="card-header"><h3>Roster</h3></div>
+  <div class="card-header"><h3>{{ _("Roster") }}</h3></div>
   <table>
     <thead>
-      <tr><th>Player</th><th>Team</th><th>Score</th><th>K</th><th>D</th><th>Status</th></tr>
+      <tr><th>{{ _("Player") }}</th><th>{{ _("Team") }}</th><th>{{ _("Score") }}</th><th>K</th><th>D</th><th>{{ _("Status") }}</th></tr>
     </thead>
     <tbody id="spectator-roster-body"></tbody>
   </table>
@@ -65,10 +65,10 @@
 
 {% macro spectator_timer_card() %}
 <div class="card">
-  <div class="card-header"><h3>Match Timer</h3></div>
+  <div class="card-header"><h3>{{ _("Match Timer") }}</h3></div>
   <div class="spectator-timer">
     <div class="spectator-timer-value" id="spectator-timer-value">--:--</div>
-    <div class="spectator-timer-caption" id="spectator-timer-caption">Time Remaining</div>
+    <div class="spectator-timer-caption" id="spectator-timer-caption">{{ _("Time Remaining") }}</div>
   </div>
 </div>
 {% endmacro %}

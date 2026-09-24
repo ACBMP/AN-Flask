@@ -2,17 +2,17 @@
 {% import "_macros.html" as m %}
 {% macro overview_card(title, badge, mmr, peak, total, won, lost, kd, kdname, rows) %}
 <div class="card">
-  <div class="card-header"><h3>{{ title }} Overview</h3>{% if badge %}<span class="pill pill-tie">{{ badge }}</span>{% endif %}</div>
+  <div class="card-header"><h3>{{ _("%(mode)s Overview", mode=_(title)) }}</h3>{% if badge %}<span class="pill pill-tie">{{ badge }}</span>{% endif %}</div>
   <div class="stat-grid" style="margin-bottom:1rem">
-    <div class="stat-tile"><div class="stat-label">MMR</div><div class="stat-value">{{ mmr|round()|int() }}</div></div>
-    <div class="stat-tile"><div class="stat-label">Peak MMR</div><div class="stat-value">{{ peak|round()|int() }}</div></div>
-    <div class="stat-tile"><div class="stat-label">Games</div><div class="stat-value">{{ total }}</div></div>
-    <div class="stat-tile"><div class="stat-label">{{ kdname }}</div><div class="stat-value">{{ kd }}</div></div>
+    <div class="stat-tile"><div class="stat-label">{{ _("MMR") }}</div><div class="stat-value">{{ mmr|round()|int() }}</div></div>
+    <div class="stat-tile"><div class="stat-label">{{ _("Peak MMR") }}</div><div class="stat-value">{{ peak|round()|int() }}</div></div>
+    <div class="stat-tile"><div class="stat-label">{{ _("Games") }}</div><div class="stat-value">{{ total }}</div></div>
+    <div class="stat-tile"><div class="stat-label">{{ _(kdname) }}</div><div class="stat-value">{{ kd }}</div></div>
   </div>
   {{ m.winbar(won, lost, total - won - lost) }}
   <table class="profile-list-table" style="margin-top:1rem">
     {% for label, value in rows %}
-    <tr><td>{{ label }}</td><td style="text-align:right">{{ value }}</td></tr>
+    <tr><td>{{ _(label) }}</td><td style="text-align:right">{{ value }}</td></tr>
     {% endfor %}
   </table>
 </div>
@@ -20,22 +20,22 @@
 {% macro detail_beta(extra, chart_id, anchor_id, char_chart_id, mode_key) %}
 {% if extra.games > 0 %}
 <div class="card" id="{{ anchor_id }}" style="margin-top:1rem">
-  <div class="card-header"><h3>Detailed Stats (Beta)</h3></div>
+  <div class="card-header"><h3>{{ _("Detailed Stats (Beta)") }}</h3></div>
   <ul class="nav-tabs">
-    <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#{{ anchor_id }}-bonuses">Bonuses</a></li>
+    <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#{{ anchor_id }}-bonuses">{{ _("Bonuses") }}</a></li>
     {% if extra.heatmaps %}
-    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#{{ anchor_id }}-heatmaps">Heatmaps</a></li>
+    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#{{ anchor_id }}-heatmaps">{{ _("Heatmaps") }}</a></li>
     {% endif %}
   </ul>
   <div class="tab-content">
     <div class="tab-pane active show" id="{{ anchor_id }}-bonuses">
-      <p class="page-subtitle" style="margin:0 0 0.75rem">Averages based on {{ extra.games }} game(s) with detailed bonus tracking.</p>
+      <p class="page-subtitle" style="margin:0 0 0.75rem">{{ _("Averages based on %(count)s game(s) with detailed bonus tracking.", count=extra.games) }}</p>
       <div class="stat-group-grid">
         {% for name, rows in extra.groups %}
         <div class="stat-group">
-          <div class="stat-group-title">{{ name }}</div>
+          <div class="stat-group-title">{{ _(name) }}</div>
           <table class="stat-group-table">
-            <tr>{% for label, value in rows %}<th>{{ label }}</th>{% endfor %}</tr>
+            <tr>{% for label, value in rows %}<th>{{ _(label) }}</th>{% endfor %}</tr>
             <tr>{% for label, value in rows %}<td>{% if name == "Characters" %}{{ value|safe }}{% else %}{{ value }}{% endif %}</td>{% endfor %}</tr>
           </table>
         </div>
@@ -48,7 +48,7 @@
     </div>
     {% if extra.heatmaps %}
     <div class="tab-pane" id="{{ anchor_id }}-heatmaps">
-      <p class="page-subtitle" style="margin:0 0 0.75rem">Where this player spends their time, averaged across every tracked game on each map.</p>
+      <p class="page-subtitle" style="margin:0 0 0.75rem">{{ _("Where this player spends their time, averaged across every tracked game on each map.") }}</p>
       <div class="heatmap-picker" id="{{ mode_key }}heatmapPicker">
         {% for map_key, m in extra.heatmaps.items() %}
         <button type="button" class="heatmap-picker-btn{% if loop.first %} active{% endif %}" data-map="{{ map_key }}">{{ m.label }}</button>
@@ -82,7 +82,7 @@
         <div class="page-subtitle">{{ [data.mhmmr, data.emmr, data.aarmmr, data.aadmmr, data.dommr, data.dmmmr, data.asbmmr]|max()|rank_title() }}
             &middot; {{data.platforms|join(", ") }}
             &middot; IGNs: {{data.ign|join(", ") }}
-            {% if data.link %}&middot; <a href="{{data.link}}" target="_blank">Profile Link</a>{% endif %}
+            {% if data.link %}&middot; <a href="{{data.link}}" target="_blank">{{ _("Profile Link") }}</a>{% endif %}
         </div>
     </div>
 </div>
@@ -90,49 +90,49 @@
    {%if data.mhgames.total > 9%}
    <div class="stat-tile">
    <img src="/static/badges/{{ data.mhmmr|rank_pic_big() }}">
-   <div class="stat-label">Manhunt Rank</div>
+   <div class="stat-label">{{ _("Manhunt Rank") }}</div>
    <div class="stat-value" style="font-size:0.95rem">{{ data.mhmmr|rank_title() }}</div>
    </div>
    {%endif%}
    {%if data.egames.total > 9%}
    <div class="stat-tile">
    <img src="/static/badges/{{ data.emmr|rank_pic_big() }}">
-   <div class="stat-label">Escort Rank</div>
+   <div class="stat-label">{{ _("Escort Rank") }}</div>
    <div class="stat-value" style="font-size:0.95rem">{{ data.emmr|rank_title() }}</div>
    </div>
    {%endif%}
    {%if data.aadgames.total > 9%}
    <div class="stat-tile">
    <img src="/static/badges/{{ data.aadmmr|rank_pic_big() }}">
-   <div class="stat-label">AA Defender Rank</div>
+   <div class="stat-label">{{ _("AA Defender Rank") }}</div>
    <div class="stat-value" style="font-size:0.95rem">{{ data.aadmmr|rank_title() }}</div>
    </div>
    {%endif%}
    {%if data.aargames.total > 9%}
    <div class="stat-tile">
    <img src="/static/badges/{{ data.aarmmr|rank_pic_big() }}">
-   <div class="stat-label">AA Runner Rank</div>
+   <div class="stat-label">{{ _("AA Runner Rank") }}</div>
    <div class="stat-value" style="font-size:0.95rem">{{ data.aarmmr|rank_title() }}</div>
    </div>
    {%endif%}
    {%if data.dogames.total > 9%}
    <div class="stat-tile">
    <img src="/static/badges/{{ data.dommr|rank_pic_big() }}">
-   <div class="stat-label">Domination Rank</div>
+   <div class="stat-label">{{ _("Domination Rank") }}</div>
    <div class="stat-value" style="font-size:0.95rem">{{ data.dommr|rank_title() }}</div>
    </div>
    {%endif%}
    {%if data.dmgames.total > 9%}
    <div class="stat-tile">
     <img src="/static/badges/{{ data.dmmmr|rank_pic_big() }}">
-    <div class="stat-label">Deathmatch Rank</div>
+    <div class="stat-label">{{ _("Deathmatch Rank") }}</div>
     <div class="stat-value" style="font-size:0.95rem">{{ data.dmmmr|rank_title() }}</div>
     </div>
     {%endif%}
     {%if data.asbgames.total > 9%}
     <div class="stat-tile">
     <img src="/static/badges/{{ data.asbmmr|rank_pic_big() }}">
-    <div class="stat-label">Assassinate (ACB) Rank</div>
+    <div class="stat-label">{{ _("Assassinate (ACB) Rank") }}</div>
     <div class="stat-value" style="font-size:0.95rem">{{ data.asbmmr|rank_title() }}</div>
     </div>
     {%endif%}
@@ -140,8 +140,8 @@
 
 <div class="page-header">
   <div>
-    <h2 style="margin:0">Mode Breakdown</h2>
-    <p class="page-subtitle">Detailed stats for a specific game &amp; mode.</p>
+    <h2 style="margin:0">{{ _("Mode Breakdown") }}</h2>
+    <p class="page-subtitle">{{ _("Detailed stats for a specific game &amp; mode.") }}</p>
   </div>
   {% include "_mode_select.html" %}
 </div>
@@ -155,7 +155,7 @@
         ("Average deaths", data.estats.deaths|avgdeaths(data.egames.total)),
     ]) }}
     <div class="card">
-      <div class="card-header"><h3>Trends</h3></div>
+      <div class="card-header"><h3>{{ _("Trends") }}</h3></div>
       <canvas id="ehist" height="150"></canvas>
     </div>
   </div>
@@ -171,7 +171,7 @@
         ("Average deaths", data.mhstats.deaths|avgdeaths(data.mhgames.total)),
     ]) }}
     <div class="card">
-      <div class="card-header"><h3>Trends</h3></div>
+      <div class="card-header"><h3>{{ _("Trends") }}</h3></div>
       <canvas id="mhhist" height="150"></canvas>
     </div>
   </div>
@@ -189,7 +189,7 @@
         ("Average kills", data.asbstats.kills|avgkills(data.asbgames.total)),
     ]) }}
     <div class="card">
-      <div class="card-header"><h3>Trends</h3></div>
+      <div class="card-header"><h3>{{ _("Trends") }}</h3></div>
       <canvas id="asbhist" height="150"></canvas>
     </div>
   </div>
@@ -204,7 +204,7 @@
         ("Average score", data.aarstats.totalscore|avgscore(data.aargames.total)),
     ]) }}
     <div class="card">
-      <div class="card-header"><h3>Trends</h3></div>
+      <div class="card-header"><h3>{{ _("Trends") }}</h3></div>
       <canvas id="aarhist" height="150"></canvas>
     </div>
   </div>
@@ -218,7 +218,7 @@
         ("Average score", data.aadstats.totalscore|avgscore(data.aadgames.total)),
     ]) }}
     <div class="card">
-      <div class="card-header"><h3>Trends</h3></div>
+      <div class="card-header"><h3>{{ _("Trends") }}</h3></div>
       <canvas id="aadhist" height="150"></canvas>
     </div>
   </div>
@@ -233,7 +233,7 @@
         ("Average deaths", data.dostats.deaths|avgdeaths(data.dogames.total)),
     ]) }}
     <div class="card">
-      <div class="card-header"><h3>Trends</h3></div>
+      <div class="card-header"><h3>{{ _("Trends") }}</h3></div>
       <canvas id="dohist" height="150"></canvas>
     </div>
   </div>
@@ -250,7 +250,7 @@
         ("Average kills", data.dmstats.kills|avgkills(data.dmgames.total)),
     ]) }}
     <div class="card">
-      <div class="card-header"><h3>Trends</h3></div>
+      <div class="card-header"><h3>{{ _("Trends") }}</h3></div>
       <canvas id="dmhist" height="150"></canvas>
     </div>
   </div>
@@ -265,27 +265,27 @@
   "Deathmatch": ["Deathmatch"],
 } %}
 <div class="card table-wrap">
-<div class="card-header"><h3>Match History</h3><span class="players-count" id="matchHistoryCount"></span></div>
+<div class="card-header"><h3>{{ _("Match History") }}</h3><span class="players-count" id="matchHistoryCount"></span></div>
     <table style="width:100%">
         <thead>
         <tr>
-            <th>Mode</th>
-            <th>Team 1<table style="width:100%"><tr style="background: transparent;width: 100%">
-                <td style="width: 25%;border: 0px">Player</td><td style="width: 25%;border: 0px">Score</td>
-                <td style="width: 25%;border: 0px">Kills</td><td style="width: 25%;border: 0px">Deaths</td></tr></table></th>
-                <th>Team 2<table style="width:100%"><tr style="background: transparent;width: 100%">
-                    <td style="width: 25%;border: 0px">Player</td><td style="width: 25%;border: 0px">Score</td>
-                    <td style="width: 25%;border: 0px">Kills</td><td style="width: 25%;border: 0px">Deaths</td></tr></table></th>
-            <th>Winner</th>
-            <th>Map</th>
-            <th>Host</th>
-            <th>Rating Change</th>
+            <th>{{ _("Mode") }}</th>
+            <th>{{ _("Team 1") }}<table style="width:100%"><tr style="background: transparent;width: 100%">
+                <td style="width: 25%;border: 0px">{{ _("Player") }}</td><td style="width: 25%;border: 0px">{{ _("Score") }}</td>
+                <td style="width: 25%;border: 0px">{{ _("Kills") }}</td><td style="width: 25%;border: 0px">{{ _("Deaths") }}</td></tr></table></th>
+                <th>{{ _("Team 2") }}<table style="width:100%"><tr style="background: transparent;width: 100%">
+                    <td style="width: 25%;border: 0px">{{ _("Player") }}</td><td style="width: 25%;border: 0px">{{ _("Score") }}</td>
+                    <td style="width: 25%;border: 0px">{{ _("Kills") }}</td><td style="width: 25%;border: 0px">{{ _("Deaths") }}</td></tr></table></th>
+            <th>{{ _("Winner") }}</th>
+            <th>{{ _("Map") }}</th>
+            <th>{{ _("Host") }}</th>
+            <th>{{ _("Rating Change") }}</th>
           </tr>
         </thead>
         <tbody id="matchHistoryBody">
     {% for entry in data_matches %}
     <tr class="match-row" data-href="/match/{{ entry._id }}" data-modes="{{ MATCH_MODE_MAP.get(entry.mode, [])|join(',') }}">
-        <td>{{entry.mode}}</td>
+        <td>{{ _(entry.mode) }}</td>
         <td><table style="width:100%">{% for player in entry.team1 %}
                 <tr style="background: transparent;width: 100%">
                     <td style="width: 25%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.score if entry.mode != "Artifact assault" else player.scored}}</td>
@@ -301,31 +301,31 @@
     </table>
     </td>
         {% if entry.player_result == "win" %}
-        <td><span class="pill pill-win">Win</span></td>
+        <td><span class="pill pill-win">{{ _("Win") }}</span></td>
         {% elif entry.player_result == "loss" %}
-        <td><span class="pill pill-loss">Loss</span></td>
+        <td><span class="pill pill-loss">{{ _("Loss") }}</span></td>
         {% elif entry.player_result == "tie" %}
-        <td><span class="pill pill-tie">Tie</span></td>
+        <td><span class="pill pill-tie">{{ _("Tie") }}</span></td>
         {% else %}
         <td><span class="pill">-</span></td>
         {% endif %}
-        <td>{{ entry | try_value("map") }}</td>
-        <td><a href="/profile/{{ entry | try_value('host') }}">{{ entry | try_value("host") }}</a></td>
+        <td>{{ _(entry | try_value("map")) }}</td>
+        <td><a href="/profile/{{ entry | try_value('host') }}">{{ _(entry | try_value("host")) }}</a></td>
         <td>{{ entry.mmrchange }}</td>
     </tr>
     {% endfor %}
         </tbody>
     </table>
-    <p id="noMatchHistory" class="page-subtitle" style="display:none;text-align:center;margin:1rem 0 0">No matches for this mode yet.</p>
+    <p id="noMatchHistory" class="page-subtitle" style="display:none;text-align:center;margin:1rem 0 0">{{ _("No matches for this mode yet.") }}</p>
     <div class="pager" id="matchHistoryPager">
-      <a class="btn" href="#" id="matchHistoryPrev">&laquo; Previous</a>
+      <a class="btn" href="#" id="matchHistoryPrev">&laquo; {{ _("Previous") }}</a>
       <span id="matchHistoryPageLabel"></span>
-      <a class="btn" href="#" id="matchHistoryNext">Next &raquo;</a>
+      <a class="btn" href="#" id="matchHistoryNext">{{ _("Next") }} &raquo;</a>
     </div>
 </div>
 
 {%else%}
-<h1>Nothing to show</h1>
+<h1>{{ _("Nothing to show") }}</h1>
 {%endif%}
 {% endblock content %}
 

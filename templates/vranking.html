@@ -5,19 +5,19 @@
 <meta content="https://assassins.network/virtualtraining" property="og:url" />
 <div class="page-header">
   <div>
-    <h1>Virtual Training</h1>
-    <p class="page-subtitle">Spawn-guessing time trial leaderboards.</p>
+    <h1>{{ _("Virtual Training") }}</h1>
+    <p class="page-subtitle">{{ _("Spawn-guessing time trial leaderboards.") }}</p>
   </div>
 </div>
     {%for table in data%}
-        <h2>{{table.name}} Leaderboard</h2>
+        <h2>{{ _("%(name)s Leaderboard", name=table.name) }}</h2>
         <div class="card table-wrap">
         <table>
             <tr>
-                <th>Rank</th>
-                <th>Player</th>
-                <th>Time</th>
-                <th>Platform</th>
+                <th>{{ _("Rank") }}</th>
+                <th>{{ _("Player") }}</th>
+                <th>{{ _("Time") }}</th>
+                <th>{{ _("Platform") }}</th>
             </tr>
         {% for entry in table.stats %}
         <tr>

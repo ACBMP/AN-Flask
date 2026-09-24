@@ -3,14 +3,14 @@
 {% block content %}
 <div class="page-header">
   <div>
-    <h1>Spectator</h1>
+    <h1>{{ _("Spectator") }}</h1>
     <p class="page-subtitle">Live position feed from the match server &middot; {{ map }} &middot; {{ mode }}</p>
   </div>
   <div class="spectator-header-badges">
-    <span class="pill">Spectator access &middot; not a participant</span>
+    <span class="pill">{{ _("Spectator access &middot; not a participant") }}</span>
     <span class="pill pill-win">&#9679; Live</span>
     <span class="spectator-chip">match_id: {{ match_id }}</span>
-    <a class="btn" href="{{ url_for('matches.matches') }}">Browse Matches</a>
+    <a class="btn" href="{{ url_for('matches.matches') }}">{{ _("Browse Matches") }}</a>
   </div>
 </div>
 

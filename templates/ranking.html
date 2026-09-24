@@ -5,50 +5,50 @@
 <meta content="{{ mode }} leaderboard." property="og:description" />
 <div class="page-header">
   <div>
-    <h1>{{mode}} Leaderboard</h1>
-    <p class="page-subtitle">Ranked standings for {{mode}}.</p>
+    <h1>{{ _("%(mode)s Leaderboard", mode=mode) }}</h1>
+    <p class="page-subtitle">{{ _("Ranked standings for %(mode)s.", mode=mode) }}</p>
   </div>
   {% include "_mode_select.html" %}
 </div>
 <div class="card table-wrap">
     <table style="white-space:nowrap;">
         <tr>
-            <th>Rank</th>
-            <th>Player</th>
-            <th>Region</th>
-            <th>Points</th>
-            <th>Games</th>
-            <th>Winrate</th>
+            <th>{{ _("Rank") }}</th>
+            <th>{{ _("Player") }}</th>
+            <th>{{ _("Region") }}</th>
+            <th>{{ _("Points") }}</th>
+            <th>{{ _("Games") }}</th>
+            <th>{{ _("Winrate") }}</th>
         {%if mode in ["Deathmatch", "Assassinate Brotherhood"]%}
-            <th>Podium Rate</th>
-            <th>Average Finish</th>
+            <th>{{ _("Podium Rate") }}</th>
+            <th>{{ _("Average Finish") }}</th>
         {%endif%}
         {%if mode in ["Escort", "Manhunt", "Deathmatch", "Assassinate"]%}
-	        <th>Average score</th>
+	        <th>{{ _("Average score") }}</th>
 	        <th>K/D</th>
         {%elif mode == "AA Running"%}
-	        <th>Average scores</th>
-	        <th>Deaths per score</th>
+	        <th>{{ _("Average scores") }}</th>
+	        <th>{{ _("Deaths per score") }}</th>
         {%elif mode == "AA Defending"%}
-	        <th>Average kills</th>
-	        <th>Average concedes</th>
+	        <th>{{ _("Average kills") }}</th>
+	        <th>{{ _("Average concedes") }}</th>
         {%elif mode == "Domination"%}
             <th>K/D</th>
         {%else%}
-            <th>AA Defending</th>
-            <th>AA Running</th>
-            <th>Domination</th>
-            <th>Escort</th>
-            <th>Manhunt</th>
-            <th>Deathmatch</th>
-            <th>Assassinate</th>
+            <th>{{ _("AA Defending") }}</th>
+            <th>{{ _("AA Running") }}</th>
+            <th>{{ _("Domination") }}</th>
+            <th>{{ _("Escort") }}</th>
+            <th>{{ _("Manhunt") }}</th>
+            <th>{{ _("Deathmatch") }}</th>
+            <th>{{ _("Assassinate") }}</th>
         {%endif%}
         </tr>
     {% for entry in data %}
     <tr class="player-row" data-href="/profile/{{ entry.name }}">
         {%if mode == "Escort"%}
             {% if entry.erank == 0 %}
-                <td>TBD</td>
+                <td>{{ _("TBD") }}</td>
             {% else %}
                 {%if entry.erankchange < 0%}
                     <td class="{{ 'rank-1' if entry.erank==1 else ('rank-2' if entry.erank==2 else ('rank-3' if entry.erank==3 else '')) }}">{{ entry.erank }} <span class="text-loss">&#9660;{{ -1 * entry.erankchange }}</span></td>
@@ -67,7 +67,7 @@
 	        <td>{{ entry.estats.kills|kdratio(entry.estats.deaths) }}</td>
         {%elif mode == "AA Running"%}
             {% if entry.aarrank == 0 %}
-                <td>TBD</td>
+                <td>{{ _("TBD") }}</td>
             {% else %}
                 {%if entry.aarrankchange < 0%}
                     <td class="{{ 'rank-1' if entry.aarrank==1 else ('rank-2' if entry.aarrank==2 else ('rank-3' if entry.aarrank==3 else '')) }}">{{ entry.aarrank }} <span class="text-loss">&#9660;{{ -1 * entry.aarrankchange }}</span></td>
@@ -86,7 +86,7 @@
 	        <td>{{ entry.aarstats.deaths|kdratio(entry.aarstats.scored) }}</td>
         {%elif mode == "AA Defending"%}
             {% if entry.aadrank == 0 %}
-                <td>TBD</td>
+                <td>{{ _("TBD") }}</td>
             {% else %}
                 {%if entry.aadrankchange < 0%}
                     <td class="{{ 'rank-1' if entry.aadrank==1 else ('rank-2' if entry.aadrank==2 else ('rank-3' if entry.aadrank==3 else '')) }}">{{ entry.aadrank }} <span class="text-loss">&#9660;{{ -1 * entry.aadrankchange }}</span></td>
@@ -105,7 +105,7 @@
 	        <td>{{ entry.aadstats.conceded|avgdeaths(entry.aadgames.total) }}</td>
         {%elif mode == "Domination"%}
             {% if entry.dorank == 0 %}
-                <td>TBD</td>
+                <td>{{ _("TBD") }}</td>
             {% else %}
                 {%if entry.dorankchange < 0%}
                     <td class="{{ 'rank-1' if entry.dorank==1 else ('rank-2' if entry.dorank==2 else ('rank-3' if entry.dorank==3 else '')) }}">{{ entry.dorank }} <span class="text-loss">&#9660;{{ -1 * entry.dorankchange }}</span></td>
@@ -123,7 +123,7 @@
 	        <td>{{ entry.dostats.kills|kdratio(entry.dostats.deaths) }}</td>
         {%elif mode == "Manhunt"%}
             {% if entry.mhrank == 0 %}
-                <td>TBD</td>
+                <td>{{ _("TBD") }}</td>
             {% else %}
                 {%if entry.mhrankchange < 0%}
                     <td class="{{ 'rank-1' if entry.mhrank==1 else ('rank-2' if entry.mhrank==2 else ('rank-3' if entry.mhrank==3 else '')) }}">{{ entry.mhrank }} <span class="text-loss">&#9660;{{ -1 * entry.mhrankchange }}</span></td>
@@ -142,7 +142,7 @@
 	        <td>{{ entry.mhstats.kills|kdratio(entry.mhstats.deaths) }}</td>
         {%elif mode == "Deathmatch"%}
             {% if entry.dmrank == 0 %}
-                <td>TBD</td>
+                <td>{{ _("TBD") }}</td>
             {% else %}
                 {%if entry.dmrankchange < 0%}
                     <td class="{{ 'rank-1' if entry.dmrank==1 else ('rank-2' if entry.dmrank==2 else ('rank-3' if entry.dmrank==3 else '')) }}">{{ entry.dmrank }} <span class="text-loss">&#9660;{{ -1 * entry.dmrankchange }}</span></td>
@@ -163,7 +163,7 @@
 	        <td>{{ entry.dmstats.kills|kdratio(entry.dmstats.deaths) }}</td>
         {%elif mode == "Assassinate"%}
             {% if entry.asbrank == 0 %}
-                <td>TBD</td>
+                <td>{{ _("TBD") }}</td>
             {% else %}
                 {%if entry.asbrankchange < 0%}
                     <td class="{{ 'rank-1' if entry.asbrank==1 else ('rank-2' if entry.asbrank==2 else ('rank-3' if entry.asbrank==3 else '')) }}">{{ entry.asbrank }} <span class="text-loss">&#9660;{{ -1 * entry.asbrankchange }}</span></td>
@@ -190,37 +190,37 @@
             <td>{{ entry.totalgames }}</td>
             <td>{{ m.winbar(entry.totalwins, entry.totallosses, entry.totalgames - entry.totalwins - entry.totallosses) }}</td>
             {%if entry.aadgames.total < 10%}
-                <td>TBD</td>
+                <td>{{ _("TBD") }}</td>
             {%else%}
                 <td><img src="/static/badges/{{ entry.aadmmr|rank_pic_small() }}">{{ entry.aadmmr | round() | int() }}</td>
             {%endif%}
             {%if entry.aargames.total < 10%}
-                <td>TBD</td>
+                <td>{{ _("TBD") }}</td>
             {%else%}
                 <td><img src="/static/badges/{{ entry.aarmmr|rank_pic_small() }}">{{ entry.aarmmr | round() | int() }}</td>
             {%endif%}
             {%if entry.dogames.total < 10%}
-                <td>TBD</td>
+                <td>{{ _("TBD") }}</td>
             {%else%}
                 <td><img src="/static/badges/{{ entry.dommr|rank_pic_small() }}">{{ entry.dommr | round() | int() }}</td>
             {%endif%}
             {%if entry.egames.total < 10%}
-                <td>TBD</td>
+                <td>{{ _("TBD") }}</td>
             {%else%}
                 <td><img src="/static/badges/{{ entry.emmr|rank_pic_small() }}">{{ entry.emmr | round() | int() }}</td>
             {%endif%}
             {%if entry.mhgames.total < 10%}
-                <td>TBD</td>
+                <td>{{ _("TBD") }}</td>
             {%else%}
                 <td><img src="/static/badges/{{ entry.mhmmr|rank_pic_small() }}">{{ entry.mhmmr | round() | int() }}</td>
             {%endif%}
             {%if entry.dmgames.total < 10%}
-                <td>TBD</td>
+                <td>{{ _("TBD") }}</td>
             {%else%}
                 <td><img src="/static/badges/{{ entry.dmmmr|rank_pic_small() }}">{{ entry.dmmmr | round() | int() }}</td>
             {%endif%}
             {%if entry.asbgames.total < 10%}
-                <td>TBD</td>
+                <td>{{ _("TBD") }}</td>
             {%else%}
                 <td><img src="/static/badges/{{ entry.asbmmr|rank_pic_small() }}">{{ entry.asbmmr | round() | int() }}</td>
             {%endif%}

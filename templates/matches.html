@@ -6,27 +6,27 @@
 <meta content="https://assassins.network/matches" property="og:url" />
 <div class="page-header">
   <div>
-    <h1>Match History</h1>
-    <p class="page-subtitle">Recent games across every mode.</p>
+    <h1>{{ _("Match History") }}</h1>
+    <p class="page-subtitle">{{ _("Recent games across every mode.") }}</p>
   </div>
   <div class="match-pager">
-    <a class="btn" href="/matches/{{ [page_no-1,0]|max() }}">&laquo; Previous</a>
-    <a class="btn" href="/matches/{{ page_no+1 }}">Next &raquo;</a>
+    <a class="btn" href="/matches/{{ [page_no-1,0]|max() }}">&laquo; {{ _("Previous") }}</a>
+    <a class="btn" href="/matches/{{ page_no+1 }}">{{ _("Next") }} &raquo;</a>
   </div>
 </div>
     <div class="card table-wrap">
     <table style="width:100%">
         <tr>
-            <th>Mode</th>
-            <th>Team 1<table style="width:100%"><tr style="background: transparent;width: 100%">
-                <td style="width: 1.6em;border: 0px"></td><td style="width: 23%;border: 0px">Player</td><td style="width: 25%;border: 0px">Score</td>
-                <td style="width: 25%;border: 0px">Kills</td><td style="width: 25%;border: 0px">Deaths</td></tr></table></th>
-            <th>Team 2<table style="width:100%"><tr style="background: transparent;width: 100%">
-                <td style="width: 1.6em;border: 0px"></td><td style="width: 23%;border: 0px">Player</td><td style="width: 25%;border: 0px">Score</td>
-                <td style="width: 25%;border: 0px">Kills</td><td style="width: 25%;border: 0px">Deaths</td></tr></table></th>
-            <th>Winner</th>
-            <th>Map</th>
-            <th>Host</th>
+            <th>{{ _("Mode") }}</th>
+            <th>{{ _("Team 1") }}<table style="width:100%"><tr style="background: transparent;width: 100%">
+                <td style="width: 1.6em;border: 0px"></td><td style="width: 23%;border: 0px">{{ _("Player") }}</td><td style="width: 25%;border: 0px">{{ _("Score") }}</td>
+                <td style="width: 25%;border: 0px">{{ _("Kills") }}</td><td style="width: 25%;border: 0px">{{ _("Deaths") }}</td></tr></table></th>
+            <th>{{ _("Team 2") }}<table style="width:100%"><tr style="background: transparent;width: 100%">
+                <td style="width: 1.6em;border: 0px"></td><td style="width: 23%;border: 0px">{{ _("Player") }}</td><td style="width: 25%;border: 0px">{{ _("Score") }}</td>
+                <td style="width: 25%;border: 0px">{{ _("Kills") }}</td><td style="width: 25%;border: 0px">{{ _("Deaths") }}</td></tr></table></th>
+            <th>{{ _("Winner") }}</th>
+            <th>{{ _("Map") }}</th>
+            <th>{{ _("Host") }}</th>
         </tr>
     {% for entry in data %}
     <tr class="match-row" data-href="/match/{{ entry._id }}">
@@ -100,19 +100,19 @@
                 </td>
             </td>
         {% endif %}
-        <td>{{ entry | try_value("map") }}</td>
+        <td>{{ _(entry | try_value("map")) }}</td>
         {% if entry | try_value("host") == "Unknown" %}
-        <td>Unknown</td>
+        <td>{{ _("Unknown") }}</td>
         {% else %}
-        <td><a href="/profile/{{ entry | try_value('host') }}">{{ entry | try_value("host") }}</a></td>
+        <td><a href="/profile/{{ entry | try_value('host') }}">{{ _(entry | try_value("host")) }}</a></td>
         {% endif %}
         </tr>
     {% endfor %}
     </table>
     </div>
 <div class="match-pager">
-    <a class="btn" href="/matches/{{ [page_no-1,0]|max() }}">&laquo; Previous</a>
-    <a class="btn" href="/matches/{{ page_no+1 }}">Next &raquo;</a>
+    <a class="btn" href="/matches/{{ [page_no-1,0]|max() }}">&laquo; {{ _("Previous") }}</a>
+    <a class="btn" href="/matches/{{ page_no+1 }}">{{ _("Next") }} &raquo;</a>
 </div>
 <script>
 document.querySelectorAll('.match-row').forEach(function (row) {

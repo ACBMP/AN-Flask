@@ -6,17 +6,17 @@
 <div class="card wrapper">
 <div class="left"><img src="{{ url_for('static', filename='an_icon_n.png') }}" width=100 height=100></div>
 <div class="right">
-    <h1>About Assassins' Network</h1>
+    <h1>{{ _("About Assassins' Network") }}</h1>
     <div class="warning">
-    <h3>Disclaimer</h3>
-    <p>This website is in no way affiliated with Ubisoft and should not be confused with their service, Assassin's Network.</p>
+    <h3>{{ _("Disclaimer") }}</h3>
+    <p>{{ _("This website is in no way affiliated with Ubisoft and should not be confused with their service, Assassin's Network.") }}</p>
     </div>
-    Assassins' Network is a community project focused around the Assassin's Creed series multiplayer community. All source code is publicized on <A href="https://github.com/ACBMP/" target="_blank">the ACBMP GitHub organization's profile</A>.
+    {{ _("Assassins' Network is a community project focused around the Assassin's Creed series multiplayer community. All source code is publicized on %(link)s.", link='<A href="https://github.com/ACBMP/" target="_blank">' ~ _("the ACBMP GitHub organization's profile") ~ '</A>')|safe }}
  
     <br \>
     <br \>
 
-        <b>Contact information:</b>
+        <b>{{ _("Contact information:") }}</b>
 <ul>
     <li>Email: assassinsnetwork@airmail.cc</li>
     <li>Twitter: @AssassinsNetwrk</li>

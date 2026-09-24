@@ -4,18 +4,18 @@
 <meta content="Achievements leaderboard." property="og:description" />
 <div class="page-header">
   <div>
-    <h1>Achievements Leaderboard</h1>
-    <p class="page-subtitle">Ranked by tournament and seasonal accolades.</p>
+    <h1>{{ _("Achievements Leaderboard") }}</h1>
+    <p class="page-subtitle">{{ _("Ranked by tournament and seasonal accolades.") }}</p>
   </div>
 </div>
         <div class="card table-wrap">
         <table style="white-space:nowrap;">
             <tr>
-                <th>Rank</th>
-                <th>Player</th>
-                <th>Nation</th>
-                <th>Achievements</th>
-                <th>Score</th>
+                <th>{{ _("Rank") }}</th>
+                <th>{{ _("Player") }}</th>
+                <th>{{ _("Region") }}</th>
+                <th>{{ _("Achievements") }}</th>
+                <th>{{ _("Score") }}</th>
             </tr>
             {% for entry in data %}
             <tr>
@@ -31,8 +31,8 @@
         <div class="card table-wrap">
             <table style="white-space:nowrap;">
                 <tr>
-                    <th>Achievement</th>
-                    <th>Points</th>
+                    <th>{{ _("Achievement") }}</th>
+                    <th>{{ _("Points") }}</th>
                 </tr>
                 <tr>
                     <td>1st &#129351</td>
@@ -47,23 +47,23 @@
                     <td>3</td>
                 </tr>
                 <tr>
-                    <td>All-Star &#11088</td>
+                    <td>{{ _("All-Star") }} &#11088</td>
                     <td>1</td>
                 </tr>
                 <tr>
-                    <td>All-Star Champion &#127775</td>
+                    <td>{{ _("All-Star Champion") }} &#127775</td>
                     <td>2</td>
                 </tr>
                 <tr>
-                    <td>Rookie of the Season &#128304</td>
+                    <td>{{ _("Rookie of the Season") }} &#128304</td>
                     <td>2</td>
                 </tr>
                 <tr>
-                    <td>Tournament Win &#127942</td>
+                    <td>{{ _("Tournament Win") }} &#127942</td>
                     <td>5</td>
                 </tr>
                 <tr>
-                    <td>Others</td>
+                    <td>{{ _("Others") }}</td>
                     <td>2</td>
                 </tr>
             </table>

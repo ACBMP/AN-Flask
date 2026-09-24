@@ -5,49 +5,49 @@
 <meta content="https://assassins.network/maps" property="og:url" />
 <div class="page-header">
   <div>
-    <h1>Map Statistics</h1>
-    <p class="page-subtitle">Per-map performance across every mode. Select a map for its own page.</p>
+    <h1>{{ _("Map Statistics") }}</h1>
+    <p class="page-subtitle">{{ _("Per-map performance across every mode. Select a map for its own page.") }}</p>
   </div>
 </div>
     {% for mode in modes %}
-        <h2>{{mode}}</h2>
+        <h2>{{ _(mode) }}</h2>
         <div class="card table-wrap">
         <table style="white-space:nowrap;">
             <tr>
-                <th>Name</th>
-                <th>Games</th>
+                <th>{{ _("Name") }}</th>
+                <th>{{ _("Games") }}</th>
             {%if mode == "Manhunt"%}
-	            <th title="Average score of an individual player in a game">Avg score</th>
-	            <th title="Average kills of an individual player in a game">Avg kills</th>
-	            <th title="Host team rating compared to other maps">Host rating</th>
-	            <th title="Host team win rate">Host winrate</th>
+	            <th title="{{ _("Average score of an individual player in a game") }}">{{ _("Avg score") }}</th>
+	            <th title="{{ _("Average kills of an individual player in a game") }}">{{ _("Avg kills") }}</th>
+	            <th title="{{ _("Host team rating compared to other maps") }}">{{ _("Host rating") }}</th>
+	            <th title="{{ _("Host team win rate") }}">{{ _("Host winrate") }}</th>
             {%elif mode == "Escort"%}
-	            <th title="Average score of an individual player in a game">Avg score</th>
-                <!-- <th title="Average VIP kills of an individual player in a game">Avg VIPs</th> -->
-	            <th title="Average defending kills of an individual player in a game">Avg kills</th>
-	            <th title="Host team rating compared to other maps">Host rating</th>
-	            <th title="Host team win rate">Host winrate</th>
+	            <th title="{{ _("Average score of an individual player in a game") }}">{{ _("Avg score") }}</th>
+                <!-- <th title="Average VIP kills of an individual player in a game">{{ _("Avg VIPs") }}</th> -->
+	            <th title="{{ _("Average defending kills of an individual player in a game") }}">{{ _("Avg kills") }}</th>
+	            <th title="{{ _("Host team rating compared to other maps") }}">{{ _("Host rating") }}</th>
+	            <th title="{{ _("Host team win rate") }}">{{ _("Host winrate") }}</th>
             {%elif mode == "Artifact Assault"%}
-	            <th title="Average scores of non-host team in a game">Avg non-host scores</th>
-	            <th title="Average scores of host team in a game">Avg host scores</th>
-	            <th title="Host team rating compared to other maps">Host rating</th>
-	            <th title="Host team win rate">Host winrate</th>
-                <th title="Rate of ties">Tierate</th>
+	            <th title="{{ _("Average scores of non-host team in a game") }}">{{ _("Avg non-host scores") }}</th>
+	            <th title="{{ _("Average scores of host team in a game") }}">{{ _("Avg host scores") }}</th>
+	            <th title="{{ _("Host team rating compared to other maps") }}">{{ _("Host rating") }}</th>
+	            <th title="{{ _("Host team win rate") }}">{{ _("Host winrate") }}</th>
+                <th title="{{ _("Rate of ties") }}">{{ _("Tierate") }}</th>
             {%elif mode == "Domination"%}
-	            <th title="Average score of an individual player in a game">Avg score</th>
-	            <th title="Average kills of an individual player in a game">Avg kills</th>
-	            <th title="Host team rating compared to other maps">Host rating</th>
-	            <th title="Host team win rate">Host winrate</th>
+	            <th title="{{ _("Average score of an individual player in a game") }}">{{ _("Avg score") }}</th>
+	            <th title="{{ _("Average kills of an individual player in a game") }}">{{ _("Avg kills") }}</th>
+	            <th title="{{ _("Host team rating compared to other maps") }}">{{ _("Host rating") }}</th>
+	            <th title="{{ _("Host team win rate") }}">{{ _("Host winrate") }}</th>
             {%elif mode == "Deathmatch"%}
-                <th title="Average score of an individual player in a game">Avg score</th>
-                <th title="Average kills of an individual player in a game">Avg kills</th>
-                <th title="Host rating compared to other maps">Host rating</th>
-                <th title="Host win rate">Host winrate</th>
+                <th title="{{ _("Average score of an individual player in a game") }}">{{ _("Avg score") }}</th>
+                <th title="{{ _("Average kills of an individual player in a game") }}">{{ _("Avg kills") }}</th>
+                <th title="{{ _("Host team rating compared to other maps") }}">{{ _("Host rating") }}</th>
+                <th title="{{ _("Host team win rate") }}">{{ _("Host winrate") }}</th>
             {%elif mode == "Assassinate Brotherhood"%}
-                <th title="Average score of an individual player in a game">Avg score</th>
-                <th title="Average kills of an individual player in a game">Avg kills</th>
-                <th title="Host rating compared to other maps">Host rating</th>
-                <th title="Host win rate">Host winrate</th>
+                <th title="{{ _("Average score of an individual player in a game") }}">{{ _("Avg score") }}</th>
+                <th title="{{ _("Average kills of an individual player in a game") }}">{{ _("Avg kills") }}</th>
+                <th title="{{ _("Host team rating compared to other maps") }}">{{ _("Host rating") }}</th>
+                <th title="{{ _("Host team win rate") }}">{{ _("Host winrate") }}</th>
             {%endif%}
             </tr>
         {% for entry in data[mode] %}

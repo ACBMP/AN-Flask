@@ -3,6 +3,7 @@
 import re
 
 from extensions import mongo
+from i18n import translate
 from badges import filter_badges, full_badge_names, transform_badges
 from modes import MMR_FIELDS
 
@@ -85,7 +86,7 @@ def try_rating_change(entry, value="mmrchange"):
 
 
 def rank_title(elo):
-    return _tier(elo)[0]
+    return translate(_tier(elo)[0])
 
 
 def rank_pic_small(elo):

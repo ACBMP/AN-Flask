@@ -15,21 +15,21 @@
   <div class="home-side">
     {% if latest_patch %}
     <div class="card">
-      <div class="card-header"><h3>Patch Notes</h3><span class="pill pill-tie">v{{ latest_patch.version }}</span></div>
+      <div class="card-header"><h3>{{ _("Patch Notes") }}</h3><span class="pill pill-tie">v{{ latest_patch.version }}</span></div>
       <ul style="margin:0 0 0.9rem;padding-left:1.1rem;color:var(--text-muted);font-size:0.85rem;display:flex;flex-direction:column;gap:0.35rem">
         {% for note in latest_patch.notes %}
         <li>{{ note }}</li>
         {% endfor %}
       </ul>
-      <a class="btn" href="/patch/patch-notes" style="width:100%;justify-content:center">Full Patch Notes</a>
+      <a class="btn" href="/patch/patch-notes" style="width:100%;justify-content:center">{{ _("Full Patch Notes") }}</a>
     </div>
     {% endif %}
     <div class="card">
-      <div class="card-header"><h3>Join Us</h3></div>
-      <p class="article-content" style="margin-bottom:0.9rem">Find players, queue for games, and follow league news on our Discord.</p>
+      <div class="card-header"><h3>{{ _("Join Us") }}</h3></div>
+      <p class="article-content" style="margin-bottom:0.9rem">{{ _("Find players, queue for games, and follow league news on our Discord.") }}</p>
       <a class="discord-button" href="https://discord.gg/Th5rm6qz5u" target="_blank">
         <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg" alt="">
-        Join the Discord
+        {{ _("Join the Discord") }}
       </a>
     </div>
   </div>

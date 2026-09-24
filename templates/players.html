@@ -5,20 +5,20 @@
 <meta content="https://assassins.network/players" property="og:url" />
 <div class="page-header">
   <div>
-    <h1>Players Directory</h1>
+    <h1>{{ _("Players Directory") }}</h1>
   </div>
   <div class="navbar-search" style="width:280px">
     <span>&#128269;</span>
-    <input type="text" id="playerSearch" placeholder="Search by name or IGN&hellip;" oninput="applyPlayers()">
+    <input type="text" id="playerSearch" placeholder="{{ _("Search by name or IGN&hellip;") }}" oninput="applyPlayers()">
   </div>
 </div>
 <div class="players-toolbar">
   <span class="players-count" id="playersCount"></span>
   <select id="playerSort" class="mode-select-input" onchange="applyPlayers()">
-    <option value="name-asc">Name (A-Z)</option>
-    <option value="name-desc">Name (Z-A)</option>
-    <option value="badges-desc">Most badges</option>
-    <option value="badges-asc">Fewest badges</option>
+    <option value="name-asc">{{ _("Name (A-Z)") }}</option>
+    <option value="name-desc">{{ _("Name (Z-A)") }}</option>
+    <option value="badges-desc">{{ _("Most badges") }}</option>
+    <option value="badges-asc">{{ _("Fewest badges") }}</option>
   </select>
 </div>
 <div id="playerGrid" class="player-grid">
@@ -43,18 +43,18 @@
                 <div class="player-meta"><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png" alt="{{entry.nation}}"> {{entry.platforms|join(", ")}}</div>
             </div>
         </div>
-        <div class="player-card-row"><span class="stat-label">IGNs</span><span>{{entry.ign|join(", ") }}</span></div>
+        <div class="player-card-row"><span class="stat-label">{{ _("IGNs") }}</span><span>{{entry.ign|join(", ") }}</span></div>
         {% if entry.badges|length %}
         <div class="player-card-row player-badges">{{ entry.badges|transform_badges(mode)|safe}}</div>
         {% endif %}
     </a>
 {% endfor %}
 </div>
-<p id="noPlayers" class="page-subtitle" style="display:none;text-align:center">No players match your search.</p>
+<p id="noPlayers" class="page-subtitle" style="display:none;text-align:center">{{ _("No players match your search.") }}</p>
 <div class="pager" id="playerPager">
   <a class="btn" href="#" id="playerPrev">&laquo; Previous</a>
   <span id="playerPageLabel"></span>
-  <a class="btn" href="#" id="playerNext">Next &raquo;</a>
+  <a class="btn" href="#" id="playerNext">{{ _("Next") }} &raquo;</a>
 </div>
 <script>
 var PLAYERS_PER_PAGE = 25;
