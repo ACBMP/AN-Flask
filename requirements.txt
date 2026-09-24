@@ -7,3 +7,4 @@ psutil
 requests
 python-nmap
 pymdown-extensions
+Pillow

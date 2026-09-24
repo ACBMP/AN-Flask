@@ -8,7 +8,7 @@
     <a class="pill pill-tie" href="/profile/{{ player.name }}">View Public Profile</a>
   </div>
 
-  <form action="/account" method="post">
+  <form action="/account" method="post" enctype="multipart/form-data">
     <div class="form-field">
       <label>In-Game Names (IGNs)</label>
       <div class="ign-inputs">
@@ -43,14 +43,30 @@
     </div>
 
     <div class="form-field">
-      <label>Profile Picture</label>
-      <div class="pfp-placeholder">Custom profile pictures are coming soon.</div>
+      <label for="picture">Profile Picture</label>
+      <div class="pfp-field">
+        {% if picture %}
+        <img class="pfp-preview" src="/pfp/{{ player.name }}?v={{ picture }}" alt="Your profile picture">
+        {% else %}
+        <div class="pfp-preview pfp-preview-empty">{{ player.name[0]|upper }}</div>
+        {% endif %}
+        <div>
+          <input class="form-input" type="file" id="picture" name="picture" accept="image/*">
+          <span class="field-hint">PNG, JPEG, GIF or WebP, up to 8 MB. Cropped to a square and resized for the site &mdash; the original isn't kept.</span>
+        </div>
+      </div>
     </div>
 
     <div class="form-actions">
       <button type="submit" class="btn btn-primary">Save Changes</button>
     </div>
   </form>
+
+  {% if picture %}
+  <form action="/account/picture/delete" method="post" class="pfp-remove">
+    <button type="submit" class="btn">Remove Profile Picture</button>
+  </form>
+  {% endif %}
 </div>
 
 <div class="card auth-card" style="margin-top:1.25rem">

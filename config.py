@@ -21,10 +21,14 @@ class Config:
     )
 
     # AN-API runs on this same host (gunicorn on 127.0.0.1:8000), so server-side
-    # calls can skip the public hostname and the round trip back in through the
-    # reverse proxy by setting AN_API_URL=http://127.0.0.1:8000. The default
-    # stays on the public URL so this works unchanged from a container or from a
-    # dev machine.
-    AN_API_URL = os.getenv("AN_API_URL", "https://api.assassins.network").rstrip("/")
+    # calls go straight there instead of out to the public hostname and back in
+    # through the reverse proxy. Set AN_API_URL when the API isn't reachable on
+    # loopback - from a container, or a dev machine working against production.
+    AN_API_URL = os.getenv("AN_API_URL", "http://127.0.0.1:8000").rstrip("/")
     # How long to wait on AN-API before giving up, in seconds.
     AN_API_TIMEOUT = float(os.getenv("AN_API_TIMEOUT", "5"))
+
+    # Hard ceiling on a request body. Sits just above avatars.MAX_UPLOAD_BYTES
+    # so an oversized profile picture gets the friendly message from there
+    # rather than a bare 413; anything past this is refused unread.
+    MAX_CONTENT_LENGTH = 10 * 1024 * 1024

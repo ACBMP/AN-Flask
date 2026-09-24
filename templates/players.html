@@ -29,9 +29,15 @@
        data-badges="{{ entry.badges|length }}">
         <div class="player-card-top">
             {% set rank_pic = entry|top_rank_pic("big") %}
+            {% if entry.name in pictures %}
+            <div class="player-avatar player-avatar-photo">
+                <img src="/pfp/{{ entry.name }}/small?v={{ pictures[entry.name] }}" alt="{{ entry.name }}" loading="lazy">
+            </div>
+            {% else %}
             <div class="player-avatar">
                 {% if rank_pic %}<img src="/static/badges/{{ rank_pic }}" alt="Rank">{% else %}{{ entry.name[0]|upper }}{% endif %}
             </div>
+            {% endif %}
             <div>
                 <div class="player-name">{{entry.name}}</div>
                 <div class="player-meta"><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png" alt="{{entry.nation}}"> {{entry.platforms|join(", ")}}</div>

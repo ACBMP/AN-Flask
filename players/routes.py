@@ -1,7 +1,8 @@
 """Player directory and individual profile pages."""
 
-from flask import Blueprint, abort, render_template
+from flask import Blueprint, abort, make_response, render_template, request
 
+import avatars
 from extensions import mongo
 from modes import title
 
@@ -91,10 +92,38 @@ def recent_matches(name, igns):
     return matches
 
 
+# Pictures are re-encoded on upload and only change when a player uploads a
+# new one, so they can be cached hard and revalidated with the stored etag.
+AVATAR_MAX_AGE = 86400
+
+
+@players_bp.route("/pfp/<name>")
+@players_bp.route("/pfp/<name>/<size>")
+def profile_picture(name, size="full"):
+    if size not in avatars.SIZES:
+        abort(404)
+    picture = avatars.get(name, size)
+    if picture is None:
+        abort(404)
+    data, mimetype, etag = picture
+
+    response = make_response(data)
+    response.headers["Content-Type"] = mimetype
+    response.headers["Cache-Control"] = f"public, max-age={AVATAR_MAX_AGE}"
+    if etag:
+        response.set_etag(f"{etag}-{size}")
+    return response.make_conditional(request)
+
+
 @players_bp.route("/players")
 def players():
     data = mongo.db.players.find({"hidden": False}).sort("name")
-    return render_template("players.html", data=data, title=title("Players"))
+    return render_template(
+        "players.html",
+        data=data,
+        pictures=avatars.etags(),
+        title=title("Players"),
+    )
 
 
 @players_bp.route("/profile/<name>")
@@ -119,6 +148,7 @@ def display_profile(name):
     return render_template(
         "profile.html",
         data=data,
+        picture=avatars.etag(name),
         data_matches=recent_matches(name, igns),
         mh_extra=mh_extra,
         e_extra=e_extra,

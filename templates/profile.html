@@ -70,7 +70,11 @@
 <meta content="{{ data.name }}'s Assassins' Network Profile." property="og:description" />
 <meta content="https://assassins.network/profile/{{ data.name }}" property="og:url" />
 <div class="card profile-header">
+    {% if picture %}
+    <div class="player-avatar player-avatar-photo" style="width:64px;height:64px"><img src="/pfp/{{ data.name }}?v={{ picture }}" alt="{{ data.name }}"></div>
+    {% else %}
     <div class="player-avatar" style="width:64px;height:64px;font-size:1.6rem">{{ data.name[0]|upper }}</div>
+    {% endif %}
     <div>
         <h1 style="margin-bottom:0.2rem">{{data.name}} <img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/48/{{data.nation}}.png" style="height:1em;vertical-align:middle">
         {% if data.badges|length %}<span class="player-badges profile-name-badges">{{ data.badges|transform_badges()|safe }}</span>{% endif %}

@@ -15,6 +15,7 @@ from flask import (
 )
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
+import avatars
 from extensions import mongo
 
 from .countries import DEFAULT_NATION, NATIONS
@@ -300,6 +301,14 @@ def register():
     return redirect(url_for("players.display_profile", name=name))
 
 
+@accounts_bp.route("/account/picture/delete", methods=["POST"])
+@login_required
+def delete_picture():
+    avatars.delete(current_player()["name"])
+    flash("Your profile picture has been removed.", "success")
+    return redirect(url_for("accounts.account"))
+
+
 @accounts_bp.route("/account", methods=["GET", "POST"])
 @login_required
 def account():
@@ -333,6 +342,16 @@ def account():
             )
             flash("Your profile has been updated.", "success")
 
+        # The picture is handled on its own so a rejected image doesn't throw
+        # away the text changes, or the other way round.
+        upload = request.files.get("picture")
+        if upload and upload.filename:
+            picture_error = avatars.store(player["name"], upload)
+            if picture_error:
+                flash(picture_error, "error")
+            else:
+                flash("Your profile picture has been updated.", "success")
+
         player = current_player()
 
     nations = dict(NATIONS)
@@ -342,6 +361,7 @@ def account():
 
     return render_template(
         "account.html",
+        picture=avatars.etag(player["name"]),
         title="My Account | Assassins' Network",
         player=player,
         nations=nations,
