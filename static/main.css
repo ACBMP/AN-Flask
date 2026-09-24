@@ -686,6 +686,14 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
 .match-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 @media (max-width: 768px) { .match-detail-grid { grid-template-columns: 1fr; } }
 
+/* ---- map detail page ------------------------------------------------------- */
+
+.map-detail-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; align-items: start; }
+.map-image-card { padding: 0; overflow: hidden; }
+.map-image-card img { display: block; width: 100%; height: auto; }
+.map-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+@media (max-width: 768px) { .map-detail-grid { grid-template-columns: 1fr; } }
+
 .bonus-toggle-row { cursor: pointer; }
 .bonus-toggle-row:hover { background-color: var(--surface-high); }
 .bonus-indicator { color: var(--text-dim); font-size: 0.7em; }

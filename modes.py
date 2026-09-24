@@ -44,3 +44,40 @@ SITE = "Assassins' Network"
 def title(page):
     """Build a page title in the site's ``<page> | Assassins' Network`` style."""
     return f"{page} | {SITE}"
+
+
+# Map mode keys (as stored on map documents) matched against the ``mode`` field
+# on match documents, which spells modes out in full ("Assassinate
+# brotherhood", "Artifact Assault"). Matched case-insensitively by prefix so a
+# change in spelling on one side doesn't silently empty a page.
+MAP_MODE_MATCH_PREFIXES = {
+    "e": ("escort",),
+    "mh": ("manhunt",),
+    "do": ("domination",),
+    "dm": ("deathmatch",),
+    "asb": ("assassinate",),
+    "aa": ("artifact",),
+}
+
+# Escort measures stealth bonuses against VIP kills; every other mode uses the
+# player's own kills.
+MAP_MODE_DETECTION_BASIS = {"e": "vip"}
+
+
+def map_slug(name):
+    """URL form of a map name: ``Castel Gandolfo`` -> ``castel_gandolfo``."""
+    return name.strip().lower().replace(" ", "_")
+
+
+def map_key(slug):
+    """Map-data form of a slug: ``castel_gandolfo`` -> ``castel gandolfo``.
+
+    This is the spelling ``guides/map_data.py`` keys its calibration, spawn and
+    route data by.
+    """
+    return slug.strip().lower().replace("_", " ")
+
+
+def map_image(slug):
+    """Static path of a map's overhead image."""
+    return f"maps/{map_slug(slug)}.jpg"

@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+{% import "_macros.html" as m %}
+
+{# Mode-specific summary tiles, mirroring the columns the map listing shows. #}
+{% macro mode_tiles(mode) %}
+{% set r = mode.row %}
+<div class="stat-grid" style="margin-bottom:1rem">
+  <div class="stat-tile"><div class="stat-label">Games</div><div class="stat-value">{{ r.games }}</div></div>
+  {% if mode.key == "aa" %}
+  <div class="stat-tile"><div class="stat-label">Avg non-host scores</div><div class="stat-value">{{ r.scored | sub(r.hostscored) | avgscore(r.games) }}</div></div>
+  <div class="stat-tile"><div class="stat-label">Avg host scores</div><div class="stat-value">{{ r.hostscored | avgscore(r.games) }}</div></div>
+  {% elif mode.key == "e" %}
+  <div class="stat-tile"><div class="stat-label">Avg score</div><div class="stat-value">{{ r.score | avgscore(r.players) }}</div></div>
+  <div class="stat-tile"><div class="stat-label">Avg defending kills</div><div class="stat-value">{{ r.deaths | avgscore(r.players) }}</div></div>
+  {% else %}
+  <div class="stat-tile"><div class="stat-label">Avg score</div><div class="stat-value">{{ r.score | avgscore(r.players) }}</div></div>
+  <div class="stat-tile"><div class="stat-label">Avg kills</div><div class="stat-value">{{ r.kills | avgscore(r.players) }}</div></div>
+  {% endif %}
+  <div class="stat-tile" title="Host team rating compared to other maps"><div class="stat-label">Host rating</div><div class="stat-value">{{ r | try_value("hostrating") }}</div></div>
+  <div class="stat-tile" title="Host team win rate"><div class="stat-label">Host winrate</div><div class="stat-value">{{ r.hostwins | winrate(r.hostlosses) }}</div></div>
+</div>
+{{ m.winbar(r.hostwins, r.hostlosses, r.games - r.hostwins - r.hostlosses) }}
+<p class="page-subtitle" style="margin:0.5rem 0 0">Win, tie and loss shares are from the host team's side.</p>
+{% endmacro %}
+
+{% block content %}
+<meta content="Assassins' Network | {{ name }}" property="og:title" />
+<meta content="Map statistics for {{ name }}." property="og:description" />
+<meta content="https://assassins.network/maps/{{ name | lower | replace(' ', '_') }}" property="og:url" />
+
+<div class="page-header">
+  <div>
+    <h1>{{ name }}</h1>
+    <p class="page-subtitle">Per-mode performance on this map.</p>
+  </div>
+  <div class="map-actions">
+    <a class="btn" href="/maps">&laquo; All Maps</a>
+    {% if links.spawns %}<a class="btn btn-primary" href="{{ links.spawns }}">Spawns</a>{% endif %}
+    {% if links.routes %}<a class="btn btn-primary" href="{{ links.routes }}">Routes</a>{% endif %}
+  </div>
+</div>
+
+<div class="map-detail-grid">
+  <div class="card map-image-card">
+    <img src="{{ url_for('static', filename=image) }}" alt="Overhead view of {{ name }}" class="img-fluid">
+  </div>
+  <div class="card">
+    <div class="card-header"><h3>Guides</h3></div>
+    {% if links.spawns or links.routes %}
+    <table class="profile-list-table">
+      {% if links.spawns %}
+      <tr><td><a href="{{ links.spawns }}">Spawn points</a></td><td style="text-align:right">Where you spawn, and why</td></tr>
+      {% endif %}
+      {% if links.routes %}
+      <tr><td><a href="{{ links.routes }}">Escort routes</a></td><td style="text-align:right">VIP paths and checkpoints</td></tr>
+      {% endif %}
+    </table>
+    {% else %}
+    <p class="page-subtitle" style="margin:0">No spawn or route data for this map yet.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% if not modes %}
+<div class="card" style="margin-top:1rem">
+  <p class="page-subtitle" style="margin:0">No recorded games on this map yet.</p>
+</div>
+{% endif %}
+
+{% for mode in modes %}
+<div class="card" style="margin-top:1rem">
+  <div class="card-header"><h3>{{ mode.name }}</h3></div>
+  {{ mode_tiles(mode) }}
+</div>
+
+{% if mode.extra.games > 0 %}
+<div class="card" style="margin-top:1rem">
+  <div class="card-header"><h3>{{ mode.name }} Detailed Stats (Beta)</h3></div>
+  <p class="page-subtitle" style="margin:0 0 0.75rem">
+    Averages per player per game, across {{ mode.extra.matches }} game(s) on this map with detailed bonus tracking.
+  </p>
+  <div class="stat-group-grid">
+    {% for group, rows in mode.extra.groups %}
+    <div class="stat-group">
+      <div class="stat-group-title">{{ group }}</div>
+      <table class="stat-group-table">
+        <tr>{% for label, value in rows %}<th>{{ label }}</th>{% endfor %}</tr>
+        <tr>{% for label, value in rows %}<td>{% if group == "Characters" %}{{ value|safe }}{% else %}{{ value }}{% endif %}</td>{% endfor %}</tr>
+      </table>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endfor %}
+{% endblock content %}
