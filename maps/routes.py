@@ -6,7 +6,7 @@ from flask import Blueprint, abort, render_template
 
 import an_api
 from extensions import mongo
-from guides.map_data import spawns as LOCAL_SPAWNS, world_corners
+from guides.map_data import world_corners
 from modes import MAP_MODES, map_image, map_key, map_slug, title
 from players.stats import bonus_stat_groups
 
@@ -53,19 +53,18 @@ def maps():
 def _guide_links(key):
     """Which guide pages exist for this map.
 
-    Both guide pages need calibration data to place anything on the image, and
-    they take their points from AN-API with a local fallback for spawns, so ask
-    the API once rather than linking somewhere that renders empty.
+    Both need calibration data to place anything on the image, and both take
+    their points from AN-API, so ask it once here rather than linking to a page
+    that would only 404.
     """
     if key not in world_corners:
         return {}
     data = an_api.get(f"/maps/{key}") or {}
-    links = {}
-    if data.get("spawns") or key in LOCAL_SPAWNS:
-        links["spawns"] = f"/guides/spawns/{key}"
-    if data.get("routes"):
-        links["routes"] = f"/guides/routes/{key}"
-    return links
+    return {
+        name: f"/guides/{name}/{key}"
+        for name in ("spawns", "routes")
+        if data.get(name)
+    }
 
 
 @maps_bp.route("/maps/<slug>")
