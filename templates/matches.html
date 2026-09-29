@@ -28,15 +28,16 @@
             <th>{{ _("Map") }}</th>
             <th>{{ _("Host") }}</th>
         </tr>
+    {% set match_admin = can_edit_matches() %}
     {% for entry in data %}
     <tr class="match-row" data-href="/match/{{ entry._id }}">
         {% if entry.mode not in ["Deathmatch", "Assassinate brotherhood"] %}
-            <td>{{entry.mode}}</td>
+            <td>{{entry.mode}}{% if match_admin %} <a class="match-edit-link" href="/match/{{ entry._id }}/correct" title="{{ _('Correct') }}">&#9998;</a>{% endif %}</td>
             <td><table style="width:100%">{% for player in entry.team1 %}
                 <tr style="background: transparent;width: 100%">
                 {% if player.hidden %}
                 {% else %}
-                    <td style="width: 1.6em;border: 0px">{{ char_icon(player) }}</td><td style="width: 23%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.score if entry.mode != "Artifact assault" else player.scored}}</td>
+                    <td style="width: 1.6em;border: 0px">{{ char_icon(player) }}</td><td style="width: 23%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.scored if entry.mode|is_aa_mode() else player.score}}</td>
                     <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
                 {% endif %}
             {% endfor %}
@@ -46,7 +47,7 @@
                 <tr style="background: transparent;width: 100%">
                 {% if player.hidden %}
                 {% else %}
-                    <td style="width: 1.6em;border: 0px">{{ char_icon(player) }}</td><td style="width: 23%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.score if entry.mode != "Artifact assault" else player.scored}}</td>
+                    <td style="width: 1.6em;border: 0px">{{ char_icon(player) }}</td><td style="width: 23%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.scored if entry.mode|is_aa_mode() else player.score}}</td>
                     <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
                 {% endif %}
             {% endfor %}
@@ -58,7 +59,7 @@
                 <td><span class="pill pill-win">Team {{entry.outcome}}</span></td>
             {%endif%}
         {% else %}
-            <td>{{entry.mode}}</td>
+            <td>{{entry.mode}}{% if match_admin %} <a class="match-edit-link" href="/match/{{ entry._id }}/correct" title="{{ _('Correct') }}">&#9998;</a>{% endif %}</td>
             <td><table style="width:100%">{% for player in entry.players %}
                 <tr style="background: transparent;width: 100%">
                 {% if player.player | is_hidden %}

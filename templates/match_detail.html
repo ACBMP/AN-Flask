@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% macro char_icon(player) %}{% if player.character %}<img src="{{ url_for('static', filename='char_svg/' ~ player.character.lower() ~ '.svg') }}" alt="{{ player.character }}" style="height:1em;width:1em;vertical-align:middle">{% endif %}{% endmacro %}
-{% macro team_total(team, mode) %}{% set ns = namespace(total=0) %}{% for p in team %}{% set ns.total = ns.total + (p.score if mode != "Artifact assault" else p.scored) %}{% endfor %}{{ ns.total }}{% endmacro %}
+{% macro team_total(team, mode) %}{% set ns = namespace(total=0) %}{% for p in team %}{% set ns.total = ns.total + (p.scored if mode|is_aa_mode() else p.score) %}{% endfor %}{{ ns.total }}{% endmacro %}
 {% macro bonus_row(p, colspan) %}
 {% if p.bonuses is defined %}
 {% set nonzero = [] %}
@@ -30,7 +30,7 @@
     {% set clickable = p.bonuses is defined and (p.bonuses.values()|selectattr('score', 'gt', 0)|list|length > 0) %}
     <tr{% if clickable %} class="bonus-toggle-row"{% endif %}>
         <td>{{ char_icon(p) }} <a href="/profile/{{ p.player }}">{{ p.player }}</a>{% if clickable %} <span class="bonus-indicator" title="{{ _("View bonuses earned") }}">&#9662;</span>{% endif %}</td>
-        <td>{{ p.score if mode != "Artifact assault" else p.scored }}</td>
+        <td>{{ p.scored if mode|is_aa_mode() else p.score }}</td>
         <td>{{ p.kills }}</td>
         <td>{{ p.deaths }}</td>
         <td>{{ p.kills|kdratio(p.deaths) }}</td>
@@ -49,9 +49,19 @@
 <div class="page-header">
   <div>
     <h1>{{ _("Match Details") }}</h1>
-    <p class="page-subtitle">{{ _(entry.mode) }}{% if entry|try_value("map") != "Unknown" %} &middot; {{ entry|try_value("map") }}{% endif %}{% if entry|try_value("date") != "Unknown" %} &middot; {{ entry|try_value("date") }}{% endif %}</p>
+    <p class="page-subtitle">{{ _(entry.mode) }}{% if entry|try_value("map") != "Unknown" %} &middot; {{ entry|try_value("map") }}{% endif %}{% if entry|try_value("date") != "Unknown" %} &middot; {{ entry|try_value("date") }}{% endif %}{% if entry.corrected %} &middot; <span class="pill pill-tie">{{ _("Corrected") }}</span>{% endif %}</p>
   </div>
-  <a class="btn" href="/matches">&laquo; Back to Match History</a>
+  <div class="match-admin-actions">
+    {% if can_edit_matches() %}
+    <a class="btn" href="/match/{{ entry._id }}/correct">{{ _("Correct") }}</a>
+    <form method="post" action="/match/{{ entry._id }}/undo" style="display:inline"
+          onsubmit="return confirm({{ _('Undo this match? Every rating it touched is recalculated.')|tojson }});">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="btn btn-danger">{{ _("Undo") }}</button>
+    </form>
+    {% endif %}
+    <a class="btn" href="/matches">&laquo; {{ _("Back to Match History") }}</a>
+  </div>
 </div>
 
 {% if is_ffa %}

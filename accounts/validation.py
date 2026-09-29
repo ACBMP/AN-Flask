@@ -3,6 +3,7 @@ import secrets
 from datetime import datetime, timedelta
 
 from .countries import DEFAULT_NATION, NATIONS
+from modes import AA_ROLE_OF, MODES
 
 NAME_RE = re.compile(r"^[A-Za-z0-9_.\- ]{2,24}$")
 
@@ -222,9 +223,9 @@ def refund_invite(db, code):
 
 
 STARTING_MMR = 800
-MODE_PREFIXES = ("e", "mh", "aar", "aad", "do", "dm", "asb")
+MODE_PREFIXES = tuple(MODES)
 _FFA_MODES = ("dm", "asb")
-_OBJECTIVE_MODES = ("aar", "aad")
+_OBJECTIVE_MODES = tuple(AA_ROLE_OF)
 DEFAULT_PRIVILEGE = 10
 
 

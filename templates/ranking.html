@@ -26,22 +26,18 @@
         {%if mode in ["Escort", "Manhunt", "Deathmatch", "Assassinate"]%}
 	        <th>{{ _("Average score") }}</th>
 	        <th>K/D</th>
-        {%elif mode == "AA Running"%}
+        {%elif aa_role == "running"%}
 	        <th>{{ _("Average scores") }}</th>
 	        <th>{{ _("Deaths per score") }}</th>
-        {%elif mode == "AA Defending"%}
+        {%elif aa_role == "defending"%}
 	        <th>{{ _("Average kills") }}</th>
 	        <th>{{ _("Average concedes") }}</th>
         {%elif mode == "Domination"%}
             <th>K/D</th>
         {%else%}
-            <th>{{ _("AA Defending") }}</th>
-            <th>{{ _("AA Running") }}</th>
-            <th>{{ _("Domination") }}</th>
-            <th>{{ _("Escort") }}</th>
-            <th>{{ _("Manhunt") }}</th>
-            <th>{{ _("Deathmatch") }}</th>
-            <th>{{ _("Assassinate") }}</th>
+            {% for column, label in total_columns %}
+            <th>{{ _(label) }}</th>
+            {% endfor %}
         {%endif%}
         </tr>
     {% for entry in data %}
@@ -65,44 +61,32 @@
             <td>{{ m.winbar(entry.egames.won, entry.egames.lost, entry.egames.total - entry.egames.won - entry.egames.lost) }}</td>
 	        <td>{{ entry.estats.totalscore|avgscore(entry.egames.total) }}</td>
 	        <td>{{ entry.estats.kills|kdratio(entry.estats.deaths) }}</td>
-        {%elif mode == "AA Running"%}
-            {% if entry.aarrank == 0 %}
+        {%elif aa_role%}
+            {% set rank = entry[key ~ "rank"] %}{% set change = entry[key ~ "rankchange"] %}
+            {% set mmr = entry[key ~ "mmr"] %}{% set games = entry[key ~ "games"] %}{% set stats = entry[key ~ "stats"] %}
+            {% if rank == 0 %}
                 <td>{{ _("TBD") }}</td>
             {% else %}
-                {%if entry.aarrankchange < 0%}
-                    <td class="{{ 'rank-1' if entry.aarrank==1 else ('rank-2' if entry.aarrank==2 else ('rank-3' if entry.aarrank==3 else '')) }}">{{ entry.aarrank }} <span class="text-loss">&#9660;{{ -1 * entry.aarrankchange }}</span></td>
-                {%elif entry.aarrankchange > 0%}
-                    <td class="{{ 'rank-1' if entry.aarrank==1 else ('rank-2' if entry.aarrank==2 else ('rank-3' if entry.aarrank==3 else '')) }}">{{ entry.aarrank }} <span class="text-win">&#9650;{{ entry.aarrankchange }}</span></td>
+                {%if change < 0%}
+                    <td class="{{ 'rank-1' if rank==1 else ('rank-2' if rank==2 else ('rank-3' if rank==3 else '')) }}">{{ rank }} <span class="text-loss">&#9660;{{ -1 * change }}</span></td>
+                {%elif change > 0%}
+                    <td class="{{ 'rank-1' if rank==1 else ('rank-2' if rank==2 else ('rank-3' if rank==3 else '')) }}">{{ rank }} <span class="text-win">&#9650;{{ change }}</span></td>
                 {%else%}
-                    <td class="{{ 'rank-1' if entry.aarrank==1 else ('rank-2' if entry.aarrank==2 else ('rank-3' if entry.aarrank==3 else '')) }}">{{ entry.aarrank }}</td>
+                    <td class="{{ 'rank-1' if rank==1 else ('rank-2' if rank==2 else ('rank-3' if rank==3 else '')) }}">{{ rank }}</td>
                 {%endif%}
             {%endif%}
-            <td><img src="/static/badges/{{ entry.aarmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
+            <td><img src="/static/badges/{{ mmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
             <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
-            <td>{{ entry.aarmmr | round() | int() }}</td>
-            <td>{{ entry.aargames.total }}</td>
-            <td>{{ m.winbar(entry.aargames.won, entry.aargames.lost, entry.aargames.total - entry.aargames.won - entry.aargames.lost) }}</td>
-	        <td>{{ entry.aarstats.scored|avgscore(entry.aargames.total) }}</td>
-	        <td>{{ entry.aarstats.deaths|kdratio(entry.aarstats.scored) }}</td>
-        {%elif mode == "AA Defending"%}
-            {% if entry.aadrank == 0 %}
-                <td>{{ _("TBD") }}</td>
+            <td>{{ mmr | round() | int() }}</td>
+            <td>{{ games.total }}</td>
+            <td>{{ m.winbar(games.won, games.lost, games.total - games.won - games.lost) }}</td>
+            {% if aa_role == "running" %}
+	        <td>{{ stats.scored|avgscore(games.total) }}</td>
+	        <td>{{ stats.deaths|kdratio(stats.scored) }}</td>
             {% else %}
-                {%if entry.aadrankchange < 0%}
-                    <td class="{{ 'rank-1' if entry.aadrank==1 else ('rank-2' if entry.aadrank==2 else ('rank-3' if entry.aadrank==3 else '')) }}">{{ entry.aadrank }} <span class="text-loss">&#9660;{{ -1 * entry.aadrankchange }}</span></td>
-                {%elif entry.aadrankchange > 0%}
-                    <td class="{{ 'rank-1' if entry.aadrank==1 else ('rank-2' if entry.aadrank==2 else ('rank-3' if entry.aadrank==3 else '')) }}">{{ entry.aadrank }} <span class="text-win">&#9650;{{ entry.aadrankchange }}</span></td>
-                {%else%}
-                    <td class="{{ 'rank-1' if entry.aadrank==1 else ('rank-2' if entry.aadrank==2 else ('rank-3' if entry.aadrank==3 else '')) }}">{{ entry.aadrank }}</td>
-                {%endif%}
-            {%endif%}
-            <td><img src="/static/badges/{{ entry.aadmmr|rank_pic_small() }}"> <a href="/profile/{{ entry.name }}">{{ entry.name }}</a> {{ entry.badges|transform_badges(mode)|safe}}</td>
-            <td><img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/24/{{entry.nation}}.png"></td>
-            <td>{{ entry.aadmmr | round() | int() }}</td>
-            <td>{{ entry.aadgames.total }}</td>
-            <td>{{ m.winbar(entry.aadgames.won, entry.aadgames.lost, entry.aadgames.total - entry.aadgames.won - entry.aadgames.lost) }}</td>
-	        <td>{{ entry.aadstats.kills|avgscore(entry.aadgames.total) }}</td>
-	        <td>{{ entry.aadstats.conceded|avgdeaths(entry.aadgames.total) }}</td>
+	        <td>{{ stats.kills|avgscore(games.total) }}</td>
+	        <td>{{ stats.conceded|avgdeaths(games.total) }}</td>
+            {% endif %}
         {%elif mode == "Domination"%}
             {% if entry.dorank == 0 %}
                 <td>{{ _("TBD") }}</td>
@@ -189,41 +173,13 @@
             <td>{{ entry.totalmmr | round() | int() }}</td>
             <td>{{ entry.totalgames }}</td>
             <td>{{ m.winbar(entry.totalwins, entry.totallosses, entry.totalgames - entry.totalwins - entry.totallosses) }}</td>
-            {%if entry.aadgames.total < 10%}
+            {% for column, label in total_columns %}
+            {%if entry[column ~ "games"].total < 10%}
                 <td>{{ _("TBD") }}</td>
             {%else%}
-                <td><img src="/static/badges/{{ entry.aadmmr|rank_pic_small() }}">{{ entry.aadmmr | round() | int() }}</td>
+                <td><img src="/static/badges/{{ entry[column ~ "mmr"]|rank_pic_small() }}">{{ entry[column ~ "mmr"] | round() | int() }}</td>
             {%endif%}
-            {%if entry.aargames.total < 10%}
-                <td>{{ _("TBD") }}</td>
-            {%else%}
-                <td><img src="/static/badges/{{ entry.aarmmr|rank_pic_small() }}">{{ entry.aarmmr | round() | int() }}</td>
-            {%endif%}
-            {%if entry.dogames.total < 10%}
-                <td>{{ _("TBD") }}</td>
-            {%else%}
-                <td><img src="/static/badges/{{ entry.dommr|rank_pic_small() }}">{{ entry.dommr | round() | int() }}</td>
-            {%endif%}
-            {%if entry.egames.total < 10%}
-                <td>{{ _("TBD") }}</td>
-            {%else%}
-                <td><img src="/static/badges/{{ entry.emmr|rank_pic_small() }}">{{ entry.emmr | round() | int() }}</td>
-            {%endif%}
-            {%if entry.mhgames.total < 10%}
-                <td>{{ _("TBD") }}</td>
-            {%else%}
-                <td><img src="/static/badges/{{ entry.mhmmr|rank_pic_small() }}">{{ entry.mhmmr | round() | int() }}</td>
-            {%endif%}
-            {%if entry.dmgames.total < 10%}
-                <td>{{ _("TBD") }}</td>
-            {%else%}
-                <td><img src="/static/badges/{{ entry.dmmmr|rank_pic_small() }}">{{ entry.dmmmr | round() | int() }}</td>
-            {%endif%}
-            {%if entry.asbgames.total < 10%}
-                <td>{{ _("TBD") }}</td>
-            {%else%}
-                <td><img src="/static/badges/{{ entry.asbmmr|rank_pic_small() }}">{{ entry.asbmmr | round() | int() }}</td>
-            {%endif%}
+            {% endfor %}
         {%endif%}
     </tr>
     {% endfor %}

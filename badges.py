@@ -63,9 +63,11 @@ def filter_badges(badges, mode):
         # Some badges have no mode of their own - eg rookie of the season.
         if b["mode"] == "all":
             relevant.append(b)
-        elif mode in ("AA Running", "AA Defending"):
+        elif mode.endswith(("AA Running", "AA Defending")):
             # AA cares about both directions - no priority between them for now.
-            if b["mode"] in ("AA Running", "AA Defending"):
+            # Each game ("AA ...", "ACR AA ...") has its own badges.
+            game = mode.rsplit("AA ", 1)[0]
+            if b["mode"] in (game + "AA Running", game + "AA Defending"):
                 relevant.append(b)
             else:
                 other.insert(0, b)

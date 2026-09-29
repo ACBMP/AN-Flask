@@ -27,7 +27,7 @@
 	            <th title="{{ _("Average defending kills of an individual player in a game") }}">{{ _("Avg kills") }}</th>
 	            <th title="{{ _("Host team rating compared to other maps") }}">{{ _("Host rating") }}</th>
 	            <th title="{{ _("Host team win rate") }}">{{ _("Host winrate") }}</th>
-            {%elif mode == "Artifact Assault"%}
+            {%elif mode.endswith("Artifact Assault")%}
 	            <th title="{{ _("Average scores of non-host team in a game") }}">{{ _("Avg non-host scores") }}</th>
 	            <th title="{{ _("Average scores of host team in a game") }}">{{ _("Avg host scores") }}</th>
 	            <th title="{{ _("Host team rating compared to other maps") }}">{{ _("Host rating") }}</th>
@@ -67,7 +67,7 @@
                 <td>{{ entry.kills | avgscore(entry.players) }}</td>
                 <td>{{ entry.hostrating }}</td>
                 <td>{{ entry.hostwins | winrate(entry.hostlosses) }}</td>
-            {%elif mode == "Artifact Assault"%}
+            {%elif mode.endswith("Artifact Assault")%}
                 <td><a href="/maps/{{ entry.slug }}">{{ entry.name }}</a></td>
                 <td>{{ entry.games }}</td>
                 <td>{{ entry.scored | sub(entry.hostscored) | avgscore(entry.games) }}</td>

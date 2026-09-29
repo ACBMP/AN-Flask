@@ -79,7 +79,7 @@
         <h1 style="margin-bottom:0.2rem">{{data.name}} <img src="https://raw.githubusercontent.com/gosquared/flags/master/flags/flags-iso/flat/48/{{data.nation}}.png" style="height:1em;vertical-align:middle">
         {% if data.badges|length %}<span class="player-badges profile-name-badges">{{ data.badges|transform_badges()|safe }}</span>{% endif %}
         </h1>
-        <div class="page-subtitle">{{ [data.mhmmr, data.emmr, data.aarmmr, data.aadmmr, data.dommr, data.dmmmr, data.asbmmr]|max()|rank_title() }}
+        <div class="page-subtitle">{{ data|top_rating()|rank_title() }}
             &middot; {{data.platforms|join(", ") }}
             &middot; IGNs: {{data.ign|join(", ") }}
             {% if data.link %}&middot; <a href="{{data.link}}" target="_blank">{{ _("Profile Link") }}</a>{% endif %}
@@ -99,20 +99,6 @@
    <img src="/static/badges/{{ data.emmr|rank_pic_big() }}">
    <div class="stat-label">{{ _("Escort Rank") }}</div>
    <div class="stat-value" style="font-size:0.95rem">{{ data.emmr|rank_title() }}</div>
-   </div>
-   {%endif%}
-   {%if data.aadgames.total > 9%}
-   <div class="stat-tile">
-   <img src="/static/badges/{{ data.aadmmr|rank_pic_big() }}">
-   <div class="stat-label">{{ _("AA Defender Rank") }}</div>
-   <div class="stat-value" style="font-size:0.95rem">{{ data.aadmmr|rank_title() }}</div>
-   </div>
-   {%endif%}
-   {%if data.aargames.total > 9%}
-   <div class="stat-tile">
-   <img src="/static/badges/{{ data.aarmmr|rank_pic_big() }}">
-   <div class="stat-label">{{ _("AA Runner Rank") }}</div>
-   <div class="stat-value" style="font-size:0.95rem">{{ data.aarmmr|rank_title() }}</div>
    </div>
    {%endif%}
    {%if data.dogames.total > 9%}
@@ -136,6 +122,15 @@
     <div class="stat-value" style="font-size:0.95rem">{{ data.asbmmr|rank_title() }}</div>
     </div>
     {%endif%}
+    {% for b in aa_boards %}
+    {%if data[b.key ~ "games"].total > 9%}
+    <div class="stat-tile">
+    <img src="/static/badges/{{ data[b.key ~ "mmr"]|rank_pic_big() }}">
+    <div class="stat-label">{{ _(b.tile_label) }}</div>
+    <div class="stat-value" style="font-size:0.95rem">{{ data[b.key ~ "mmr"]|rank_title() }}</div>
+    </div>
+    {%endif%}
+    {% endfor %}
 </div>
 
 <div class="page-header">
@@ -196,33 +191,30 @@
   {{ detail_beta(asb_extra, "asbdetchart", "bonuses-assassinate", "asbcharchart", "asb") }}
 </div>
 
-<div class="mode-panel" data-mode="AA Running">
+{% for b in aa_boards %}
+{% set k = b.key %}{% set games = data[k ~ "games"] %}{% set stats = data[k ~ "stats"] %}{% set mmr = data[k ~ "mmr"] %}
+<div class="mode-panel" data-mode="{{ b.name }}">
   <div class="match-detail-grid">
-    {{ overview_card("Artifact Assault (Running)", data.aarmmr|rank_title(), data.aarmmr, data.aarhistory.mmrs|max(), data.aargames.total, data.aargames.won, data.aargames.lost, data.aarstats.kills|avgdeaths(data.aargames.total), "Rat Index", [
-        ("Average artifacts scored", data.aarstats.scored|avgkills(data.aargames.total)),
-        ("Deaths per artifact", data.aarstats.deaths|avgdeaths(data.aarstats.scored)),
-        ("Average score", data.aarstats.totalscore|avgscore(data.aargames.total)),
+    {% if b.role == "running" %}
+    {{ overview_card(b.card_title, mmr|rank_title(), mmr, data[k ~ "history"].mmrs|max(), games.total, games.won, games.lost, stats.kills|avgdeaths(games.total), "Rat Index", [
+        ("Average artifacts scored", stats.scored|avgkills(games.total)),
+        ("Deaths per artifact", stats.deaths|avgdeaths(stats.scored)),
+        ("Average score", stats.totalscore|avgscore(games.total)),
     ]) }}
+    {% else %}
+    {{ overview_card(b.card_title, mmr|rank_title(), mmr, data[k ~ "history"].mmrs|max(), games.total, games.won, games.lost, stats.kills|kdratio(stats.conceded), "Kills/Conceded", [
+        ("Average kills", stats.kills|avgkills(games.total)),
+        ("Average artifacts conceded", stats.conceded|avgdeaths(games.total)),
+        ("Average score", stats.totalscore|avgscore(games.total)),
+    ]) }}
+    {% endif %}
     <div class="card">
       <div class="card-header"><h3>{{ _("Trends") }}</h3></div>
-      <canvas id="aarhist" height="150"></canvas>
+      <canvas id="{{ k }}hist" height="150"></canvas>
     </div>
   </div>
 </div>
-
-<div class="mode-panel" data-mode="AA Defending">
-  <div class="match-detail-grid">
-    {{ overview_card("Artifact Assault (Defending)", data.aadmmr|rank_title(), data.aadmmr, data.aadhistory.mmrs|max(), data.aadgames.total, data.aadgames.won, data.aadgames.lost, data.aadstats.kills|kdratio(data.aadstats.conceded), "Kills/Conceded", [
-        ("Average kills", data.aadstats.kills|avgkills(data.aadgames.total)),
-        ("Average artifacts conceded", data.aadstats.conceded|avgdeaths(data.aadgames.total)),
-        ("Average score", data.aadstats.totalscore|avgscore(data.aadgames.total)),
-    ]) }}
-    <div class="card">
-      <div class="card-header"><h3>{{ _("Trends") }}</h3></div>
-      <canvas id="aadhist" height="150"></canvas>
-    </div>
-  </div>
-</div>
+{% endfor %}
 
 <div class="mode-panel" data-mode="Domination">
   <div class="match-detail-grid">
@@ -256,14 +248,6 @@
   </div>
 </div>
 
-{% set MATCH_MODE_MAP = {
-  "Escort": ["Escort"],
-  "Manhunt": ["Manhunt"],
-  "Assassinate brotherhood": ["Assassinate"],
-  "Artifact assault": ["AA Running", "AA Defending"],
-  "Domination": ["Domination"],
-  "Deathmatch": ["Deathmatch"],
-} %}
 <div class="card table-wrap">
 <div class="card-header"><h3>{{ _("Match History") }}</h3><span class="players-count" id="matchHistoryCount"></span></div>
     <table style="width:100%">
@@ -284,18 +268,18 @@
         </thead>
         <tbody id="matchHistoryBody">
     {% for entry in data_matches %}
-    <tr class="match-row" data-href="/match/{{ entry._id }}" data-modes="{{ MATCH_MODE_MAP.get(entry.mode, [])|join(',') }}">
+    <tr class="match-row" data-href="/match/{{ entry._id }}" data-modes="{{ match_mode_panels.get(entry.mode, [])|join(',') }}">
         <td>{{ _(entry.mode) }}</td>
         <td><table style="width:100%">{% for player in entry.team1 %}
                 <tr style="background: transparent;width: 100%">
-                    <td style="width: 25%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.score if entry.mode != "Artifact assault" else player.scored}}</td>
+                    <td style="width: 25%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.scored if entry.mode|is_aa_mode() else player.score}}</td>
                     <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
             {% endfor %}
         </table>
         </td>
         <td><table style="width:100%">{% for player in entry.team2 %}
             <tr style="background: transparent;width: 100%">
-                <td style="width: 25%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.score if entry.mode != "Artifact assault" else player.scored}}</td>
+                <td style="width: 25%;border: 0px"><a href="/profile/{{ player.player }}">{{ player.player }}</a></td><td style="width: 25%;border: 0px">{{player.scored if entry.mode|is_aa_mode() else player.score}}</td>
                 <td style="width: 25%;border: 0px">{{player.kills}}</td><td style="width: 25%;border: 0px">{{player.deaths}}</td></tr>
         {% endfor %}
     </table>
@@ -493,40 +477,24 @@ var mhhistchart = new Chart(mhhist, {
             display:false}
         }});
 
-    var aadhist = document.getElementById('aadhist').getContext('2d');
-var aadhistchart = new Chart(aadhist, {
+{% for b in aa_boards %}
+new Chart(document.getElementById('{{ b.key }}hist').getContext('2d'), {
     type: 'line',
     data:{
-        labels: {{data.aadhistory.dates|safe}},
+        labels: {{ data[b.key ~ "history"].dates|tojson }},
         datasets:
         [
             {
-                data: {{data.aadhistory.mmrs|safe}},
+                data: {{ data[b.key ~ "history"].mmrs|tojson }},
                 backgroundColor:'rgba(0, 245, 255, 0.15)',
                 borderColor:'#00f5ff',
                 lineTension:0
             }
         ],},
-        options:{title:{display:true,text:'AA Defending MMR',fontSize: 16 },legend:{
+        options:{title:{display:true,text:{{ (b.name ~ " MMR")|tojson }},fontSize: 16 },legend:{
             display:false}
         }});
-var aarhist = document.getElementById('aarhist').getContext('2d');
-var aarhistchart = new Chart(aarhist, {
-    type: 'line',
-    data:{
-        labels: {{data.aarhistory.dates|safe}},
-        datasets:
-        [
-            {
-                data: {{data.aarhistory.mmrs|safe}},
-                backgroundColor:'rgba(0, 245, 255, 0.15)',
-                borderColor:'#00f5ff',
-                lineTension:0
-            }
-        ],},
-        options:{title:{display:true,text:'AA Running MMR',fontSize: 16 },legend:{
-            display:false}
-        }});
+{% endfor %}
 var dohist = document.getElementById('dohist').getContext('2d');
 var dohistchart = new Chart(dohist, {
     type: 'line',

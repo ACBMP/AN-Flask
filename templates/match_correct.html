@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+{% set aa = entry.mode|is_aa_mode() %}
+{% set ffa = entry.mode in ["Deathmatch", "Assassinate brotherhood"] %}
+{% macro val(key, default) %}{{ form.get(key, default) if form else default }}{% endmacro %}
+{% macro player_rows(prefix, players) %}
+<table class="correct-table">
+  <tr><th>{{ _("Player") }}</th><th>{{ _("Score") }}</th><th>{{ _("Kills") }}</th><th>{{ _("Deaths") }}</th>{% if aa %}<th>{{ _("Artifacts") }}</th>{% endif %}</tr>
+  {% for p in players %}
+  {% set i = loop.index0 %}
+  <tr>
+    <td><input name="{{ prefix }}-{{ i }}-player" value="{{ val(prefix ~ '-' ~ i ~ '-player', p.player) }}" required></td>
+    <td><input name="{{ prefix }}-{{ i }}-score" value="{{ val(prefix ~ '-' ~ i ~ '-score', p.score) }}" inputmode="numeric" size="6" required></td>
+    <td><input name="{{ prefix }}-{{ i }}-kills" value="{{ val(prefix ~ '-' ~ i ~ '-kills', p.kills) }}" inputmode="numeric" size="4" required></td>
+    <td><input name="{{ prefix }}-{{ i }}-deaths" value="{{ val(prefix ~ '-' ~ i ~ '-deaths', p.deaths) }}" inputmode="numeric" size="4" required></td>
+    {% if aa %}<td><input name="{{ prefix }}-{{ i }}-scored" value="{{ val(prefix ~ '-' ~ i ~ '-scored', p.scored) }}" inputmode="numeric" size="3" required></td>{% endif %}
+  </tr>
+  {% endfor %}
+</table>
+{% endmacro %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>{{ _("Correct Match") }}</h1>
+    <p class="page-subtitle">{{ _(entry.mode) }}{% if entry.map %} &middot; {{ entry.map }}{% endif %}{% if entry.date %} &middot; {{ entry.date }}{% endif %}</p>
+  </div>
+  <a class="btn" href="/match/{{ entry._id }}">&laquo; {{ _("Back to the match") }}</a>
+</div>
+
+<div class="card" style="margin-bottom:1.25rem">
+  <p>{{ _("Fix player names or stats, the winner, map or host. Every later match of this mode is recalculated, so ratings, stats, history and ranks end up as if the match had been entered correctly.") }}</p>
+</div>
+
+<form method="post" action="/match/{{ entry._id }}/correct" class="correct-form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  {% if ffa %}
+  <div class="card table-wrap">
+    <div class="card-header"><h3>{{ _("Players") }}</h3></div>
+    {{ player_rows("p", entry.players or []) }}
+  </div>
+  {% else %}
+  <div class="match-detail-grid">
+    <div class="card table-wrap">
+      <div class="card-header"><h3>{{ _("Team 1") }}</h3></div>
+      {{ player_rows("team1", entry.team1) }}
+    </div>
+    <div class="card table-wrap">
+      <div class="card-header"><h3>{{ _("Team 2") }}</h3></div>
+      {{ player_rows("team2", entry.team2) }}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="card" style="margin-top:1.25rem">
+    {% if not ffa %}
+    {% set outcome = val("outcome", entry.outcome)|string %}
+    <label>{{ _("Winner") }}
+      <select name="outcome">
+        <option value="1"{% if outcome == "1" %} selected{% endif %}>{{ _("Team 1") }}</option>
+        <option value="2"{% if outcome == "2" %} selected{% endif %}>{{ _("Team 2") }}</option>
+        <option value="0"{% if outcome == "0" %} selected{% endif %}>{{ _("Tie") }}</option>
+      </select>
+    </label>
+    {% endif %}
+    <label>{{ _("Map") }} <input name="map" value="{{ val('map', entry.map or '') }}"></label>
+    <label>{{ _("Host") }} <input name="host" value="{{ val('host', entry.host or '') }}"></label>
+    <div style="margin-top:1rem">
+      <button type="submit" class="btn">{{ _("Save correction") }}</button>
+    </div>
+  </div>
+</form>
+{% endblock content %}

@@ -20,3 +20,23 @@ def get(path, **params):
     except (requests.RequestException, ValueError):
         current_app.logger.exception("AN-API request failed: %s", path)
         return None
+
+
+def post(path, payload=None, token=None, params=None, timeout=None):
+    """POST to AN-API as a player. Returns ``(status, json)``; status 0 if unreachable.
+
+    Unlike ``get`` this reports errors, because the caller shows them.
+    """
+    base = current_app.config["AN_API_URL"]
+    headers = {"Authorization": f"Bearer {token}"} if token else {}
+    try:
+        r = requests.post(f"{base}/{path.lstrip('/')}", json=payload, params=params, headers=headers,
+                          timeout=timeout or current_app.config["AN_API_TIMEOUT"])
+    except requests.RequestException:
+        current_app.logger.exception("AN-API request failed: %s", path)
+        return 0, {"error": "The API could not be reached."}
+    try:
+        body = r.json()
+    except ValueError:
+        body = {"error": r.text[:200]}
+    return r.status_code, body

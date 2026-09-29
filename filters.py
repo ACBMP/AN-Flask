@@ -5,7 +5,7 @@ import re
 from extensions import mongo
 from i18n import translate
 from badges import filter_badges, full_badge_names, transform_badges
-from modes import MMR_FIELDS
+from modes import MMR_FIELDS, is_aa_mode
 
 # Rating thresholds, ascending. The last entry catches everything above.
 RANK_TIERS = [
@@ -97,6 +97,11 @@ def rank_pic_big(elo):
     return _tier(elo)[1] + "_big.png"
 
 
+def top_rating(player):
+    """A player's highest rating across all modes."""
+    return max((player[f] for f in MMR_FIELDS if player.get(f) is not None), default=800)
+
+
 def top_rank_pic(player, size="small"):
     """Badge for a player's highest rating across all modes."""
     values = [player[f] for f in MMR_FIELDS if player.get(f) is not None]
@@ -141,6 +146,8 @@ FILTERS = {
     "name_in_db": name_in_db,
     "full_badge_names": full_badge_names,
     "transform_badges": transform_badges,
+    "top_rating": top_rating,
+    "is_aa_mode": is_aa_mode,
     "filter_badges": filter_badges,
     "is_hidden": is_hidden,
 }

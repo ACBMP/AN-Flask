@@ -6,7 +6,7 @@
 {% set r = mode.row %}
 <div class="stat-grid" style="margin-bottom:1rem">
   <div class="stat-tile"><div class="stat-label">{{ _("Games") }}</div><div class="stat-value">{{ r.games }}</div></div>
-  {% if mode.key == "aa" %}
+  {% if mode.key.endswith("aa") %}
   <div class="stat-tile"><div class="stat-label">{{ _("Avg non-host scores") }}</div><div class="stat-value">{{ r.scored | sub(r.hostscored) | avgscore(r.games) }}</div></div>
   <div class="stat-tile"><div class="stat-label">{{ _("Avg host scores") }}</div><div class="stat-value">{{ r.hostscored | avgscore(r.games) }}</div></div>
   {% elif mode.key == "e" %}

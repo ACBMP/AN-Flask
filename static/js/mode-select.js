@@ -1,22 +1,31 @@
 // Persistent Game -> Mode selector shared by the leaderboard and profile pages.
 // Selection is stored in cookies so it carries over between the two page types.
 (function () {
+  // Artifact Assault is rated per game, so each game has its own AA modes.
   var GAMES = {
     ACB: { label: "AC Brotherhood", modes: ["Escort", "Manhunt", "Assassinate"] },
-    ACR: { label: "AC Revelations", modes: ["AA Running", "AA Defending"] },
-    AC3: { label: "AC III", modes: ["AA Running", "AA Defending", "Domination"] },
-    AC4: { label: "AC IV", modes: ["AA Running", "AA Defending", "Domination", "Deathmatch"] },
+    ACR: { label: "AC Revelations", modes: ["ACR AA Running", "ACR AA Defending"] },
+    AC3: { label: "AC III", modes: ["AC3 AA Running", "AC3 AA Defending", "Domination"] },
+    AC4: { label: "AC IV", modes: ["AC4 AA Running", "AC4 AA Defending", "Domination", "Deathmatch"] },
   };
   var MODE_LABELS = {
     "Escort": "Escort", "Manhunt": "Manhunt", "Assassinate": "Assassinate",
-    "AA Running": "Artifact Assault (Running)", "AA Defending": "Artifact Assault (Defending)",
     "Domination": "Domination", "Deathmatch": "Deathmatch",
   };
   var MODE_ROUTES = {
     "Escort": "/escort", "Manhunt": "/manhunt", "Assassinate": "/assassinate",
-    "AA Running": "/running", "AA Defending": "/defending",
     "Domination": "/domination", "Deathmatch": "/deathmatch",
   };
+  ["ACR", "AC3", "AC4"].forEach(function (game) {
+    var prefix = game + " ";
+    var path = "/" + game.toLowerCase();
+    MODE_LABELS[prefix + "AA Running"] = "Artifact Assault (Running)";
+    MODE_LABELS[prefix + "AA Defending"] = "Artifact Assault (Defending)";
+    MODE_ROUTES[prefix + "AA Running"] = path + "/running";
+    MODE_ROUTES[prefix + "AA Defending"] = path + "/defending";
+  });
+  // ACR's AA modes before they were named after the game (still in cookies)
+  var LEGACY_MODES = { "AA Running": "ACR AA Running", "AA Defending": "ACR AA Defending" };
   var DEFAULT_GAME = "ACB", DEFAULT_MODE = "Escort";
 
   function getCookie(name) {
@@ -40,7 +49,9 @@
       var gameSel = root.querySelector("[data-role=game]");
       var modeSel = root.querySelector("[data-role=mode]");
 
-      var initialMode = opts.currentMode && MODE_LABELS[opts.currentMode] ? opts.currentMode : (getCookie("an_mode") || DEFAULT_MODE);
+      var cookieMode = getCookie("an_mode");
+      cookieMode = LEGACY_MODES[cookieMode] || cookieMode;
+      var initialMode = opts.currentMode && MODE_LABELS[opts.currentMode] ? opts.currentMode : (cookieMode || DEFAULT_MODE);
       // Several modes (Artifact Assault, Domination, ...) are shared across more than one
       // game. Keep the previously chosen game if it's still compatible with initialMode,
       // instead of always collapsing back to that mode's first/default game.

@@ -991,3 +991,16 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
   font-size: inherit;
   cursor: pointer;
 }
+
+/* match corrections (admins) */
+.match-admin-actions { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+.btn-danger { color: #fecaca; border-color: rgba(239,68,68,0.5); }
+.btn-danger:hover { background: rgba(239,68,68,0.15); color: #fff; }
+.flash-info { color: #bae6fd; border-color: rgba(56,189,248,0.5); background: rgba(56,189,248,0.1); }
+.match-edit-link { color: var(--text-dim); font-size: 0.85em; }
+.match-edit-link:hover { color: var(--primary); text-decoration: none; }
+.correct-table input { width: 100%; min-width: 3.5rem; background: var(--surface-high); color: var(--text);
+  border: 1px solid var(--border); border-radius: var(--radius); padding: 0.3rem 0.45rem; font: inherit; }
+.correct-form label { display: inline-flex; gap: 0.5rem; align-items: center; margin: 0 1.25rem 0.6rem 0; }
+.correct-form label input, .correct-form select { background: var(--surface-high); color: var(--text);
+  border: 1px solid var(--border); border-radius: var(--radius); padding: 0.35rem 0.5rem; font: inherit; }

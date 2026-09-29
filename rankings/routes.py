@@ -1,10 +1,19 @@
 """Per-mode leaderboards plus the aggregate and achievement boards."""
 
-from flask import Blueprint, render_template
+from flask import Blueprint, redirect, render_template
 
 from extensions import mongo
 from badges import badge_score
-from modes import MODES, RANKING_MODES, RANKING_TITLES, title
+from modes import (
+    AA_ROLE_OF,
+    LEGACY_RANKING_PATHS,
+    MODES,
+    RANKING_MODES,
+    RANKING_TITLES,
+    TOTAL_COLUMNS,
+    mode_defaults,
+    title,
+)
 
 rankings_bp = Blueprint("rankings", __name__)
 
@@ -53,6 +62,10 @@ def _totals(average):
         )
     )
     for p in players:
+        for m in MODES:
+            # players from before a mode existed don't carry its fields yet
+            for field, value in mode_defaults(m).items():
+                p.setdefault(field, value)
         ranked_modes = 0
         p["totalmmr"] = 0
         p["totalgames"] = 0
@@ -80,6 +93,8 @@ def ranking(mode, name):
         data=extract_mode_data(mode),
         title=title(RANKING_TITLES[mode]),
         mode=name,
+        key=mode,
+        aa_role=AA_ROLE_OF.get(mode),
     )
 
 
@@ -88,22 +103,30 @@ def ranking(mode, name):
 for _path, (_mode, _name) in RANKING_MODES.items():
     rankings_bp.add_url_rule(
         f"/{_path}",
-        endpoint=_path,
+        endpoint=_path.replace("/", "_"),
         view_func=(lambda mode=_mode, name=_name: ranking(mode, name)),
+    )
+
+# ACR's AA boards moved; keep old links and bookmarks working.
+for _old, _new in LEGACY_RANKING_PATHS.items():
+    rankings_bp.add_url_rule(
+        f"/{_old}", endpoint=f"legacy_{_old}", view_func=(lambda new=_new: redirect(f"/{new}", 301))
     )
 
 
 @rankings_bp.route("/allmodes")
 def allmodes():
     return render_template(
-        "ranking.html", data=_totals(average=False), title=title("All Modes"), mode="All Modes"
+        "ranking.html", data=_totals(average=False), title=title("All Modes"), mode="All Modes",
+        total_columns=TOTAL_COLUMNS,
     )
 
 
 @rankings_bp.route("/average")
 def average():
     return render_template(
-        "ranking.html", data=_totals(average=True), title=title("Average"), mode="Average"
+        "ranking.html", data=_totals(average=True), title=title("Average"), mode="Average",
+        total_columns=TOTAL_COLUMNS,
     )
 
 
