@@ -10,6 +10,7 @@
 * [Castel Gandolfo](/guides/spawns/castel gandolfo)
 * [Florence](/guides/spawns/florence)
 * [Forli](/guides/spawns/forli)
+* [Monteriggioni](/guides/spawns/monteriggioni)
 * [Rome](/guides/spawns/rome)
 * [San Donato](/guides/spawns/san donato)
 * [Siena](/guides/spawns/siena)
@@ -24,7 +25,14 @@
 * [Escort Guide](/guides/escort)
 
 ##### Routes
+* [Castel Gandolfo](/guides/routes/castel gandolfo)
 * [Florence](/guides/routes/florence)
+* [Forli](/guides/routes/forli)
+* [Monteriggioni](/guides/routes/monteriggioni)
+* [Rome](/guides/routes/rome)
+* [San Donato](/guides/routes/san donato)
+* [Siena](/guides/routes/siena)
+* [Venice](/guides/routes/venice)
 
 #### Manhunt
 * [Manhunt Sets](/guides/manhunt-sets)

@@ -196,7 +196,7 @@
 <div class="mode-panel" data-mode="{{ b.name }}">
   <div class="match-detail-grid">
     {% if b.role == "running" %}
-    {{ overview_card(b.card_title, mmr|rank_title(), mmr, data[k ~ "history"].mmrs|max(), games.total, games.won, games.lost, stats.kills|avgdeaths(games.total), "Rat Index", [
+    {{ overview_card(b.card_title, mmr|rank_title(), mmr, data[k ~ "history"].mmrs|max(), games.total, games.won, games.lost, stats.kills|avgdeaths(games.total), "🐀 Index", [
         ("Average artifacts scored", stats.scored|avgkills(games.total)),
         ("Deaths per artifact", stats.deaths|avgdeaths(stats.scored)),
         ("Average score", stats.totalscore|avgscore(games.total)),

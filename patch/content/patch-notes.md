@@ -1,5 +1,56 @@
 # ACB 2.0 Patch Notes
 
+### 1.7.0
+* Abilities now reach other players faster.
+* All players' mutes are now visible no matter what, so you can see missed mutes and teammate mutes.
+* Fixed a couple minor bugs in the patch.
+
+### 1.6.3
+
+* Made Enhanced Autobash a permanent thing instead of requiring the perk.
+* Disabled numerous chasebreakers on Pienza due to a bug where they close on players before they can run through them.
+* Fixed a bug that made it [possible to miss a gunshot even if fully aimed](https://www.youtube.com/watch?v=sSOUsRO8ysY).
+* Fixed a bug where the host player's spawn used incorrect player positions. No more [host spawning directly on opponents](https://www.youtube.com/watch?v=XGoK3xnuHI8).
+
+We've also done a little redesign of the AN website: https://assassins.network.
+
+### 1.6.2
+
+* Fixed a bug caused by the spawn change on Monteriggioni that caused players to fall through the map.
+* On game end, the scoreboard is now logged under a `game_score_logs` folder.
+
+### 1.6.1
+
+* Fixed the Florence invisible chimney bug fix.
+
+### 1.6.0
+
+* Disabled score x2. (Host streak glitch triggers on it as well, plus it's horrible to balance around. Should be back once/if host streak glitch is fixed.)
+* Added a `patch.ini` config file to toggle new settings.
+* New setting to disable the FPS cap.
+* New setting to force highest level of detail.
+* New setting to raise civilian and player render distances.
+* New setting to enable AC3/4 style controls when using an Xinput controller (Xbox 360 or any emulator, such as `claudia.asi`, `xinput.asi`, x360ce, PadForge, DS4Tool, etc.). RT now triggers RT+A and RT+A triggers RT. No more excuses about not being able to claw, Xanthex.
+* Fixed an invisible chimney bug on Florence.
+* Fixed the invisible smoke bomb glitch.
+* Moved Monteriggioni's spawn trap to the center of the map.
+* Fixed automatic camera dampening when using keyboard and mouse input. You can also adjust the dampening in the new settings file.
+* Changed map order in private matches to better reflect play order.
+* Disabled crowd-bandwidth management. This seems to have no effect on lag, but may later need to be reverted.
+* Increased unlock distance. Locking distance is WIP, but at least you won't lose your locks as quickly.
+* Wanted: set chases while in line of sight to expire after 15 s (up from 0 s).
+
+### 1.5.1
+
+* Reverted Firecrackers max intensity change.
+
+### 1.5.0
+
+* Diversion: score bonus raised from 75 to 175.
+* Morph: rapid reload is now the only kind of morph. RIP super morph (I'm sure it'll be back).
+* Firecrackers: lowered max intensity radius to 2.0 for normal and 2.5 for strong. This should make blinding white screens significantly rarer.
+* Templar Vision: raised distance to 50 and duration to 3.5 s.
+
 ### 1.4.0
 
 * Chest Capture: removed chases, made chests always visible on defense, changed spawn rule to remove spawn kills, and made compass inaccurate.
