@@ -103,6 +103,24 @@ def mode_defaults(key):
         key + "rankchange": 0, key + "history": {"dates": [], "mmrs": [800]},
     }
 
+
+def fill_mode_defaults(player):
+    """Give a player document every mode field the pages read, in place.
+
+    Covers modes the player doesn't have yet and counters missing inside ones
+    they do (e.g. ``asbgames`` without ``podium``/``finishes`` for players who
+    got the mode before those were tracked).
+    """
+    for mode in MODES:
+        for field, default in mode_defaults(mode).items():
+            current = player.get(field)
+            if current is None:
+                player[field] = default
+            elif isinstance(default, dict) and isinstance(current, dict):
+                for key, value in default.items():
+                    current.setdefault(key, value)
+    return player
+
 # Short mode key -> display name, for the map statistics page. Artifact assault
 # has one entry per game ("acraa", ...) because maps aren't split by
 # running/defending.

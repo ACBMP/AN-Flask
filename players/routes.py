@@ -4,7 +4,7 @@ from flask import Blueprint, abort, make_response, render_template, request
 
 import avatars
 from extensions import mongo
-from modes import AA_BOARDS, MATCH_MODE_PANELS, MODES, mode_defaults, title
+from modes import AA_BOARDS, MATCH_MODE_PANELS, fill_mode_defaults, title
 
 from .stats import (
     MH_E_EXCLUDED_BONUSES,
@@ -132,10 +132,8 @@ def display_profile(name):
     if data is None:
         abort(404)
     igns = player_igns(data)
-    for mode in MODES:
-        # players from before a mode existed don't carry its fields yet
-        for field, value in mode_defaults(mode).items():
-            data.setdefault(field, value)
+    # players from before a mode (or one of its counters) existed lack fields
+    fill_mode_defaults(data)
 
     mh_extra = compute_extra_acb_stats(
         igns, "Manhunt", False, detection_basis="kills", excluded_bonuses=MH_E_EXCLUDED_BONUSES

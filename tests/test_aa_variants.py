@@ -112,3 +112,12 @@ def test_match_pages_show_artifacts_for_every_aa_game(client, db):
     }).inserted_id
     detail = client.get(f"/match/{mid}").get_data(as_text=True)
     assert ">7<" in detail and "1234" not in detail
+
+
+def test_pages_cope_with_missing_counters(client, db):
+    # got Assassinate before podiums/finishes were tracked
+    db.players.insert_one(player("Legacy", ign=["Legacy"], asbgames={"total": 12, "won": 5, "lost": 7},
+                                 asbrank=1, dmgames={"total": 0, "won": 0, "lost": 0}))
+    assert client.get("/profile/Legacy").status_code == 200
+    assert "Legacy" in client.get("/assassinate").get_data(as_text=True)
+    assert client.get("/allmodes").status_code == 200

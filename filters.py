@@ -2,6 +2,8 @@
 
 import re
 
+from jinja2.exceptions import UndefinedError
+
 from extensions import mongo
 from i18n import translate
 from badges import filter_badges, full_badge_names, transform_badges
@@ -29,7 +31,8 @@ def _ratio(numerator, denominator, fmt="{0:.2f}"):
     """Format a ratio, yielding a zero rather than raising on bad input."""
     try:
         return fmt.format(round(numerator / denominator, 2))
-    except (TypeError, ZeroDivisionError):
+    except (TypeError, ZeroDivisionError, UndefinedError):
+        # UndefinedError: a template passed a field the document doesn't have
         return fmt.format(0)
 
 

@@ -11,7 +11,7 @@ from modes import (
     RANKING_MODES,
     RANKING_TITLES,
     TOTAL_COLUMNS,
-    mode_defaults,
+    fill_mode_defaults,
     title,
 )
 
@@ -44,7 +44,7 @@ def extract_mode_data(mode):
             "hidden": False,
         }
     ).sort(f"{mode}mmr", -1)
-    return list(_dedupe(ranked, tbd))
+    return [fill_mode_defaults(p) for p in _dedupe(ranked, tbd)]
 
 
 def _totals(average):
@@ -62,10 +62,8 @@ def _totals(average):
         )
     )
     for p in players:
-        for m in MODES:
-            # players from before a mode existed don't carry its fields yet
-            for field, value in mode_defaults(m).items():
-                p.setdefault(field, value)
+        # players from before a mode existed don't carry its fields yet
+        fill_mode_defaults(p)
         ranked_modes = 0
         p["totalmmr"] = 0
         p["totalgames"] = 0
